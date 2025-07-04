@@ -7,13 +7,13 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 1. Install dependencies
 
    ```bash
-   npm install
+   yarn install
    ```
 
 2. Start the app
 
    ```bash
-   npx expo start
+   yarn run ios
    ```
 
 In the output, you'll find options to open the app in a
@@ -25,5 +25,9 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-3. Style your component
-   you can tailwind style to write css with [Nativewind](https://www.nativewind.dev/)
+3. Style your component, you can tailwind style to write css with [Nativewind](https://www.nativewind.dev/)
+
+
+## Environment Requirements
+
+node version >= 20.18.0
