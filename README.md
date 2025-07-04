@@ -6,15 +6,21 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 1. Install dependencies
 
-   ```bash
-   yarn install
-   ```
+  ```bash
+  yarn install
+  ```
 
-2. Start the app
+2. Start dev net
+  
+  ```bash
+  yarn run chain
+  ```
 
-   ```bash
-   yarn run ios
-   ```
+3. Start the app
+
+  ```bash
+  yarn run ios
+  ```
 
 In the output, you'll find options to open the app in a
 
@@ -30,4 +36,18 @@ You can start developing by editing the files inside the **app** directory. This
 
 ## Environment Requirements
 
+#### Node version
+
 node version >= 20.18.0
+
+#### Starknet-devnet version
+
+To ensure the proper functioning of scaffold-stark, your `starknet-devnet` version must be `0.4.0`. To accomplish this, first check your `starknet-devnet` version:
+
+```sh
+starknet-devnet --version
+```
+
+If your `starknet-devnet` version is not `0.4.0`, you need to install it.
+
+- Install starknet-devnet `0.4.0` via `asdf` ([instructions](https://github.com/gianalarcon/asdf-starknet-devnet/blob/main/README.md)).
