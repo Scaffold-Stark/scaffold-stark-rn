@@ -2,7 +2,7 @@ import {
   devnetStrkClassHash,
   universalErc20Abi,
   universalStrkAddress,
-} from "./constants.ts";
+} from "./constants";
 
 const preDeployedContracts = {
   devnet: {
