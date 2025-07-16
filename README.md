@@ -98,7 +98,13 @@ yarn install
 yarn run chain
 ```
 
-3. Start the app
+3. Deploy sample contracts
+
+```bash
+yarn run deploy
+```
+
+4. Start the app on iOS simulator
 
 ```bash
 yarn run ios

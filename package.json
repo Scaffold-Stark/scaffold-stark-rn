@@ -21,6 +21,7 @@
     "format": "yarn workspace @ss-rn/snfoundry format",
     "format:check": "yarn workspace @ss-rn/snfoundry format:check",
     "start": "yarn workspace @ss-rn/rn start",
+    "start:ios": "yarn workspace @ss-rn/rn start --ios",
     "prepare": "husky",
     "postinstall": "yarn workspace @ss-rn/rn postinstall && yarn workspace @ss-rn/snfoundry postinstall"
   },
