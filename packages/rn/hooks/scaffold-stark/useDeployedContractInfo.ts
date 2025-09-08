@@ -4,7 +4,7 @@ import {
   ContractCodeStatus,
   ContractName,
   contracts,
-} from "@/services/utils/contract";
+} from "@/services/utils/scaffold-stark/contract";
 import { useProvider } from "@starknet-react/core";
 import { useEffect, useState } from "react";
 import { BlockIdentifier } from "starknet";

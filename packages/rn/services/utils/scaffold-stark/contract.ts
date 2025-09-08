@@ -1,6 +1,6 @@
 import deployedContractsData from "@/contracts/deployedContracts";
 import scaffoldConfig from "@/scaffold.config";
-import { feltToHex } from "@/services/utils/common";
+import { feltToHex } from "@/services/utils/scaffold-stark/common";
 import {
   isCairoArray,
   isCairoBigInt,
@@ -15,7 +15,7 @@ import {
   isCairoTuple,
   isCairoU256,
   parseGenericType,
-} from "@/services/utils/typeValidations";
+} from "@/services/utils/scaffold-stark/typeValidations";
 import { Address } from "@starknet-react/chains";
 import {
   UseReadContractProps,
