@@ -1,4 +1,5 @@
-import deployedContractsData from "@/contracts/deployedContracts";
+import deployedContracts from "@/contracts/deployedContracts";
+import preDeployedContracts from "@/contracts/predeployedContracts";
 import scaffoldConfig from "@/scaffold.config";
 import { feltToHex } from "@/services/utils/scaffold-stark/common";
 import {
@@ -109,7 +110,10 @@ export const deepMergeContracts = <
   >;
 };
 
-const contractsData = deployedContractsData;
+const contractsData = deepMergeContracts(
+  deployedContracts,
+  preDeployedContracts,
+);
 
 type IsContractDeclarationMissing<TYes, TNo> = typeof contractsData extends {
   [key in ConfiguredChainId]: any;
