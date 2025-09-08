@@ -16,7 +16,7 @@ import {
   ExtractAbiEvent,
   ExtractAbiEventNames,
 } from "abi-wan-kanabi/kanabi";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CallData,
   hash,
@@ -112,93 +112,96 @@ export const useScaffoldEventHistory = <
   const eventAbi = matchingAbiEvents?.[0];
   const fullName = eventAbi?.name;
 
-  const readEvents = async (fromBlock?: bigint) => {
-    if (!enabled) {
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      if (deployedContractLoading) {
+  const readEvents = useCallback(
+    async (fromBlock?: bigint) => {
+      if (!enabled) {
+        setIsLoading(false);
         return;
       }
 
-      if (!deployedContractData) {
-        throw new Error("Contract not found");
-      }
-
-      const event = (deployedContractData.abi as Abi).find(
-        (part) =>
-          part.type === "event" &&
-          part.name.split("::").slice(-1)[0] === eventName,
-      ) as ExtractAbiEvent<ContractAbi<TContractName>, TEventName>;
-
-      const blockNumber = (await publicClient.getBlockLatestAccepted())
-        .block_number;
-
-      if (
-        (fromBlock && blockNumber >= fromBlock) ||
-        blockNumber >= fromBlockUpdated
-      ) {
-        let keys: string[][] = [[hash.getSelectorFromName(eventName)]];
-        if (filters) {
-          keys = keys.concat(
-            composeEventFilterKeys(filters, event, deployedContractData.abi),
-          );
-        }
-        keys = keys.slice(0, MAX_KEYS_COUNT);
-        const rawEventResp = await publicClient.getEvents({
-          chunk_size: 100,
-          keys,
-          address: deployedContractData?.address,
-          from_block: { block_number: Number(fromBlock || fromBlockUpdated) },
-          to_block: { block_number: blockNumber },
-        });
-        if (!rawEventResp) {
+      setIsLoading(true);
+      try {
+        if (deployedContractLoading) {
           return;
         }
-        const logs = rawEventResp.events;
-        setFromBlockUpdated(BigInt(blockNumber + 1));
 
-        const newEvents = [];
-        for (let i = logs.length - 1; i >= 0; i--) {
-          newEvents.push({
-            event,
-            log: logs[i],
-            block:
-              blockData && logs[i].block_hash === null
-                ? null
-                : await publicClient.getBlockWithTxHashes(logs[i].block_hash),
-            transaction:
-              transactionData && logs[i].transaction_hash !== null
-                ? await publicClient.getTransactionByHash(
-                    logs[i].transaction_hash,
-                  )
-                : null,
-            receipt:
-              receiptData && logs[i].transaction_hash !== null
-                ? await publicClient.getTransactionReceipt(
-                    logs[i].transaction_hash,
-                  )
-                : null,
+        if (!deployedContractData) {
+          throw new Error("Contract not found");
+        }
+
+        const event = (deployedContractData.abi as Abi).find(
+          (part) =>
+            part.type === "event" &&
+            part.name.split("::").slice(-1)[0] === eventName,
+        ) as ExtractAbiEvent<ContractAbi<TContractName>, TEventName>;
+
+        const blockNumber = (await publicClient.getBlockLatestAccepted())
+          .block_number;
+
+        if (
+          (fromBlock && blockNumber >= fromBlock) ||
+          blockNumber >= fromBlockUpdated
+        ) {
+          let keys: string[][] = [[hash.getSelectorFromName(eventName)]];
+          if (filters) {
+            keys = keys.concat(
+              composeEventFilterKeys(filters, event, deployedContractData.abi),
+            );
+          }
+          keys = keys.slice(0, MAX_KEYS_COUNT);
+          const rawEventResp = await publicClient.getEvents({
+            chunk_size: 100,
+            keys,
+            address: deployedContractData?.address,
+            from_block: { block_number: Number(fromBlock || fromBlockUpdated) },
+            to_block: { block_number: blockNumber },
           });
+          if (!rawEventResp) {
+            return;
+          }
+          const logs = rawEventResp.events;
+          setFromBlockUpdated(BigInt(blockNumber + 1));
+
+          const newEvents = [];
+          for (let i = logs.length - 1; i >= 0; i--) {
+            newEvents.push({
+              event,
+              log: logs[i],
+              block:
+                blockData && logs[i].block_hash === null
+                  ? null
+                  : await publicClient.getBlockWithTxHashes(logs[i].block_hash),
+              transaction:
+                transactionData && logs[i].transaction_hash !== null
+                  ? await publicClient.getTransactionByHash(
+                      logs[i].transaction_hash,
+                    )
+                  : null,
+              receipt:
+                receiptData && logs[i].transaction_hash !== null
+                  ? await publicClient.getTransactionReceipt(
+                      logs[i].transaction_hash,
+                    )
+                  : null,
+            });
+          }
+          if (events && typeof fromBlock === "undefined") {
+            setEvents([...newEvents, ...events]);
+          } else {
+            setEvents(newEvents);
+          }
+          setError(undefined);
         }
-        if (events && typeof fromBlock === "undefined") {
-          setEvents([...newEvents, ...events]);
-        } else {
-          setEvents(newEvents);
-        }
-        setError(undefined);
+      } catch (e: any) {
+        console.error(e);
+        setEvents(undefined);
+        setError(e);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (e: any) {
-      console.error(e);
-      setEvents(undefined);
-      setError(e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [enabled, deployedContractLoading, deployedContractData, publicClient],
+  );
 
   useEffect(() => {
     readEvents(fromBlock).then();
