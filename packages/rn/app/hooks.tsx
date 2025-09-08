@@ -2,6 +2,7 @@
 // TODO: DELETE THIS FILE AFTER TESTING
 
 import { useDeployedContractInfo } from "@/hooks/scaffold-stark/useDeployedContractInfo";
+import { useScaffoldEventHistory } from "@/hooks/scaffold-stark/useScaffoldEventHistory";
 import { useScaffoldMultiWriteContract } from "@/hooks/scaffold-stark/useScaffoldMultiWriteContract";
 import { useScaffoldReadContract } from "@/hooks/scaffold-stark/useScaffoldReadContract";
 import { useScaffoldWriteContract } from "@/hooks/scaffold-stark/useScaffoldWriteContract";
@@ -52,11 +53,22 @@ export default function Hooks() {
     ],
   });
 
+  const { data: events } = useScaffoldEventHistory({
+    contractName: "YourContract",
+    eventName: "GreetingChanged",
+    fromBlock: 0n,
+    enabled: !!address,
+  });
+
   return (
     <View>
       <Text>Hooks</Text>
       <Text>Greeting: {greeting?.toString()}</Text>
       <Text>Allowance: {allowance?.toString()}</Text>
+      <Text>Events: {events?.length}</Text>
+      <Text>
+        Events: {events?.map((event) => event.args.new_greeting.toString())}
+      </Text>
       <TouchableOpacity onPress={() => sendAsync()}>
         <Text>Set greeting</Text>
       </TouchableOpacity>
