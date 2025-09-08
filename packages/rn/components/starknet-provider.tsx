@@ -1,5 +1,3 @@
-import React from "react";
-
 import { BurnerConnector } from "@scaffold-stark/stark-burner";
 import { devnet } from "@starknet-react/chains";
 import { StarknetConfig, publicProvider, voyager } from "@starknet-react/core";

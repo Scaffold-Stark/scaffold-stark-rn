@@ -9,6 +9,7 @@ import {
   useReadContract,
   useSendTransaction,
 } from "@starknet-react/core";
+import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { CairoOption, CairoOptionVariant } from "starknet";
@@ -38,6 +39,7 @@ export default function Index() {
     args: [],
     enabled: true,
   });
+  const router = useRouter();
 
   const myOption = new CairoOption<bigint>(CairoOptionVariant.None);
   const { sendAsync, error } = useSendTransaction({
@@ -67,6 +69,16 @@ export default function Index() {
       {address && balance && <Text>{balance.toString()}</Text>}
 
       <Text>{`Current greeting: ${greeting}`}</Text>
+
+      <TouchableOpacity
+        onPress={() => {
+          // Navigate to hooks page
+          router.push("/hooks");
+        }}
+      >
+        <Text>Go to Hooks</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity
         onPress={async () => {
           try {
@@ -89,7 +101,7 @@ export default function Index() {
               <TouchableOpacity
                 onPress={() => {
                   const connector = connectors.find(
-                    (it) => it.id === "burner-wallet"
+                    (it) => it.id === "burner-wallet",
                   );
                   if (connector && connector instanceof BurnerConnector) {
                     connector.burnerAccount = item;
