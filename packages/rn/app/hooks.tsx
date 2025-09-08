@@ -1,8 +1,8 @@
 // THIS IS A PAGE TO TEST HOOKS
 // TODO: DELETE THIS FILE AFTER TESTING
 
-import { useScaffoldReadContract } from "@/hooks/useScaffoldReadContract";
-import { useScaffoldWriteContract } from "@/hooks/useScaffoldWriteContract";
+import { useScaffoldReadContract } from "@/hooks/scaffold-stark/useScaffoldReadContract";
+import { useScaffoldWriteContract } from "@/hooks/scaffold-stark/useScaffoldWriteContract";
 import { useAccount } from "@starknet-react/core";
 import { Text, TouchableOpacity, View } from "react-native";
 import { CairoOption, CairoOptionVariant } from "starknet";
