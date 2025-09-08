@@ -2398,7 +2398,7 @@ __metadata:
     "@react-navigation/native": ^7.1.6
     "@scaffold-stark/stark-burner": ^0.1.11
     "@starknet-react/chains": ^5.0.1
-    "@starknet-react/core": ^3.7.4
+    "@starknet-react/core": ^5.0.1
     "@tanstack/eslint-plugin-query": ^5.86.0
     "@tanstack/react-query": ^5.87.1
     "@types/react": ~19.0.10
@@ -2462,7 +2462,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@starknet-io/starknet-types-07@npm:@starknet-io/types-js@~0.7.10, @starknet-io/types-js@npm:^0.7.7":
+"@starknet-io/starknet-types-07@npm:@starknet-io/types-js@~0.7.10, @starknet-io/types-js@npm:^0.7.10":
   version: 0.7.10
   resolution: "@starknet-io/types-js@npm:0.7.10"
   checksum: 8f71c57d0f101ebbde91e3016b73ab70ce3329ccb7463764a27a61db42b9ea14b690bd620a6b2dd4303e890b4a9212bdd40626962e0320e82e0c600fd3be5abf
@@ -2476,13 +2476,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@starknet-react/chains@npm:^3.1.3":
-  version: 3.1.3
-  resolution: "@starknet-react/chains@npm:3.1.3"
-  checksum: 28acadd103c2248bb189a4300eb81307f27cc91b6cdc1af737a9ea1bf43b16fd0634194de80d8e6968be73ca387deb3119720ecfee8e2943b8fe533e5dd25b58
-  languageName: node
-  linkType: hard
-
 "@starknet-react/chains@npm:^5.0.1":
   version: 5.0.1
   resolution: "@starknet-react/chains@npm:5.0.1"
@@ -2490,12 +2483,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@starknet-react/core@npm:^3.7.4":
-  version: 3.7.4
-  resolution: "@starknet-react/core@npm:3.7.4"
+"@starknet-react/core@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@starknet-react/core@npm:5.0.1"
   dependencies:
-    "@starknet-io/types-js": ^0.7.7
-    "@starknet-react/chains": ^3.1.3
+    "@starknet-io/types-js": ^0.7.10
+    "@starknet-react/chains": ^5.0.1
     "@tanstack/react-query": ^5.25.0
     abi-wan-kanabi: ^2.2.4
     eventemitter3: ^5.0.1
@@ -2504,8 +2497,8 @@ __metadata:
   peerDependencies:
     get-starknet-core: ^4.0.0
     react: ^18.0
-    starknet: ^6.11.0
-  checksum: 2808e2072e5cdbd858a457be860f30f00342e80a0f139616b1989efc0539b8ba1c6e5dcbd91f04a91a57e4b200caf36bfda43dfb52660ee7218b517604d0456d
+    starknet: ^8.1.2
+  checksum: 47bfec581b03a9f6f692510107aa55f59557dce5e336b532210371d8294303e5b8d6cd9fc1f9f678746341414a274023e9313148d608861c8d5c5f8cab96eac5
   languageName: node
   linkType: hard
 
