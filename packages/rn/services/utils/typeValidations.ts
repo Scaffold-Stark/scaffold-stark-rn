@@ -13,7 +13,7 @@ import type {
   CairoTuple,
   CairoU256,
   CairoVoid,
-} from "abi-wan-kanabi/dist/kanabi";
+} from "abi-wan-kanabi/kanabi";
 import { AbiEnum, AbiStruct } from "./contract";
 
 export const isCairoInt = (type: string): type is CairoInt =>

@@ -32,5 +32,9 @@
   },
   "resolutions": {
     "@noble/hashes": "1.8.0"
+  },
+  "dependencies": {
+    "react-native-vector-icons": "^10.3.0",
+    "toastify-react-native": "^7.2.3"
   }
 }

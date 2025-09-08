@@ -49,7 +49,7 @@ export const useDeployedContractInfo = <TContractName extends ContractName>(
       );
 
       // If contract code is `0x` => no contract deployed on that address
-      if (contractClassHash == undefined) {
+      if (contractClassHash === undefined) {
         setStatus(ContractCodeStatus.NOT_FOUND);
         return;
       }

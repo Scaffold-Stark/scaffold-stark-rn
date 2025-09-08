@@ -15,7 +15,7 @@ import {
   isCairoTuple,
   isCairoU256,
   parseGenericType,
-} from "@/services/utils/type-validations";
+} from "@/services/utils/typeValidations";
 import { Address } from "@starknet-react/chains";
 import {
   UseReadContractProps,

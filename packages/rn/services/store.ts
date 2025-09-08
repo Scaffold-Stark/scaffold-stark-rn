@@ -1,5 +1,5 @@
 import scaffoldConfig from "@/scaffold.config";
-import { ChainWithAttributes } from "@/services/utils/type-validations";
+import { ChainWithAttributes } from "@/services/utils/typeValidations";
 import { create } from "zustand";
 
 /**
