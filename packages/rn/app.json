@@ -33,7 +33,32 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-font",
+      {
+        "fonts": [
+          {
+            "name": "SpaceGrotesk-Regular",
+            "file": "./assets/fonts/SpaceGrotesk-Regular.ttf"
+          },
+          {
+            "name": "SpaceGrotesk-Bold",
+            "file": "./assets/fonts/SpaceGrotesk-Bold.ttf"
+          },
+          {
+            "name": "SpaceGrotesk-SemiBold",
+            "file": "./assets/fonts/SpaceGrotesk-SemiBold.ttf"
+          },
+          {
+            "name": "SpaceGrotesk-Medium",
+            "file": "./assets/fonts/SpaceGrotesk-Medium.ttf"
+          },
+          {
+            "name": "SpaceGrotesk-Light",
+            "file": "./assets/fonts/SpaceGrotesk-Light.ttf"
+          }
+        ]
+      }
     ],
     "experiments": {
       "typedRoutes": true
