@@ -2742,7 +2742,7 @@ __metadata:
     "@react-navigation/native": ^7.1.6
     "@scaffold-stark/stark-burner": ^0.1.11
     "@starknet-react/chains": ^5.0.1
-    "@starknet-react/core": ^5.0.1
+    "@starknet-react/core": ^3.7.4
     "@tanstack/eslint-plugin-query": ^5.86.0
     "@tanstack/react-query": ^5.87.1
     "@testing-library/react-native": ^13.3.3
@@ -2757,6 +2757,7 @@ __metadata:
     expo-font: ~13.3.2
     expo-haptics: ~14.1.4
     expo-image: ^2.3.2
+    expo-linear-gradient: ^15.0.7
     expo-linking: ~7.1.7
     expo-router: ^5.1.3
     expo-splash-screen: ~0.30.10
@@ -2810,7 +2811,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@starknet-io/starknet-types-07@npm:@starknet-io/types-js@~0.7.10, @starknet-io/types-js@npm:^0.7.10":
+"@starknet-io/starknet-types-07@npm:@starknet-io/types-js@~0.7.10, @starknet-io/types-js@npm:^0.7.7":
   version: 0.7.10
   resolution: "@starknet-io/types-js@npm:0.7.10"
   checksum: 8f71c57d0f101ebbde91e3016b73ab70ce3329ccb7463764a27a61db42b9ea14b690bd620a6b2dd4303e890b4a9212bdd40626962e0320e82e0c600fd3be5abf
@@ -2824,6 +2825,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@starknet-react/chains@npm:^3.1.3":
+  version: 3.1.3
+  resolution: "@starknet-react/chains@npm:3.1.3"
+  checksum: 28acadd103c2248bb189a4300eb81307f27cc91b6cdc1af737a9ea1bf43b16fd0634194de80d8e6968be73ca387deb3119720ecfee8e2943b8fe533e5dd25b58
+  languageName: node
+  linkType: hard
+
 "@starknet-react/chains@npm:^5.0.1":
   version: 5.0.1
   resolution: "@starknet-react/chains@npm:5.0.1"
@@ -2831,12 +2839,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@starknet-react/core@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@starknet-react/core@npm:5.0.1"
+"@starknet-react/core@npm:^3.7.4":
+  version: 3.7.4
+  resolution: "@starknet-react/core@npm:3.7.4"
   dependencies:
-    "@starknet-io/types-js": ^0.7.10
-    "@starknet-react/chains": ^5.0.1
+    "@starknet-io/types-js": ^0.7.7
+    "@starknet-react/chains": ^3.1.3
     "@tanstack/react-query": ^5.25.0
     abi-wan-kanabi: ^2.2.4
     eventemitter3: ^5.0.1
@@ -2845,8 +2853,8 @@ __metadata:
   peerDependencies:
     get-starknet-core: ^4.0.0
     react: ^18.0
-    starknet: ^8.1.2
-  checksum: 47bfec581b03a9f6f692510107aa55f59557dce5e336b532210371d8294303e5b8d6cd9fc1f9f678746341414a274023e9313148d608861c8d5c5f8cab96eac5
+    starknet: ^6.11.0
+  checksum: 2808e2072e5cdbd858a457be860f30f00342e80a0f139616b1989efc0539b8ba1c6e5dcbd91f04a91a57e4b200caf36bfda43dfb52660ee7218b517604d0456d
   languageName: node
   linkType: hard
 
@@ -6095,6 +6103,17 @@ __metadata:
     expo: "*"
     react: "*"
   checksum: fd3adfd3f1bacb06c244c4c21452de892c55fe2ee0eed9e9912292ceafb1cdb0ea58941c4f77395032f37321113321d23ac142d63b9d0d214b7821d78b74d60e
+  languageName: node
+  linkType: hard
+
+"expo-linear-gradient@npm:^15.0.7":
+  version: 15.0.7
+  resolution: "expo-linear-gradient@npm:15.0.7"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 2c8b9674099aa6a8a8910ee0e698217cfb2a3be47b32860aa7483f6e38ce27c62bcd51af24cf30d84c31fd5eb1870ebd5bf432ba71ee0a4266b75b7eca99aef6
   languageName: node
   linkType: hard
 
