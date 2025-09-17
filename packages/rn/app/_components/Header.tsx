@@ -1,10 +1,13 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { themeColors, useTheme } from "./ThemeProvider";
-import { ScaffoldBtnGradient } from "./gradients/ScaffoldBtnGradient";
-import { ScaffoldDarkIcon } from "./scaffold-stark/icons/ScaffoldDarkIcon";
-import { ScaffoldLightIcon } from "./scaffold-stark/icons/ScaffoldLightIcon";
+import { ScaffoldBtnGradient } from "../../components/scaffold-stark/gradients/ScaffoldBtnGradient";
+import { ScaffoldDarkIcon } from "../../components/scaffold-stark/icons/ScaffoldDarkIcon";
+import { ScaffoldLightIcon } from "../../components/scaffold-stark/icons/ScaffoldLightIcon";
+import {
+  themeColors,
+  useTheme,
+} from "../../components/scaffold-stark/ThemeProvider";
 interface HeaderProps {
   onConnectWallet?: () => void;
   isWalletConnected?: boolean;

@@ -1,6 +1,9 @@
 import React, { ReactNode } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { themeColors, useTheme } from "./ThemeProvider";
+import {
+  themeColors,
+  useTheme,
+} from "../../components/scaffold-stark/ThemeProvider";
 
 interface InfoCardProps {
   icon: ReactNode;

@@ -1,7 +1,10 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { Text, View } from "react-native";
-import { themeColors, useTheme } from "./ThemeProvider";
+import {
+  themeColors,
+  useTheme,
+} from "../../components/scaffold-stark/ThemeProvider";
 
 interface WelcomeSectionProps {
   title?: string;

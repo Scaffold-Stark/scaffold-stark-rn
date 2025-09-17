@@ -1,9 +1,12 @@
-import { BottomNavigation } from "@/components/BottomNavigation";
-import { ScaffoldBgGradient } from "@/components/gradients/ScaffoldBgGradient";
-import { Header } from "@/components/Header";
-import { InfoCard } from "@/components/InfoCard";
-import { themeColors, useTheme } from "@/components/ThemeProvider";
-import { WelcomeSection } from "@/components/WelcomeSection";
+import { BottomNavigation } from "@/app/_components/BottomNavigation";
+import { Header } from "@/app/_components/Header";
+import { InfoCard } from "@/app/_components/InfoCard";
+import { WelcomeSection } from "@/app/_components/WelcomeSection";
+import { ScaffoldBgGradient } from "@/components/scaffold-stark/gradients/ScaffoldBgGradient";
+import {
+  themeColors,
+  useTheme,
+} from "@/components/scaffold-stark/ThemeProvider";
 import { useScaffoldReadContract } from "@/hooks/scaffold-stark/useScaffoldReadContract";
 import { useScaffoldWriteContract } from "@/hooks/scaffold-stark/useScaffoldWriteContract";
 import Ionicons from "@expo/vector-icons/Ionicons";
