@@ -1,7 +1,10 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { themeColors, useTheme } from "./ThemeProvider";
-
+import { ScaffoldBtnGradient } from "./gradients/ScaffoldBtnGradient";
+import { ScaffoldDarkIcon } from "./scaffold-stark/icons/ScaffoldDarkIcon";
+import { ScaffoldLightIcon } from "./scaffold-stark/icons/ScaffoldLightIcon";
 interface HeaderProps {
   onConnectWallet?: () => void;
   isWalletConnected?: boolean;
@@ -22,35 +25,46 @@ export function Header({
 
   return (
     <View
-      className="flex-row items-center justify-between px-4 pt-12 pb-4"
+      className="flex-row items-center justify-between px-4 py-4 pb-4"
       style={{ backgroundColor: colors.background }}
     >
       {/* Logo/Brand */}
-      <View className="w-12 h-12 bg-purple-600 rounded-xl items-center justify-center">
-        <Text className="text-white text-xl font-bold">SS</Text>
+      <View className="w-12 h-12 rounded-xl items-center justify-center">
+        {isDark ? <ScaffoldDarkIcon /> : <ScaffoldLightIcon />}
       </View>
 
-      {/* Center - Connect Wallet Button */}
-      <TouchableOpacity
-        onPress={onConnectWallet}
-        className="px-6 py-3 bg-purple-600 rounded-full"
-        style={{ backgroundColor: colors.primary }}
-      >
-        <Text className="text-white font-semibold">
-          {isWalletConnected && walletAddress
-            ? formatAddress(walletAddress)
-            : "Connect wallet"}
-        </Text>
-      </TouchableOpacity>
+      <View className="flex flex-row gap-4">
+        {/* Center - Connect Wallet Button */}
+        <TouchableOpacity onPress={onConnectWallet} activeOpacity={0.8}>
+          <ScaffoldBtnGradient>
+            <Text
+              className="font-semibold"
+              style={{ color: isDark ? "#FFFFFF" : "#1F2937" }}
+            >
+              {isWalletConnected && walletAddress
+                ? formatAddress(walletAddress)
+                : "Connect wallet"}
+            </Text>
+          </ScaffoldBtnGradient>
+        </TouchableOpacity>
 
-      {/* Theme Toggle */}
-      <TouchableOpacity
-        onPress={toggleTheme}
-        className="w-12 h-12 rounded-full items-center justify-center"
-        style={{ backgroundColor: colors.primary }}
-      >
-        <Text className="text-white text-lg">{isDark ? "☀️" : "🌙"}</Text>
-      </TouchableOpacity>
+        {/* Theme Toggle */}
+        <TouchableOpacity
+          onPress={toggleTheme}
+          className="w-12 h-12 rounded-full items-center justify-center"
+          style={{
+            backgroundColor: colors.themeButton,
+          }}
+        >
+          <Ionicons
+            name={
+              isDark ? ("moon-outline" as const) : ("sunny-outline" as const)
+            }
+            size={24}
+            color="white"
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

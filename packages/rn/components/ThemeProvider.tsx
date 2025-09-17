@@ -54,6 +54,7 @@ export const themeColors = {
     cardBackground: "rgba(255, 255, 255, 0.9)",
     gradientStart: "#A855F7", // Lighter purple for light mode
     gradientEnd: "#EC4899", // Pink
+    themeButton: "#0C0C4F",
   },
   dark: {
     primary: "#8B5CF6", // Purple
@@ -66,5 +67,6 @@ export const themeColors = {
     cardBackground: "rgba(31, 41, 55, 0.9)",
     gradientStart: "#4C1D95", // Dark purple
     gradientEnd: "#7C3AED", // Darker purple
+    themeButton: "#8B5CF6",
   },
 };
