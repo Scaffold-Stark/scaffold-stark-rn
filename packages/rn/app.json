@@ -26,6 +26,56 @@
     "plugins": [
       "expo-router",
       [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/SpaceGrotesk-Regular.ttf",
+            "./assets/fonts/SpaceGrotesk-Bold.ttf",
+            "./assets/fonts/SpaceGrotesk-SemiBold.ttf",
+            "./assets/fonts/SpaceGrotesk-Medium.ttf",
+            "./assets/fonts/SpaceGrotesk-Light.ttf"
+          ],
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "SpaceGrotesk",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/SpaceGrotesk-Regular.ttf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/SpaceGrotesk-Bold.ttf",
+                    "weight": 700
+                  },
+                  {
+                    "path": "./assets/fonts/SpaceGrotesk-SemiBold.ttf",
+                    "weight": 600
+                  },
+                  {
+                    "path": "./assets/fonts/SpaceGrotesk-Medium.ttf",
+                    "weight": 500
+                  },
+                  {
+                    "path": "./assets/fonts/SpaceGrotesk-Light.ttf",
+                    "weight": 300
+                  }
+                ]
+              }
+            ]
+          },
+          "ios": {
+            "fonts": [
+              "./assets/fonts/SpaceGrotesk-Regular.ttf",
+              "./assets/fonts/SpaceGrotesk-Bold.ttf",
+              "./assets/fonts/SpaceGrotesk-SemiBold.ttf",
+              "./assets/fonts/SpaceGrotesk-Medium.ttf",
+              "./assets/fonts/SpaceGrotesk-Light.ttf"
+            ]
+          }
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
@@ -33,32 +83,7 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],
-      "expo-font",
-      {
-        "fonts": [
-          {
-            "name": "SpaceGrotesk-Regular",
-            "file": "./assets/fonts/SpaceGrotesk-Regular.ttf"
-          },
-          {
-            "name": "SpaceGrotesk-Bold",
-            "file": "./assets/fonts/SpaceGrotesk-Bold.ttf"
-          },
-          {
-            "name": "SpaceGrotesk-SemiBold",
-            "file": "./assets/fonts/SpaceGrotesk-SemiBold.ttf"
-          },
-          {
-            "name": "SpaceGrotesk-Medium",
-            "file": "./assets/fonts/SpaceGrotesk-Medium.ttf"
-          },
-          {
-            "name": "SpaceGrotesk-Light",
-            "file": "./assets/fonts/SpaceGrotesk-Light.ttf"
-          }
-        ]
-      }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

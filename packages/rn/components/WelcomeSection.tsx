@@ -1,4 +1,4 @@
-import { LinearGradient } from "expo-linear-gradient";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { Text, View } from "react-native";
 import { themeColors, useTheme } from "./ThemeProvider";
@@ -14,43 +14,52 @@ export function WelcomeSection({
   subtitle = "Scaffold-Stark 2",
   contractPath = "YourContract.cairo in packages/snfoundry/contracts/src",
 }: WelcomeSectionProps) {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const colors = themeColors[theme];
 
   return (
-    <LinearGradient
-      colors={[colors.gradientStart, colors.gradientEnd]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      className="flex-1 items-center justify-center px-6 py-8"
-    >
+    <View className="flex-1 items-center justify-center py-6">
       {/* Home Icon */}
-      <View className="w-20 h-20 bg-white bg-opacity-20 rounded-full items-center justify-center mb-8">
-        <View className="w-12 h-12 bg-white rounded-xl items-center justify-center">
-          <View className="w-6 h-6 border-2 border-purple-600">
-            <View className="w-full h-2 bg-purple-600 mt-1" />
-            <View className="flex-row justify-center mt-0.5">
-              <View className="w-1.5 h-2 bg-purple-600" />
-            </View>
+      <View className="flex-1 items-center justify-center">
+        <View
+          className="rounded-full items-center justify-center mb-8 p-3"
+          style={{ backgroundColor: colors.primary + "25" }}
+        >
+          <View
+            className="rounded-full items-center justify-center p-4"
+            style={{ backgroundColor: colors.primaryLight + "50" }}
+          >
+            {/* Ionicons Home Icon */}
+            <Ionicons name="home" size={48} color={colors.text} />
           </View>
         </View>
       </View>
 
       {/* Welcome Text */}
-      <Text className="text-white text-4xl font-light text-center mb-2">
+      <Text
+        className={`text-5xl font-light text-center mb-2 ${isDark ? "text-white" : "text-black"}`}
+        style={{ fontFamily: "SpaceGrotesk-Bold" }}
+      >
         {title}
       </Text>
-      <Text className="text-purple-200 text-4xl font-bold text-center mb-8">
+      <Text
+        className={`text-5xl text-center mb-8`}
+        style={{ fontFamily: "SpaceGrotesk-Bold", color: colors.primary }}
+      >
         {subtitle}
       </Text>
 
       {/* Contract Info */}
-      <Text className="text-white text-lg font-medium mb-2">
+      <Text
+        className={`text-lg font-medium mb-2 text-center ${isDark ? "text-white" : "text-black"}`}
+      >
         Edit your smart contract :
       </Text>
-      <Text className="text-white text-base text-center opacity-80 italic">
+      <Text
+        className={`text-base text-center opacity-80 italic ${isDark ? "text-white" : "text-black"}`}
+      >
         {contractPath}
       </Text>
-    </LinearGradient>
+    </View>
   );
 }
