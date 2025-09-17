@@ -24,10 +24,7 @@ export function Header({
   };
 
   return (
-    <View
-      className="flex-row items-center justify-between px-4 py-4 pb-4"
-      style={{ backgroundColor: colors.background }}
-    >
+    <View className="flex-row items-center justify-between px-4 py-4 pb-4">
       {/* Logo/Brand */}
       <View className="w-12 h-12 rounded-xl items-center justify-center">
         {isDark ? <ScaffoldDarkIcon /> : <ScaffoldLightIcon />}

@@ -23,14 +23,20 @@ export function WelcomeSection({
       <View className="flex-1 items-center justify-center">
         <View
           className="rounded-full items-center justify-center mb-8 p-3"
-          style={{ backgroundColor: colors.primary + "25" }}
+          style={{
+            backgroundColor: isDark ? colors.primary + "25" : "#ffffff" + "25",
+          }}
         >
           <View
             className="rounded-full items-center justify-center p-4"
-            style={{ backgroundColor: colors.primaryLight + "50" }}
+            style={{
+              backgroundColor: isDark
+                ? colors.primaryLight + "50"
+                : "#ffffff" + "50",
+            }}
           >
             {/* Ionicons Home Icon */}
-            <Ionicons name="home" size={48} color={colors.text} />
+            <Ionicons name="home-outline" size={48} color={colors.text} />
           </View>
         </View>
       </View>

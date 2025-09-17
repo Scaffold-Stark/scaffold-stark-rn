@@ -28,8 +28,8 @@ export function BottomNavigation({
 
   return (
     <View
-      className="flex-row items-center justify-around py-4 px-6 rounded-t-3xl"
-      style={{ backgroundColor: colors.cardBackground }}
+      className="fixed bottom-1 left-0 right-0 flex-row items-center justify-around py-4 px-2 rounded-full m-3"
+      style={{ backgroundColor: colors.background, zIndex: 20 }}
     >
       {navigationItems.map((item) => {
         const isActive = item.id === activeTab;

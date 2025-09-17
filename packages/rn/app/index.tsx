@@ -1,10 +1,12 @@
 import { BottomNavigation } from "@/components/BottomNavigation";
+import { ScaffoldBgGradient } from "@/components/gradients/ScaffoldBgGradient";
 import { Header } from "@/components/Header";
 import { InfoCard } from "@/components/InfoCard";
 import { themeColors, useTheme } from "@/components/ThemeProvider";
 import { WelcomeSection } from "@/components/WelcomeSection";
 import { useScaffoldReadContract } from "@/hooks/scaffold-stark/useScaffoldReadContract";
 import { useScaffoldWriteContract } from "@/hooks/scaffold-stark/useScaffoldWriteContract";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { burnerAccounts, BurnerConnector } from "@scaffold-stark/stark-burner";
 import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
 import { useRouter } from "expo-router";
@@ -88,42 +90,42 @@ export default function Index() {
   };
 
   return (
-    <SafeAreaView
-      className="flex-1"
-      style={{ backgroundColor: colors.background }}
-    >
-      <StatusBar
-        barStyle={theme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
+    <ScaffoldBgGradient>
+      <SafeAreaView className="flex-1">
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor="transparent"
+          translucent
+        />
 
-      <Header
-        onConnectWallet={handleConnectWallet}
-        isWalletConnected={!!address}
-        walletAddress={address}
-      />
+        <Header
+          onConnectWallet={handleConnectWallet}
+          isWalletConnected={!!address}
+          walletAddress={address}
+        />
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <WelcomeSection />
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <WelcomeSection />
 
-        <View className="px-4 py-6">
-          <InfoCard
-            icon="🐛"
-            title="Tinker with your smart contract using the Debug Contracts tab."
-            description="Debug Contracts"
-            onPress={handleDebugPress}
-          />
+          <View className="px-4 py-6">
+            <InfoCard
+              icon={<Ionicons name="bug" size={24} color={colors.text} />}
+              title="Tinker with your smart contract using the Debug Contracts tab."
+              description=""
+              onPress={handleDebugPress}
+            />
 
-          <InfoCard
-            icon="🪝"
-            title="Play around with Multiwrite transactions using useScaffoldMultiWrite() hook"
-            description=""
-            onPress={handleMultiWritePress}
-          />
-        </View>
-      </ScrollView>
+            <InfoCard
+              icon={<Ionicons name="pricetag" size={24} color={colors.text} />}
+              title="Play around with Multiwrite transactions using useScaffoldMultiWrite() hook"
+              description=""
+              onPress={handleMultiWritePress}
+            />
+          </View>
+        </ScrollView>
 
-      <BottomNavigation activeTab={activeTab} onTabPress={handleTabPress} />
-    </SafeAreaView>
+        <BottomNavigation activeTab={activeTab} onTabPress={handleTabPress} />
+      </SafeAreaView>
+    </ScaffoldBgGradient>
   );
 }
