@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScaffoldBtnGradient } from "../../components/scaffold-stark/gradients/ScaffoldBtnGradient";
 import { ScaffoldDarkIcon } from "../../components/scaffold-stark/icons/ScaffoldDarkIcon";
 import { ScaffoldLightIcon } from "../../components/scaffold-stark/icons/ScaffoldLightIcon";
@@ -19,6 +20,7 @@ export function Header({
   isWalletConnected,
   walletAddress,
 }: HeaderProps) {
+  const insets = useSafeAreaInsets();
   const { theme, toggleTheme, isDark } = useTheme();
   const colors = themeColors[theme];
 
@@ -27,7 +29,10 @@ export function Header({
   };
 
   return (
-    <View className="flex-row items-center justify-between px-4 py-4 pb-4">
+    <View
+      className="flex-row items-center justify-between px-4 pb-4"
+      style={{ paddingTop: insets.top }}
+    >
       {/* Logo/Brand */}
       <View className="w-12 h-12 rounded-xl items-center justify-center">
         {isDark ? <ScaffoldDarkIcon /> : <ScaffoldLightIcon />}

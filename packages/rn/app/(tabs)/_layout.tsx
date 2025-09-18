@@ -4,7 +4,7 @@ import {
 } from "@/components/scaffold-stark/ThemeProvider";
 import { Tabs } from "expo-router";
 import React from "react";
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function CustomTabBar({ state, descriptors, navigation }: any) {
@@ -87,9 +87,6 @@ export default function TabLayout() {
         },
       }}
       tabBar={(props) => <CustomTabBar {...props} />}
-      screenLayout={({ children }) => (
-        <SafeAreaView className="flex-1">{children}</SafeAreaView>
-      )}
     >
       <Tabs.Screen name="index" options={{ title: "Home" }} />
       <Tabs.Screen name="hooks" options={{ title: "Debug" }} />

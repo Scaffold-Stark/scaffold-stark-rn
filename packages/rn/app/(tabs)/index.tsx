@@ -1,4 +1,3 @@
-import { Header } from "@/app/_components/Header";
 import { InfoCard } from "@/app/_components/InfoCard";
 import { WelcomeSection } from "@/app/_components/WelcomeSection";
 import {
@@ -8,18 +7,15 @@ import {
 import { useScaffoldReadContract } from "@/hooks/scaffold-stark/useScaffoldReadContract";
 import { useScaffoldWriteContract } from "@/hooks/scaffold-stark/useScaffoldWriteContract";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { burnerAccounts, BurnerConnector } from "@scaffold-stark/stark-burner";
-import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
+import { useAccount } from "@starknet-react/core";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ScrollView, StatusBar, View } from "react-native";
 import { CairoOption, CairoOptionVariant } from "starknet";
 
 // STRK Address: 0x4718F5A0FC34CC1AF16A1CDEE98FFB20C31F5CD61D6AB07201858F4287C938D
 
 export default function Index() {
-  const { connectors, connect } = useConnect();
-  const { disconnect } = useDisconnect();
   const { address } = useAccount();
   const { theme } = useTheme();
   const colors = themeColors[theme];
@@ -53,22 +49,6 @@ export default function Index() {
     }
   }, [error]);
 
-  const handleConnectWallet = () => {
-    if (address) {
-      disconnect();
-    } else {
-      // Connect with first available burner account
-      const firstAccount = burnerAccounts[0];
-      if (firstAccount) {
-        const connector = connectors.find((it) => it.id === "burner-wallet");
-        if (connector && connector instanceof BurnerConnector) {
-          connector.burnerAccount = firstAccount;
-          connect({ connector });
-        }
-      }
-    }
-  };
-
   const handleDebugPress = () => {
     router.push("/hooks");
   };
@@ -89,13 +69,6 @@ export default function Index() {
         backgroundColor="transparent"
         translucent
       />
-
-      <Header
-        onConnectWallet={handleConnectWallet}
-        isWalletConnected={!!address}
-        walletAddress={address}
-      />
-
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <WelcomeSection />
 

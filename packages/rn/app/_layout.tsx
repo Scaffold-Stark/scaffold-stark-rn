@@ -5,8 +5,12 @@ import ToastManager from "toastify-react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
+import { Header } from "@/app/_components/Header";
 import { ScaffoldBgGradient } from "@/components/scaffold-stark/gradients/ScaffoldBgGradient";
+import { burnerAccounts, BurnerConnector } from "@scaffold-stark/stark-burner";
+import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
 import { useEffect } from "react";
+import { SafeAreaView } from "react-native";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -34,11 +38,41 @@ export default function RootLayout() {
     <ScaffoldStarkAppWithProviders>
       <Stack
         screenOptions={{ headerShown: false }}
-        screenLayout={({ children }) => (
-          <ScaffoldBgGradient>{children}</ScaffoldBgGradient>
-        )}
+        screenLayout={({ children }) => <AppShell>{children}</AppShell>}
       />
       <ToastManager />
     </ScaffoldStarkAppWithProviders>
+  );
+}
+
+function AppShell({ children }: { children: React.ReactNode }) {
+  const { connectors, connect } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { address } = useAccount();
+
+  const handleConnectWallet = () => {
+    if (address) {
+      disconnect();
+    } else {
+      const firstAccount = burnerAccounts[0];
+      if (firstAccount) {
+        const connector = connectors.find((it) => it.id === "burner-wallet");
+        if (connector && connector instanceof BurnerConnector) {
+          connector.burnerAccount = firstAccount;
+          connect({ connector });
+        }
+      }
+    }
+  };
+
+  return (
+    <ScaffoldBgGradient>
+      <Header
+        onConnectWallet={handleConnectWallet}
+        isWalletConnected={!!address}
+        walletAddress={address}
+      />
+      {children}
+    </ScaffoldBgGradient>
   );
 }
