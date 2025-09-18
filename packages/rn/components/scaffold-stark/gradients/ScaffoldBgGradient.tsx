@@ -1,18 +1,19 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { ViewStyle } from "react-native";
+import { ViewProps, ViewStyle } from "react-native";
 import { ScaffoldBgStripes } from "../images/ScaffoldBgStripes";
 import { useTheme } from "../ThemeProvider";
 
-interface ScaffoldBgGradientProps {
-  children: React.ReactNode;
+interface ScaffoldBgGradientProps extends ViewProps {
+  children?: React.ReactNode;
   style?: ViewStyle;
 }
 
 export function ScaffoldBgGradient({
   children,
   style,
+  ...rest
 }: ScaffoldBgGradientProps) {
   // Gradient: background: linear-gradient(180deg, #4E4EDA 0%, #2F3050 100%);
   const { theme, isDark } = useTheme();
@@ -34,6 +35,7 @@ export function ScaffoldBgGradient({
         },
         style,
       ]}
+      {...rest}
     >
       <Image
         source={
@@ -51,6 +53,9 @@ export function ScaffoldBgGradient({
         }}
         alt="Background Blur"
         contentFit="cover"
+        cachePolicy="disk"
+        priority="low"
+        pointerEvents="none"
       />
 
       {/* Stripes background */}
@@ -63,6 +68,7 @@ export function ScaffoldBgGradient({
           left: 0,
           zIndex: 0,
         }}
+        pointerEvents="none"
       />
 
       {children}

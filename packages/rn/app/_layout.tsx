@@ -5,6 +5,7 @@ import ToastManager from "toastify-react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
+import { ScaffoldBgGradient } from "@/components/scaffold-stark/gradients/ScaffoldBgGradient";
 import { useEffect } from "react";
 import "../global.css";
 
@@ -31,7 +32,12 @@ export default function RootLayout() {
 
   return (
     <ScaffoldStarkAppWithProviders>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack
+        screenOptions={{ headerShown: false }}
+        screenLayout={({ children }) => (
+          <ScaffoldBgGradient>{children}</ScaffoldBgGradient>
+        )}
+      />
       <ToastManager />
     </ScaffoldStarkAppWithProviders>
   );
