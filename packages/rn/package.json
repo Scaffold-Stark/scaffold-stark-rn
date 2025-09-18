@@ -11,7 +11,8 @@
     "lint": "expo lint",
     "postinstall": "patch-package",
     "test:watch": "jest --watchAll",
-    "test": "jest"
+    "test": "jest",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
