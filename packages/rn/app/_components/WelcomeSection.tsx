@@ -53,7 +53,9 @@ export function WelcomeSection({
 
       {address ? (
         <>
-          <Text className="text-lg font-medium mb-2 text-center">
+          <Text
+            className={`text-lg font-medium mb-2 text-center ${isDark ? "text-white" : "text-black"}`}
+          >
             Wallet Address
           </Text>
           <Address address={address} />

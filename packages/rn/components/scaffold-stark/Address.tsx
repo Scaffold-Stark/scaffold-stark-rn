@@ -43,7 +43,7 @@ export default function Address({
   isLoading = false,
   size = "base",
 }: AddressProps) {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const [copied, setCopied] = useState(false);
   const [displayAddress, setDisplayAddress] = useState("");
 
@@ -108,7 +108,9 @@ export default function Address({
 
   if (!address) {
     return (
-      <Text className={`${textSizeMap[size]} font-medium italic text-center`}>
+      <Text
+        className={`${textSizeMap[size]} font-medium italic text-center ${isDark ? "text-white" : "text-black"}`}
+      >
         Wallet not connected
       </Text>
     );
@@ -132,7 +134,9 @@ export default function Address({
           size={(blockieSizeMap[size] * 24) / blockieSizeMap["base"]}
         />
       </View>
-      <Text className={`ml-2 ${textSizeMap[size]} font-medium`}>
+      <Text
+        className={`ml-2 ${textSizeMap[size]} font-medium ${isDark ? "text-white" : "text-black"}`}
+      >
         {profile?.name || displayAddress}
       </Text>
       <TouchableOpacity onPress={handleCopy} className="ml-1">
