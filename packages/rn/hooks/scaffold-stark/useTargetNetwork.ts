@@ -1,5 +1,5 @@
 import scaffoldConfig from "@/scaffold.config";
-import { useGlobalState } from "@/services/store";
+import { useGlobalState } from "@/stores/store";
 import { type ChainWithAttributes } from "@/utils/scaffold-stark/network";
 import { useAccount } from "@starknet-react/core";
 import { useEffect } from "react";
