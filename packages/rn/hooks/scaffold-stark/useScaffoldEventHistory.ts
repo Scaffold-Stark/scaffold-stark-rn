@@ -19,6 +19,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CallData,
+  createAbiParser,
   hash,
   RpcProvider,
   events as starknetEvents,
@@ -258,6 +259,7 @@ export const useScaffoldEventHistory = <
           starknetEvents.getAbiEvents(deployedContractData.abi),
           CallData.getAbiStruct(deployedContractData.abi),
           CallData.getAbiEnum(deployedContractData.abi),
+          createAbiParser(deployedContractData.abi),
         );
         const args = parsed.length ? parsed[0][fullName] : {};
         const { event: rawEvent, ...rest } = event;

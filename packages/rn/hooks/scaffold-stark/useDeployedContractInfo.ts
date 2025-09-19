@@ -45,7 +45,7 @@ export const useDeployedContractInfo = <TContractName extends ContractName>(
       const contractClassHash = await classHashCache.getClassHash(
         publicClient,
         deployedContract.address,
-        "pending" as BlockIdentifier,
+        "pre_confirmed" as BlockIdentifier,
       );
 
       // If contract code is `0x` => no contract deployed on that address
