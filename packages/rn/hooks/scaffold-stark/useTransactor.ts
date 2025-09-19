@@ -1,5 +1,5 @@
-import { getBlockExplorerTxLink } from "@/services/utils/scaffold-stark/network";
-import { appToast } from "@/services/utils/scaffold-stark/toast";
+import { getBlockExplorerTxLink } from "@/utils/scaffold-stark/network";
+import { appToast } from "@/utils/scaffold-stark/toast";
 import {
   useAccount,
   useSendTransaction,

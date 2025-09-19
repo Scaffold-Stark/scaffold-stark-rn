@@ -6,7 +6,7 @@ import {
   ExtractAbiFunctionNamesScaffold,
   UseScaffoldArgsParam,
   UseScaffoldWriteConfig,
-} from "@/services/utils/scaffold-stark/contract";
+} from "@/utils/scaffold-stark/contract";
 import { Abi, useNetwork } from "@starknet-react/core";
 import {
   Call,

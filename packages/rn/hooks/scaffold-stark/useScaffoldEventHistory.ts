@@ -1,14 +1,14 @@
 import scaffoldConfig from "@/scaffold.config";
-import { replacer } from "@/services/utils/scaffold-stark/common";
+import { replacer } from "@/utils/scaffold-stark/common";
 import {
   ContractAbi,
   ContractName,
   UseScaffoldEventHistoryConfig,
-} from "@/services/utils/scaffold-stark/contract";
+} from "@/utils/scaffold-stark/contract";
 import {
   composeEventFilterKeys,
   parseEventData,
-} from "@/services/utils/scaffold-stark/events";
+} from "@/utils/scaffold-stark/events";
 import { devnet } from "@starknet-react/chains";
 import { useProvider } from "@starknet-react/core";
 import {
