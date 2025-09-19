@@ -2646,10 +2646,12 @@ __metadata:
     "@types/jest": ^30.0.0
     "@types/react": ~19.0.10
     abi-wan-kanabi: ^2.2.4
+    blo: ^2.0.0
     eslint: ^9.25.0
     eslint-config-expo: ~9.2.0
     expo: ~53.0.17
     expo-blur: ~14.1.5
+    expo-clipboard: ~7.1.5
     expo-constants: ~17.1.7
     expo-font: ~13.3.2
     expo-haptics: ~14.1.4
@@ -4113,6 +4115,13 @@ __metadata:
   version: 2.3.0
   resolution: "binary-extensions@npm:2.3.0"
   checksum: bcad01494e8a9283abf18c1b967af65ee79b0c6a9e6fcfafebfe91dbe6e0fc7272bafb73389e198b310516ae04f7ad17d79aacf6cb4c0d5d5202a7e2e52c7d98
+  languageName: node
+  linkType: hard
+
+"blo@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "blo@npm:2.0.0"
+  checksum: adf68169bcb5fa408029805a933b28e9fa72f0b276daef335a9ff3a90ba8e1fcd7ab55907c43c64410a1741fc1badc6721bd7609f16f0e52c586dd98db99785f
   languageName: node
   linkType: hard
 
@@ -5912,6 +5921,17 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 6f7331972f50c9e262d7696169688a387674b296694c9dca5fcb919247808ac6d14b90a6a50be66eda92356f5485ac74e9a2f1986e23f0559f070c8d6424572b
+  languageName: node
+  linkType: hard
+
+"expo-clipboard@npm:~7.1.5":
+  version: 7.1.5
+  resolution: "expo-clipboard@npm:7.1.5"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: de691f1b93b4edec6150db7fca3cd5cec89d2f4ceff1c936b4c3b9f078a8cae0743c5e0dc02e846f1bf2443baa4fd8b687dc68eb8cfff2198bd238f5d6d6a560
   languageName: node
   linkType: hard
 

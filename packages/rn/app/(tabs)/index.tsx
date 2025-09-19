@@ -70,7 +70,7 @@ export default function Index() {
         translucent
       />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <WelcomeSection />
+        <WelcomeSection address={address} />
 
         <View className="px-4 py-6">
           <InfoCard

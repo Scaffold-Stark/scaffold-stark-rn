@@ -5,17 +5,20 @@ import {
   themeColors,
   useTheme,
 } from "../../components/scaffold-stark/ThemeProvider";
+import Address from "@/components/scaffold-stark/Address";
 
 interface WelcomeSectionProps {
   title?: string;
   subtitle?: string;
   contractPath?: string;
+  address?: string;
 }
 
 export function WelcomeSection({
   title = "Welcome to",
   subtitle = "Scaffold-Stark 2",
   contractPath = "YourContract.cairo in packages/snfoundry/contracts/src",
+  address = undefined,
 }: WelcomeSectionProps) {
   const { theme, isDark } = useTheme();
   const colors = themeColors[theme];
@@ -39,36 +42,51 @@ export function WelcomeSection({
             }}
           >
             {/* Ionicons Home Icon */}
-            <Ionicons name="home-outline" size={48} color={colors.text} />
+            <Ionicons
+              name={address ? "wallet-outline" : "home-outline"}
+              size={48}
+              color={colors.text}
+            />
           </View>
         </View>
       </View>
 
-      {/* Welcome Text */}
-      <Text
-        className={`text-5xl font-light text-center mb-2 ${isDark ? "text-white" : "text-black"}`}
-        style={{ fontFamily: "SpaceGrotesk-Bold" }}
-      >
-        {title}
-      </Text>
-      <Text
-        className={`text-5xl text-center mb-8`}
-        style={{ fontFamily: "SpaceGrotesk-Bold", color: colors.primary }}
-      >
-        {subtitle}
-      </Text>
+      {address ? (
+        <>
+          <Text className="text-lg font-medium mb-2 text-center">
+            Wallet Address
+          </Text>
+          <Address address={address} />
+        </>
+      ) : (
+        <>
+          {/* Welcome Text */}
+          <Text
+            className={`text-5xl font-light text-center mb-2 ${isDark ? "text-white" : "text-black"}`}
+            style={{ fontFamily: "SpaceGrotesk-Bold" }}
+          >
+            {title}
+          </Text>
+          <Text
+            className={`text-5xl text-center mb-8`}
+            style={{ fontFamily: "SpaceGrotesk-Bold", color: colors.primary }}
+          >
+            {subtitle}
+          </Text>
 
-      {/* Contract Info */}
-      <Text
-        className={`text-lg font-medium mb-2 text-center ${isDark ? "text-white" : "text-black"}`}
-      >
-        Edit your smart contract :
-      </Text>
-      <Text
-        className={`text-base text-center opacity-80 italic ${isDark ? "text-white" : "text-black"}`}
-      >
-        {contractPath}
-      </Text>
+          {/* Contract Info */}
+          <Text
+            className={`text-lg font-medium mb-2 text-center ${isDark ? "text-white" : "text-black"}`}
+          >
+            Edit your smart contract :
+          </Text>
+          <Text
+            className={`text-base text-center opacity-80 italic ${isDark ? "text-white" : "text-black"}`}
+          >
+            {contractPath}
+          </Text>
+        </>
+      )}
     </View>
   );
 }
