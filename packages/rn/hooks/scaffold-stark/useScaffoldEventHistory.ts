@@ -1,14 +1,14 @@
 import scaffoldConfig from "@/scaffold.config";
-import { replacer } from "@/services/utils/scaffold-stark/common";
+import { replacer } from "@/utils/scaffold-stark/common";
 import {
   ContractAbi,
   ContractName,
   UseScaffoldEventHistoryConfig,
-} from "@/services/utils/scaffold-stark/contract";
+} from "@/utils/scaffold-stark/contract";
 import {
   composeEventFilterKeys,
   parseEventData,
-} from "@/services/utils/scaffold-stark/events";
+} from "@/utils/scaffold-stark/events";
 import { devnet } from "@starknet-react/chains";
 import { useProvider } from "@starknet-react/core";
 import {
@@ -19,6 +19,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CallData,
+  createAbiParser,
   hash,
   RpcProvider,
   events as starknetEvents,
@@ -258,6 +259,7 @@ export const useScaffoldEventHistory = <
           starknetEvents.getAbiEvents(deployedContractData.abi),
           CallData.getAbiStruct(deployedContractData.abi),
           CallData.getAbiEnum(deployedContractData.abi),
+          createAbiParser(deployedContractData.abi),
         );
         const args = parsed.length ? parsed[0][fullName] : {};
         const { event: rawEvent, ...rest } = event;
