@@ -5,7 +5,7 @@
     "chain": "starknet-devnet --seed 0",
     "deploy": "ts-node scripts-ts/helpers/deploy-wrapper.ts",
     "deploy:clear": "cd deployments && node clear.mjs $* && cd .. && ts-node scripts-ts/helpers/deploy-wrapper.ts $*",
-    "deploy:no-reset": "yarn workspace @ss-2/snfoundry deploy --no-reset",
+    "deploy:no-reset": "yarn workspace @ss-rn/snfoundry deploy --no-reset",
     "test": "cd contracts && snforge test",
     "test-eslint": "node eslint-contract-name/eslint-plugin-contract-names.test.js",
     "compile": "ts-node scripts-ts/compile.ts",

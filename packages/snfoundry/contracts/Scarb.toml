@@ -6,7 +6,7 @@ edition = "2024_07"
 # See more keys and their definitions at https://docs.swmansion.com/scarb/docs/reference/manifest.html
 
 [dependencies]
-starknet = ">=2.12.0"
+starknet = ">=2.12.2"
 openzeppelin_access = ">=2.0.0"
 openzeppelin_token = ">=2.0.0"
 
@@ -28,7 +28,7 @@ sort-module-level-items = true
 
 [[tool.snforge.fork]]
 name = "SEPOLIA_LATEST"
-url = "https://starknet-sepolia.public.blastapi.io/rpc/v0_9"
+url = "https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_9/_hKu4IgnPgrF8O82GLuYU"
 block_id.tag = "latest"
 
 [tool]

@@ -129,12 +129,12 @@ node version >= 20.18.0
 
 #### Starknet-devnet version
 
-To ensure the proper functioning of scaffold-stark, your `starknet-devnet` version must be `0.4.0`. To accomplish this, first check your `starknet-devnet` version:
+To ensure the proper functioning of scaffold-stark, your `starknet-devnet` version must be `0.5.1`. To accomplish this, first check your `starknet-devnet` version:
 
 ```sh
 starknet-devnet --version
 ```
 
-If your `starknet-devnet` version is not `0.4.0`, you need to install it.
+If your `starknet-devnet` version is not `0.5.1`, you need to install it.
 
-- Install starknet-devnet `0.4.0` via `asdf` ([instructions](https://github.com/gianalarcon/asdf-starknet-devnet/blob/main/README.md)).
+- Install starknet-devnet `0.5.1` via `asdf` ([instructions](https://github.com/gianalarcon/asdf-starknet-devnet/blob/main/README.md)).
