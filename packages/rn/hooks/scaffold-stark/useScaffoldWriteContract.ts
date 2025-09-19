@@ -3,7 +3,7 @@ import {
   ContractName,
   ExtractAbiFunctionNamesScaffold,
   UseScaffoldWriteConfig,
-} from "@/services/utils/scaffold-stark/contract";
+} from "@/utils/scaffold-stark/contract";
 import { Abi, useNetwork } from "@starknet-react/core";
 import { useCallback } from "react";
 import { Contract as StarknetJsContract } from "starknet";
@@ -73,10 +73,10 @@ export const useScaffoldWriteContract = <
       }
 
       // we convert to starknetjs contract instance here since deployed data may be undefined if contract is not deployed
-      const contractInstance = new StarknetJsContract(
-        deployedContractData.abi,
-        deployedContractData.address,
-      );
+      const contractInstance = new StarknetJsContract({
+        abi: deployedContractData.abi,
+        address: deployedContractData.address,
+      });
 
       const newCalls = deployedContractData
         ? [contractInstance.populate(functionName, newArgs as any[])]

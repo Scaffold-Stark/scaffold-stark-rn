@@ -1,5 +1,5 @@
 import scaffoldConfig from "@/scaffold.config";
-import { ChainWithAttributes } from "@/services/utils/scaffold-stark/network";
+import { ChainWithAttributes } from "@/utils/scaffold-stark/network";
 import { create } from "zustand";
 
 /**

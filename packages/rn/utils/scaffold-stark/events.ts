@@ -5,6 +5,7 @@ import {
   AbiEnums,
   AbiStructs,
   CallData,
+  createAbiParser,
   getChecksumAddress,
   parseCalldataField,
 } from "starknet";
@@ -40,12 +41,19 @@ export const serializeEventKey = (
   abiEntry: AbiEntry,
   structs: AbiStructs,
   enums: AbiEnums,
+  abi: Abi,
 ): string[] => {
   if (abiEntry.type === "core::byte_array::ByteArray") {
     return stringToByteArrayFelt(input).map((item) => feltToHex(BigInt(item)));
   }
   const args = [input][Symbol.iterator]();
-  const parsed = parseCalldataField(args, abiEntry, structs, enums);
+  const parsed = parseCalldataField({
+    argsIterator: args,
+    input: abiEntry,
+    structs,
+    enums,
+    parser: createAbiParser(abi),
+  });
   if (typeof parsed === "string") {
     return [feltToHex(BigInt(parsed))];
   }
@@ -120,7 +128,7 @@ export const composeEventFilterKeys = (
         keys = keys.concat(
           mergeArrays(
             member.value.map((matchingItem: any) =>
-              serializeEventKey(matchingItem, member, structs, enums).map(
+              serializeEventKey(matchingItem, member, structs, enums, abi).map(
                 (item) => [item],
               ),
             ),
@@ -136,7 +144,7 @@ export const composeEventFilterKeys = (
         keys = keys.concat(
           mergeArrays(
             member.value.map((matchingItem: any) =>
-              serializeEventKey(matchingItem, member, structs, enums).map(
+              serializeEventKey(matchingItem, member, structs, enums, abi).map(
                 (item) => [item],
               ),
             ),
@@ -148,6 +156,7 @@ export const composeEventFilterKeys = (
           member,
           structs,
           enums,
+          abi,
         ).map((item) => [item]);
         keys = keys.concat(serializedKeys);
       }

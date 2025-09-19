@@ -4,7 +4,7 @@ import {
   ContractName,
   ExtractAbiFunctionNamesScaffold,
   UseScaffoldReadConfig,
-} from "@/services/utils/scaffold-stark/contract";
+} from "@/utils/scaffold-stark/contract";
 import { Abi, useReadContract } from "@starknet-react/core";
 import { BlockNumber } from "starknet";
 import { useDeployedContractInfo } from "./useDeployedContractInfo";
@@ -52,7 +52,7 @@ export const useScaffoldReadContract = <
     args: args || [],
     enabled:
       args && (!Array.isArray(args) || !args.some((arg) => arg === undefined)),
-    blockIdentifier: "pending" as BlockNumber,
+    blockIdentifier: "pre_confirmed" as BlockNumber,
     ...(readConfig as any),
   }) as Omit<ReturnType<typeof useReadContract>, "data"> & {
     data: AbiFunctionOutputs<ContractAbi, TFunctionName> | undefined;

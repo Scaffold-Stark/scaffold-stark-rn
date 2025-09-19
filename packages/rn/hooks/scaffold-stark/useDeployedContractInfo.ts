@@ -4,7 +4,7 @@ import {
   ContractCodeStatus,
   ContractName,
   contracts,
-} from "@/services/utils/scaffold-stark/contract";
+} from "@/utils/scaffold-stark/contract";
 import { useProvider } from "@starknet-react/core";
 import { useEffect, useState } from "react";
 import { BlockIdentifier } from "starknet";
@@ -45,7 +45,7 @@ export const useDeployedContractInfo = <TContractName extends ContractName>(
       const contractClassHash = await classHashCache.getClassHash(
         publicClient,
         deployedContract.address,
-        "pending" as BlockIdentifier,
+        "pre_confirmed" as BlockIdentifier,
       );
 
       // If contract code is `0x` => no contract deployed on that address
