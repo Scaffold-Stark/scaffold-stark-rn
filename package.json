@@ -32,7 +32,8 @@
     "start": "yarn workspace @ss-rn/rn start",
     "start:ios": "yarn workspace @ss-rn/rn start --ios",
     "prepare": "husky",
-    "postinstall": "yarn workspace @ss-rn/rn postinstall && yarn workspace @ss-rn/snfoundry postinstall"
+    "postinstall": "yarn workspace @ss-rn/rn postinstall && yarn workspace @ss-rn/snfoundry postinstall",
+    "clean": "yarn workspace @ss-rn/snfoundry clean"
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
