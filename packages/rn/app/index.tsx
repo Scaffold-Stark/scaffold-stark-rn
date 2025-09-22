@@ -1,14 +1,8 @@
-import { universalErc20Abi } from "@/contracts/constants";
-import deployedContracts from "@/contracts/deployedContracts";
+import { useScaffoldReadContract } from "@/hooks/scaffold-stark/useScaffoldReadContract";
+import { useScaffoldWriteContract } from "@/hooks/scaffold-stark/useScaffoldWriteContract";
 import { burnerAccounts, BurnerConnector } from "@scaffold-stark/stark-burner";
-import {
-  useAccount,
-  useConnect,
-  useContract,
-  useDisconnect,
-  useReadContract,
-  useSendTransaction,
-} from "@starknet-react/core";
+import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
+import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { CairoOption, CairoOptionVariant } from "starknet";
@@ -19,38 +13,33 @@ export default function Index() {
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
   const { address } = useAccount();
-  const { contract } = useContract({
-    address: deployedContracts.devnet.YourContract.address,
-    abi: deployedContracts.devnet.YourContract.abi,
-  });
-  const { data: balance } = useReadContract({
-    address:
-      "0x4718F5A0FC34CC1AF16A1CDEE98FFB20C31F5CD61D6AB07201858F4287C938D",
-    abi: universalErc20Abi,
+  const { data: balance } = useScaffoldReadContract({
+    contractName: "Strk",
     functionName: "balanceOf",
     args: [address as `0x${string}`],
     enabled: !!address,
   });
-  const { data: greeting } = useReadContract({
-    address: deployedContracts.devnet.YourContract.address,
-    abi: deployedContracts.devnet.YourContract.abi,
+  const { data: greeting } = useScaffoldReadContract({
+    contractName: "YourContract",
     functionName: "greeting",
     args: [],
     enabled: true,
   });
+  const router = useRouter();
 
   const myOption = new CairoOption<bigint>(CairoOptionVariant.None);
-  const { sendAsync, error } = useSendTransaction({
-    calls:
-      contract && address
-        ? [contract.populate("set_greeting", ["Hello world!", myOption])]
-        : undefined,
+  const { sendAsync, error } = useScaffoldWriteContract({
+    contractName: "YourContract",
+    functionName: "set_greeting",
+    args: ["Hello World", myOption],
   });
+
   useEffect(() => {
     if (error) {
       console.error("sendAsync error: ", error);
     }
   }, [error]);
+
   return (
     <View className="flex-1 items-center justify-center">
       <TouchableOpacity
@@ -67,6 +56,16 @@ export default function Index() {
       {address && balance && <Text>{balance.toString()}</Text>}
 
       <Text>{`Current greeting: ${greeting}`}</Text>
+
+      <TouchableOpacity
+        onPress={() => {
+          // Navigate to hooks page
+          router.push("/hooks");
+        }}
+      >
+        <Text>Go to Hooks</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity
         onPress={async () => {
           try {
@@ -89,7 +88,7 @@ export default function Index() {
               <TouchableOpacity
                 onPress={() => {
                   const connector = connectors.find(
-                    (it) => it.id === "burner-wallet"
+                    (it) => it.id === "burner-wallet",
                   );
                   if (connector && connector instanceof BurnerConnector) {
                     connector.burnerAccount = item;

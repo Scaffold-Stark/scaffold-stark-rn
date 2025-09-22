@@ -26,6 +26,7 @@
     "deploy:no-reset": "yarn workspace @ss-rn/snfoundry deploy --no-reset",
     "verify": "yarn workspace @ss-rn/snfoundry verify",
     "test": "yarn workspace @ss-rn/snfoundry test",
+    "test:rn": "yarn workspace @ss-rn/rn test",
     "compile": "yarn workspace @ss-rn/snfoundry compile",
     "format": "yarn workspace @ss-rn/snfoundry format",
     "format:check": "yarn workspace @ss-rn/snfoundry format:check",
@@ -42,5 +43,9 @@
   },
   "resolutions": {
     "@noble/hashes": "1.8.0"
+  },
+  "dependencies": {
+    "react-native-vector-icons": "^10.3.0",
+    "toastify-react-native": "^7.2.3"
   }
 }
