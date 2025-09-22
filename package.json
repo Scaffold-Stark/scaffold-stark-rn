@@ -26,6 +26,7 @@
     "deploy:no-reset": "yarn workspace @ss-rn/snfoundry deploy --no-reset",
     "verify": "yarn workspace @ss-rn/snfoundry verify",
     "test": "yarn workspace @ss-rn/snfoundry test",
+    "test:rn": "yarn workspace @ss-rn/rn test",
     "compile": "yarn workspace @ss-rn/snfoundry compile",
     "format": "yarn workspace @ss-rn/snfoundry format",
     "format:check": "yarn workspace @ss-rn/snfoundry format:check",
