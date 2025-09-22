@@ -3,7 +3,7 @@ import { useGlobalState } from "@/stores/store";
 import { type ChainWithAttributes } from "@/utils/scaffold-stark/network";
 import { useAccount } from "@starknet-react/core";
 import { useEffect } from "react";
-// import { NETWORKS_EXTRA_DATA } from "~~/utils/scaffold-stark";
+// import { NETWORKS_EXTRA_DATA } from "@/utils/scaffold-stark";
 
 /**
  * Retrieves the target network based on the connected wallet or defaults to the first network.

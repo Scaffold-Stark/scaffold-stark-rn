@@ -1,5 +1,4 @@
-import { useScaffoldReadContract } from "@/hooks/scaffold-stark/useScaffoldReadContract";
-import { useAccount } from "@starknet-react/core";
+import useScaffoldStrkBalance from "@/hooks/scaffold-stark/useScaffoldStrkBalance";
 import React, { useMemo, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { themeColors, useTheme } from "./ThemeProvider";
@@ -18,32 +17,19 @@ export default function Balance({
   className = "",
   usdMode,
 }: BalanceProps) {
-  const { address: connectedAddress } = useAccount();
   const { theme } = useTheme();
   const colors = themeColors[theme];
 
-  const targetAddress = (address || connectedAddress) as
-    | `0x${string}`
-    | undefined;
+  const targetAddress = address as `0x${string}` | undefined;
 
   const {
-    data: rawBalance,
+    formatted,
+    value: rawBalance,
+    decimals,
+    symbol,
     isLoading: isLoadingBalance,
     error: balanceError,
-  } = useScaffoldReadContract({
-    contractName: "Strk",
-    functionName: "balanceOf",
-    args: [targetAddress as `0x${string}`],
-    enabled: !!targetAddress,
-  });
-
-  const { data: decimals, isLoading: isLoadingDecimals } =
-    useScaffoldReadContract({
-      contractName: "Strk",
-      functionName: "decimals",
-      args: [],
-      enabled: true,
-    });
+  } = useScaffoldStrkBalance({ address: targetAddress });
 
   const [displayUsdMode, setDisplayUsdMode] = useState(
     FAKE_STRK_PRICE_USD > 0 ? Boolean(usdMode) : false,
@@ -57,19 +43,12 @@ export default function Balance({
 
   const formattedBalance = useMemo(() => {
     try {
-      if (rawBalance === undefined || decimals === undefined) return null;
-      const balanceBigInt = BigInt(
-        (rawBalance as any).toString?.() ?? rawBalance,
-      );
-      const decimalsNum = Number((decimals as any).toString?.() ?? decimals);
-      if (decimalsNum <= 0) return balanceBigInt.toString();
-      const divisor = 10 ** Math.min(decimalsNum, 18);
-      const asNumber = Number(balanceBigInt) / divisor;
-      return asNumber.toFixed(4);
+      if (formatted === undefined || formatted === null) return null;
+      return parseFloat(formatted).toFixed(4);
     } catch {
       return null;
     }
-  }, [rawBalance, decimals]);
+  }, [formatted]);
 
   const balanceInUsd = useMemo(() => {
     if (!formattedBalance) return null;
@@ -81,12 +60,7 @@ export default function Balance({
     });
   }, [formattedBalance]);
 
-  if (
-    !targetAddress ||
-    isLoadingBalance ||
-    isLoadingDecimals ||
-    formattedBalance === null
-  ) {
+  if (!targetAddress || isLoadingBalance || formattedBalance === null) {
     return (
       <View className="flex-row items-center">
         <View
@@ -133,7 +107,7 @@ export default function Balance({
               className="ml-1"
               style={{ color: colors.text, fontWeight: "700" }}
             >
-              STRK
+              {symbol}
             </Text>
           </View>
         )}

@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { ViewStyle } from "react-native";
-import { useTheme } from "../ThemeProvider";
+import { useTheme } from "../scaffold-stark/ThemeProvider";
 
 interface ScaffoldBtnGradientProps {
   children: React.ReactNode;
