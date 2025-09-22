@@ -51,7 +51,7 @@ export default function Index() {
   }, [error]);
 
   const handleDebugPress = () => {
-    router.push("/hooks");
+    router.push("/debug");
   };
 
   const handleMultiWritePress = async () => {
