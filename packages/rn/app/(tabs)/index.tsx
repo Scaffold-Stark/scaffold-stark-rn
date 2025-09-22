@@ -1,3 +1,4 @@
+import { ConnectedWalletMenu } from "@/app/_components/ConnectedWalletMenu";
 import { InfoCard } from "@/app/_components/InfoCard";
 import { WelcomeSection } from "@/app/_components/WelcomeSection";
 import {
@@ -69,24 +70,31 @@ export default function Index() {
         backgroundColor="transparent"
         translucent
       />
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
         <WelcomeSection address={address} />
 
-        <View className="px-4 py-6">
-          <InfoCard
-            icon={<Ionicons name="bug" size={24} color={colors.text} />}
-            title="Tinker with your smart contract using the Debug Contracts tab."
-            description=""
-            onPress={handleDebugPress}
-          />
+        {address ? (
+          <ConnectedWalletMenu />
+        ) : (
+          <View className="px-4 py-6">
+            <InfoCard
+              icon={<Ionicons name="bug" size={24} color={colors.text} />}
+              title="Tinker with your smart contract using the Debug Contracts tab."
+              description=""
+              onPress={handleDebugPress}
+            />
 
-          <InfoCard
-            icon={<Ionicons name="pricetag" size={24} color={colors.text} />}
-            title="Play around with Multiwrite transactions using useScaffoldMultiWrite() hook"
-            description=""
-            onPress={handleMultiWritePress}
-          />
-        </View>
+            <InfoCard
+              icon={<Ionicons name="pricetag" size={24} color={colors.text} />}
+              title="Play around with Multiwrite transactions using useScaffoldMultiWrite() hook"
+              description=""
+              onPress={handleMultiWritePress}
+            />
+          </View>
+        )}
       </ScrollView>
     </View>
   );

@@ -24,9 +24,9 @@ export function WelcomeSection({
   const colors = themeColors[theme];
 
   return (
-    <View className="flex-1 items-center justify-center py-6">
+    <View className="items-center justify-center py-6">
       {/* Home Icon */}
-      <View className="flex-1 items-center justify-center">
+      <View className="items-center justify-center">
         <View
           className="rounded-full items-center justify-center mb-8 p-3"
           style={{
