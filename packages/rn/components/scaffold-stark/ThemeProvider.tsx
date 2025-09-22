@@ -48,8 +48,9 @@ export const themeColors = {
     primaryLight: "#A78BFA",
     background: "#FFFFFF",
     backgroundSecondary: "#F8FAFC",
-    text: "#1F2937",
+    text: "#000000",
     textSecondary: "#6B7280",
+    textHighlight: "#B248DD",
     border: "#E5E7EB",
     cardBackground: "rgba(255, 255, 255, 0.4)",
     gradientStart: "#A855F7", // Lighter purple for light mode
@@ -63,6 +64,7 @@ export const themeColors = {
     backgroundSecondary: "#1F2937",
     text: "#FFFFFF",
     textSecondary: "#D1D5DB",
+    textHighlight: "#4DB4FF",
     border: "#374151",
     cardBackground: "rgba(31, 41, 55, 0.4)",
     gradientStart: "#4C1D95", // Dark purple
