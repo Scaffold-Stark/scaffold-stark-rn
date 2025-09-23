@@ -78,7 +78,7 @@ export const Struct = ({
   return (
     <View>
       <View
-        className="pl-4 pt-2 rounded"
+        className="pl-4 pt-2 rounded-[20px]"
         style={{
           borderWidth: 1,
           borderColor: isDisabled ? colors.border : colors.primary,

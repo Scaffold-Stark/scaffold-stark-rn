@@ -57,7 +57,7 @@ export const ArrayInput = ({
   return (
     <View>
       <View
-        className="pl-4 pt-2 rounded"
+        className="pl-4 pt-2 rounded-[20px]"
         style={{ borderWidth: 1, borderColor: colors.primary }}
       >
         <Text style={{ color: colors.text, marginBottom: 8 }}>

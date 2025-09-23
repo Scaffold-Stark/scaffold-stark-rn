@@ -10,7 +10,6 @@ import { ScaffoldBgGradient } from "@/components/scaffold-stark/gradients/Scaffo
 import { burnerAccounts, BurnerConnector } from "@scaffold-stark/stark-burner";
 import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
 import { useEffect } from "react";
-import { SafeAreaView } from "react-native";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();

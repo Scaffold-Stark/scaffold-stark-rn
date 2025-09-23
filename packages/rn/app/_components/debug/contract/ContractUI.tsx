@@ -133,9 +133,12 @@ export const ContractUI = ({
               </View>
 
               {targetNetwork ? (
-                <View className="mt-3">
+                <View className="flex-row mt-3">
                   <Text style={{ color: colors.textHighlight }}>
-                    Network: {targetNetwork.name}
+                    Network:{" "}
+                  </Text>
+                  <Text style={{ color: colors.text }}>
+                    {targetNetwork.name}
                   </Text>
                 </View>
               ) : null}

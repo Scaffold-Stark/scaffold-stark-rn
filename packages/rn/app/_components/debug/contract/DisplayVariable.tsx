@@ -53,9 +53,9 @@ export const DisplayVariable = ({
   if (isPredeployedTokenNameOrSymbol) {
     const tokenInfo =
       TOKEN_INFO[
-        ETH_ADDRESS.toLowerCase() === contractAddress.toLowerCase()
-          ? ETH_ADDRESS
-          : STRK_ADDRESS
+      ETH_ADDRESS.toLowerCase() === contractAddress.toLowerCase()
+        ? ETH_ADDRESS
+        : STRK_ADDRESS
       ];
     const value =
       abiFunction.name === "name" ? tokenInfo.name : tokenInfo.symbol;
@@ -63,7 +63,7 @@ export const DisplayVariable = ({
     return (
       <View className="pb-2">
         <View className="flex-row items-center">
-          <Text style={{ color: colors.text, fontWeight: "600" }}>
+          <Text style={{ color: colors.textHighlight, fontWeight: "600" }}>
             {abiFunction.name}
           </Text>
         </View>
@@ -115,7 +115,7 @@ export const DisplayVariable = ({
   return (
     <View className="pb-2">
       <View className="flex-row items-center justify-between">
-        <Text style={{ color: colors.text, fontWeight: "600" }}>
+        <Text style={{ color: colors.textHighlight, fontWeight: "600" }}>
           {abiFunction.name}
         </Text>
         <TouchableOpacity
