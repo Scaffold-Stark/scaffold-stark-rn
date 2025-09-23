@@ -1,5 +1,7 @@
 import { ScaffoldStarkAppWithProviders } from "@/components/scaffold-stark/ScaffoldStarkAppWithProviders";
 import { Stack } from "expo-router";
+import React from "react";
+import "react-native-reanimated";
 import ToastManager from "toastify-react-native";
 
 import { useFonts } from "expo-font";
@@ -7,9 +9,11 @@ import * as SplashScreen from "expo-splash-screen";
 
 import { Header } from "@/app/_components/Header";
 import { ScaffoldBgGradient } from "@/components/scaffold-stark/gradients/ScaffoldBgGradient";
-import { burnerAccounts, BurnerConnector } from "@scaffold-stark/stark-burner";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { WalletConnectModal } from "../components/scaffold-stark/WalletConnect/WalletConnectModal";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -35,33 +39,28 @@ export default function RootLayout() {
 
   return (
     <ScaffoldStarkAppWithProviders>
-      <Stack
-        screenOptions={{ headerShown: false }}
-        screenLayout={({ children }) => <AppShell>{children}</AppShell>}
-      />
-      <ToastManager />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <BottomSheetModalProvider>
+          <Stack
+            screenOptions={{ headerShown: false }}
+            screenLayout={({ children }: { children: React.ReactNode }) => (
+              <AppShell>{children}</AppShell>
+            )}
+          />
+          <ToastManager />
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
     </ScaffoldStarkAppWithProviders>
   );
 }
 
 function AppShell({ children }: { children: React.ReactNode }) {
-  const { connectors, connect } = useConnect();
-  const { disconnect } = useDisconnect();
   const { address } = useAccount();
+  const walletSheetRef = useRef<any>(null);
 
   const handleConnectWallet = () => {
-    if (address) {
-      disconnect();
-    } else {
-      const firstAccount = burnerAccounts[0];
-      if (firstAccount) {
-        const connector = connectors.find((it) => it.id === "burner-wallet");
-        if (connector && connector instanceof BurnerConnector) {
-          connector.burnerAccount = firstAccount;
-          connect({ connector });
-        }
-      }
-    }
+    // Open bottom sheet instead of auto-connecting
+    (walletSheetRef as any).current?.present({ index: 0 });
   };
 
   return (
@@ -70,6 +69,12 @@ function AppShell({ children }: { children: React.ReactNode }) {
         onConnectWallet={handleConnectWallet}
         isWalletConnected={!!address}
         walletAddress={address}
+      />
+      <WalletConnectModal
+        sheetRef={walletSheetRef}
+        isWalletConnected={!!address}
+        walletAddress={address}
+        onClose={() => {}}
       />
       {children}
     </ScaffoldBgGradient>
