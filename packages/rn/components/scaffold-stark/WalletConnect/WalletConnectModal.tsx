@@ -6,11 +6,11 @@ import {
 } from "@gorhom/bottom-sheet";
 import { burnerAccounts, BurnerConnector } from "@scaffold-stark/stark-burner";
 import { useConnect, useDisconnect } from "@starknet-react/core";
-import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { themeColors, useTheme } from "../ThemeProvider";
+import { CopyIcon } from "../icons/CopyIcon";
 
 interface WalletConnectModalProps {
   sheetRef: React.RefObject<BottomSheetModal>;
@@ -55,14 +55,43 @@ export function WalletConnectModal({
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  // mockData for wallet options
+  const walletOptions = [
+    {
+      key: "burner",
+      title: "Burner Wallet",
+      disabled: false,
+      iconName: "wallet-outline" as const,
+      iconColor: "#FFFFFF",
+      iconBg: "#3B82F6",
+      onPress: handleConnect,
+    },
+    {
+      key: "phantom",
+      title: "Phantom",
+      disabled: true,
+      iconName: "logo-react" as const,
+      iconColor: "#E0E7FF",
+      iconBg: "#4F46E5",
+    },
+    {
+      key: "argent",
+      title: "Argent",
+      disabled: true,
+      iconName: "flash" as const,
+      iconColor: "#F97316",
+      iconBg: "#FFFFFF",
+    },
+  ];
+
   return (
     <BottomSheetModal
       ref={sheetRef}
       snapPoints={["85%"]}
       onDismiss={onClose}
       enablePanDownToClose
-      backgroundStyle={{ backgroundColor: isDark ? "#1A1A1A" : "#FFFFFF" }}
-      handleIndicatorStyle={{ backgroundColor: isDark ? "#404040" : "#D1D5DB" }}
+      backgroundStyle={{ backgroundColor: isDark ? "#000000" : "#FFFFFF" }}
+      handleIndicatorStyle={{ backgroundColor: "#8B8B8B" }}
       backdropComponent={(props) => (
         <BottomSheetBackdrop
           {...props}
@@ -75,8 +104,14 @@ export function WalletConnectModal({
       <BottomSheetView style={{ flex: 1, paddingBottom: insets.bottom + 28 }}>
         {/* Header */}
         <View className="px-6 pb-4">
-          <Text className="text-xl font-bold" style={{ color: colors.text }}>
-            {isWalletConnected ? "Wallet Connected" : "Connect Wallet"}
+          <Text className="text-2xl font-bold" style={{ color: colors.text }}>
+            {isWalletConnected ? "Wallet connected" : "Connect a wallet"}
+          </Text>
+          <Text
+            className="text-sm mt-1"
+            style={{ color: colors.textSecondary }}
+          >
+            Get ready by connecting your wallet you preferred wallet below
           </Text>
           {isWalletConnected && walletAddress && (
             <Text
@@ -131,20 +166,14 @@ export function WalletConnectModal({
                   >
                     {formatAddress(walletAddress!)}
                   </Text>
-                  <TouchableOpacity onPress={() => {}} className="p-1">
-                    <Ionicons
-                      name="copy-outline"
-                      size={16}
-                      color={colors.textSecondary}
-                    />
-                  </TouchableOpacity>
+                  <CopyIcon variant={theme} copied={false} />
                 </View>
               </View>
 
               {/* Disconnect Button */}
               <TouchableOpacity
                 onPress={handleDisconnect}
-                className="w-full py-4 rounded-xl items-center"
+                className="w-full py-4 rounded-xl items-center mt-4"
                 style={{ backgroundColor: "#EF4444" }}
               >
                 <View className="flex-row items-center">
@@ -157,81 +186,76 @@ export function WalletConnectModal({
             </View>
           ) : (
             <View className="space-y-4">
-              {/* Available Wallets */}
-              <View className="space-y-3">
-                <Text
-                  className="text-sm font-medium mb-3"
-                  style={{ color: colors.textSecondary }}
-                >
-                  Available Wallets
-                </Text>
+              {/* Wallet options styled to match design */}
+              <View>
+                {walletOptions.map((item, index) => {
+                  const isFirst = index === 0;
+                  const isLast = index === walletOptions.length - 1;
+                  const borderTopLeftRadius = isFirst ? 18 : 0;
+                  const borderTopRightRadius = isFirst ? 18 : 0;
+                  const borderBottomLeftRadius = isLast ? 18 : 0;
+                  const borderBottomRightRadius = isLast ? 18 : 0;
 
-                {/* Burner Wallet Option */}
-                <TouchableOpacity onPress={handleConnect} className="w-full">
-                  <LinearGradient
-                    colors={
-                      isDark ? ["#2A3655", "#5C92BB"] : ["#FFFFFF", "#F8FAFC"]
-                    }
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      paddingVertical: 16,
-                      paddingHorizontal: 20,
-                      borderRadius: 12,
-                      borderWidth: isDark ? 1 : 1,
-                      borderColor: isDark ? "#404040" : "#E5E7EB",
-                    }}
-                  >
+                  const Container = (
                     <View
-                      className="w-12 h-12 rounded-full items-center justify-center mr-4"
                       style={{
-                        backgroundColor: isDark ? "#4DB4FF" : "#3B82F6",
+                        backgroundColor: isDark ? "#2C2C2C" : "#F4F4F4",
+                        paddingVertical: 10,
+                        paddingHorizontal: 12,
+                        borderTopLeftRadius,
+                        borderTopRightRadius,
+                        borderBottomLeftRadius,
+                        borderBottomRightRadius,
+                        flexDirection: "row",
+                        alignItems: "center",
                       }}
                     >
-                      <Ionicons name="wallet-outline" size={24} color="white" />
-                    </View>
-
-                    <View className="flex-1">
-                      <Text
-                        className="font-semibold text-base"
-                        style={{ color: colors.text }}
+                      <View
+                        className="w-8 h-8 rounded-full items-center justify-center mr-4"
+                        style={{ backgroundColor: item.iconBg }}
                       >
-                        Burner Wallet
-                      </Text>
-                      <Text
-                        className="text-sm mt-1"
-                        style={{ color: colors.textSecondary }}
-                      >
-                        Connect to a temporary wallet for testing
+                        <Ionicons
+                          name={item.iconName}
+                          size={24}
+                          color={item.iconColor}
+                        />
+                      </View>
+                      <Text className="text-lg" style={{ color: colors.text }}>
+                        {item.title}
                       </Text>
                     </View>
+                  );
 
-                    <Ionicons
-                      name="chevron-forward"
-                      size={20}
-                      color={colors.textSecondary}
-                    />
-                  </LinearGradient>
-                </TouchableOpacity>
+                  return (
+                    <View
+                      key={item.key}
+                      style={{ marginTop: index > 0 ? 3 : 0 }}
+                    >
+                      {item.disabled ? (
+                        <TouchableOpacity disabled className="w-full">
+                          {Container}
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={item.onPress}
+                          className="w-full"
+                        >
+                          {Container}
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  );
+                })}
+              </View>
 
-                {/* Coming Soon Options */}
-                <View
-                  className="p-4 rounded-xl"
-                  style={{
-                    backgroundColor: isDark ? "#2A2A2A" : "#F9FAFB",
-                    borderWidth: 1,
-                    borderColor: isDark ? "#404040" : "#E5E7EB",
-                  }}
+              {/* Footer text */}
+              <View className="py-2 items-center">
+                <Text
+                  className="text-sm"
+                  style={{ color: colors.textSecondary }}
                 >
-                  <Text
-                    className="text-center text-sm"
-                    style={{ color: colors.textSecondary }}
-                  >
-                    More wallet options coming soon...
-                  </Text>
-                </View>
+                  Other wallets
+                </Text>
               </View>
             </View>
           )}
