@@ -32,7 +32,7 @@ export const BlockieAvatar = ({
   if (isLoading) {
     return (
       <View
-        className="bg-gray-200 dark:bg-gray-700"
+        className="bg-gray-200 dark:bg-gray-700 animate-pulse"
         style={{ width: size, height: size, borderRadius: size / 2 }}
       />
     );
