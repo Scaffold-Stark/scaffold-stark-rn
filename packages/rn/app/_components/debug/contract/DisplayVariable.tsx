@@ -53,9 +53,9 @@ export const DisplayVariable = ({
   if (isPredeployedTokenNameOrSymbol) {
     const tokenInfo =
       TOKEN_INFO[
-      ETH_ADDRESS.toLowerCase() === contractAddress.toLowerCase()
-        ? ETH_ADDRESS
-        : STRK_ADDRESS
+        ETH_ADDRESS.toLowerCase() === contractAddress.toLowerCase()
+          ? ETH_ADDRESS
+          : STRK_ADDRESS
       ];
     const value =
       abiFunction.name === "name" ? tokenInfo.name : tokenInfo.symbol;

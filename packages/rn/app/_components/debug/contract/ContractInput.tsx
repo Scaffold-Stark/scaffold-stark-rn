@@ -1,6 +1,10 @@
 "use client";
 
 import { InputBase, IntegerInput } from "@/components/scaffold-stark";
+import {
+  themeColors,
+  useTheme,
+} from "@/components/scaffold-stark/ThemeProvider";
 import { AbiParameter } from "@/utils/scaffold-stark/contract";
 import {
   isCairoArray,
@@ -24,10 +28,6 @@ import {
   displayType,
   FormErrorMessageState,
 } from "./utilsDisplay";
-import {
-  themeColors,
-  useTheme,
-} from "@/components/scaffold-stark/ThemeProvider";
 
 type ContractInputProps = {
   abi?: Abi;

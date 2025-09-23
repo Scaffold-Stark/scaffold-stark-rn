@@ -88,7 +88,7 @@ export const Struct = ({
           {abiMember.type}
         </Text>
         <View
-          className="ml-3 pl-3"
+          className="ml-1 pl-1.5"
           style={{ borderLeftWidth: 1, borderLeftColor: colors.border }}
         >
           {abiMember.type === "struct"
@@ -127,20 +127,22 @@ export const Struct = ({
                         {index === activeVariantIndex ? "◉" : "○"}
                       </Text>
                     </TouchableOpacity>
-                    <ContractInput
-                      setFormErrorMessage={setFormErrorMessage}
-                      abi={abi}
-                      setForm={setForm}
-                      form={form}
-                      key={index}
-                      stateObjectKey={key}
-                      paramType={variant}
-                      isDisabled={
-                        index !== activeVariantIndex ||
-                        (isCairoOption(abiMember.name) &&
-                          variant.name === "None")
-                      }
-                    />
+                    <View className="flex-1">
+                      <ContractInput
+                        setFormErrorMessage={setFormErrorMessage}
+                        abi={abi}
+                        setForm={setForm}
+                        form={form}
+                        key={index}
+                        stateObjectKey={key}
+                        paramType={variant}
+                        isDisabled={
+                          index !== activeVariantIndex ||
+                          (isCairoOption(abiMember.name) &&
+                            variant.name === "None")
+                        }
+                      />
+                    </View>
                   </View>
                 );
               })}
