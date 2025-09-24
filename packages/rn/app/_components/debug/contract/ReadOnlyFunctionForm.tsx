@@ -118,7 +118,7 @@ export const ReadOnlyFunctionForm = ({
   const disabled = (inputValue && isFetching) || isError(formErrorMessage);
 
   return (
-    <View className="py-5">
+    <View className="py-3">
       <Text
         style={{
           color: colors.textHighlight,
@@ -172,6 +172,11 @@ export const ReadOnlyFunctionForm = ({
           </Text>
         ) : null}
       </View>
+
+      <View
+        className="mt-6"
+        style={{ borderBottomWidth: 1, borderColor: colors.divider }}
+      />
     </View>
   );
 };

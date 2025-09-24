@@ -88,7 +88,7 @@ export const Struct = ({
           {abiMember.type}
         </Text>
         <View
-          className="ml-1 pl-1.5"
+          className="ml-0.5 pl-1 pr-2.5"
           style={{ borderLeftWidth: 1, borderLeftColor: colors.border }}
         >
           {abiMember.type === "struct"
@@ -121,7 +121,7 @@ export const Struct = ({
                   <View key={index} className="flex-row items-center">
                     <TouchableOpacity
                       onPress={() => setActiveVariantIndex(index)}
-                      className="mr-2"
+                      className="mr-1"
                     >
                       <Text style={{ color: colors.text }}>
                         {index === activeVariantIndex ? "◉" : "○"}
