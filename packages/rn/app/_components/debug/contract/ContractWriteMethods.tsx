@@ -41,6 +41,7 @@ export const ContractWriteMethods = ({
           onChange={onChange}
           contractAddress={deployedContractData.address}
           //   inheritedFrom={inheritedFrom}
+          isLast={idx === functionsToDisplay.length - 1}
         />
       ))}
     </>

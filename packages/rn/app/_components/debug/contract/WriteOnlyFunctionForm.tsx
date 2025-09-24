@@ -33,6 +33,7 @@ type WriteOnlyFunctionFormProps = {
   onChange: () => void;
   contractAddress: Address;
   //   inheritedFrom?: string;
+  isLast: boolean;
 };
 
 export const WriteOnlyFunctionForm = ({
@@ -40,6 +41,7 @@ export const WriteOnlyFunctionForm = ({
   abiFunction,
   onChange,
   contractAddress,
+  isLast,
 }: WriteOnlyFunctionFormProps) => {
   const [form, setForm] = useState<Record<string, any>>(() =>
     getInitialFormState(abiFunction),
@@ -196,10 +198,12 @@ export const WriteOnlyFunctionForm = ({
         </View>
       ) : null}
 
-      <View
-        className="mt-6"
-        style={{ borderBottomWidth: 1, borderColor: colors.divider }}
-      />
+      {!isLast && (
+        <View
+          className="mt-6"
+          style={{ borderBottomWidth: 1, borderColor: colors.divider }}
+        />
+      )}
     </View>
   );
 };

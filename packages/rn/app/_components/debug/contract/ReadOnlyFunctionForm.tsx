@@ -31,12 +31,14 @@ type ReadOnlyFunctionFormProps = {
   contractAddress: Address;
   abiFunction: AbiFunction;
   abi: Abi;
+  isLast: boolean;
 };
 
 export const ReadOnlyFunctionForm = ({
   contractAddress,
   abiFunction,
   abi,
+  isLast,
 }: ReadOnlyFunctionFormProps) => {
   const [form, setForm] = useState<Record<string, any>>(() =>
     getInitialFormState(abiFunction),
@@ -173,10 +175,12 @@ export const ReadOnlyFunctionForm = ({
         ) : null}
       </View>
 
-      <View
-        className="mt-6"
-        style={{ borderBottomWidth: 1, borderColor: colors.divider }}
-      />
+      {!isLast && (
+        <View
+          className="mt-6"
+          style={{ borderBottomWidth: 1, borderColor: colors.divider }}
+        />
+      )}
     </View>
   );
 };
