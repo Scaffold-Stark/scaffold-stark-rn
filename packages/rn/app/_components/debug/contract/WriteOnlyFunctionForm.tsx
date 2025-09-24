@@ -81,6 +81,7 @@ export const WriteOnlyFunctionForm = ({
 
   const handleWrite = async () => {
     try {
+      setDisplayedTxResult(undefined);
       await writeTransaction(
         !!contractInstance
           ? [
@@ -91,6 +92,8 @@ export const WriteOnlyFunctionForm = ({
             ]
           : [],
       );
+      // Call onChange after successful transaction to refresh display variables
+      onChange();
     } catch (e: any) {
       const errorPattern = /Contract (.*?)"}/;
       const match = errorPattern.exec(e.message);
@@ -106,11 +109,12 @@ export const WriteOnlyFunctionForm = ({
   const [displayedTxResult, setDisplayedTxResult] =
     useState<InvokeTransactionReceiptResponse>();
   useEffect(() => {
-    setDisplayedTxResult(
-      txResult as unknown as InvokeTransactionReceiptResponse,
-    );
-    onChange();
-  }, [txResult, onChange]);
+    if (txResult) {
+      setDisplayedTxResult(
+        txResult as unknown as InvokeTransactionReceiptResponse,
+      );
+    }
+  }, [txResult]);
 
   // TODO use `useMemo` to optimize also update in ReadOnlyFunctionForm
   const transformedFunction = transformAbiFunction(abiFunction);
@@ -122,7 +126,6 @@ export const WriteOnlyFunctionForm = ({
           abi={abi}
           key={key}
           setForm={(updatedFormValue: Record<string, any>) => {
-            setDisplayedTxResult(undefined);
             setForm(updatedFormValue);
           }}
           form={form}
@@ -144,7 +147,7 @@ export const WriteOnlyFunctionForm = ({
   const colors = themeColors[theme];
 
   return (
-    <View className="py-5">
+    <View className="py-3">
       <Text
         style={{
           color: colors.textHighlight,
@@ -192,6 +195,11 @@ export const WriteOnlyFunctionForm = ({
           <TxReceipt txResult={txResult} />
         </View>
       ) : null}
+
+      <View
+        className="mt-6"
+        style={{ borderBottomWidth: 1, borderColor: colors.divider }}
+      />
     </View>
   );
 };
