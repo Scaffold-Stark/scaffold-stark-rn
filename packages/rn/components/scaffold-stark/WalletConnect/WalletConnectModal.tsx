@@ -6,7 +6,8 @@ import {
 } from "@gorhom/bottom-sheet";
 import { burnerAccounts, BurnerConnector } from "@scaffold-stark/stark-burner";
 import { useConnect, useDisconnect } from "@starknet-react/core";
-import React from "react";
+import * as Clipboard from "expo-clipboard";
+import React, { useState } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { themeColors, useTheme } from "../ThemeProvider";
@@ -33,6 +34,7 @@ export function WalletConnectModal({
   const insets = useSafeAreaInsets();
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
+  const [copied, setCopied] = useState(false);
 
   const handleConnect = () => {
     const firstAccount = burnerAccounts[0];
@@ -49,6 +51,17 @@ export function WalletConnectModal({
   const handleDisconnect = () => {
     disconnect();
     onClose && onClose();
+  };
+
+  const handleCopy = async () => {
+    if (!walletAddress) return;
+    try {
+      await Clipboard.setStringAsync(walletAddress);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy address:", error);
+    }
   };
 
   const formatAddress = (address: string) => {
@@ -166,7 +179,9 @@ export function WalletConnectModal({
                   >
                     {formatAddress(walletAddress!)}
                   </Text>
-                  <CopyIcon variant={theme} copied={false} />
+                  <TouchableOpacity onPress={handleCopy}>
+                    <CopyIcon variant={theme} copied={copied} />
+                  </TouchableOpacity>
                 </View>
               </View>
 
