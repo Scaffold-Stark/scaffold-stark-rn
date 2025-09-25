@@ -3123,6 +3123,7 @@ __metadata:
     "@tanstack/react-query": ^5.87.1
     "@testing-library/react-native": ^13.3.3
     "@types/jest": ^30.0.0
+    "@types/qs": ^6
     "@types/react": ~19.1.10
     abi-wan-kanabi: ^2.2.4
     blo: ^2.0.0
@@ -3148,6 +3149,7 @@ __metadata:
     nativewind: ^4.1.23
     patch-package: ^8.0.0
     prettier-plugin-tailwindcss: ^0.5.14
+    qs: ^6.11.2
     react: 19.1.0
     react-dom: 19.1.0
     react-native: 0.81.4
@@ -3487,6 +3489,13 @@ __metadata:
   version: 2.7.3
   resolution: "@types/prettier@npm:2.7.3"
   checksum: 705384209cea6d1433ff6c187c80dcc0b95d99d5c5ce21a46a9a58060c527973506822e428789d842761e0280d25e3359300f017fbe77b9755bc772ab3dc2f83
+  languageName: node
+  linkType: hard
+
+"@types/qs@npm:^6":
+  version: 6.14.0
+  resolution: "@types/qs@npm:6.14.0"
+  checksum: 1909205514d22b3cbc7c2314e2bd8056d5f05dfb21cf4377f0730ee5e338ea19957c41735d5e4806c746176563f50005bbab602d8358432e25d900bdf4970826
   languageName: node
   linkType: hard
 
@@ -11122,6 +11131,15 @@ __metadata:
   bin:
     qrcode-terminal: ./bin/qrcode-terminal.js
   checksum: ad146ea1e339e1745402a3ea131631f64f40f0d1ff9cc6bd9c21677feaa1ca6dcd32eadf188fd3febdab8bf6191b3d24d533454903a72543645a72820e4d324c
+  languageName: node
+  linkType: hard
+
+"qs@npm:^6.11.2":
+  version: 6.14.0
+  resolution: "qs@npm:6.14.0"
+  dependencies:
+    side-channel: ^1.1.0
+  checksum: 189b52ad4e9a0da1a16aff4c58b2a554a8dad9bd7e287c7da7446059b49ca2e33a49e570480e8be406b87fccebf134f51c373cbce36c8c83859efa0c9b71d635
   languageName: node
   linkType: hard
 
