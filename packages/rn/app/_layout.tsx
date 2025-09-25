@@ -10,7 +10,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { Header } from "@/app/_components/Header";
 import { ScaffoldBgGradient } from "@/components/scaffold-stark/gradients/ScaffoldBgGradient";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
+import { useAccount } from "@starknet-react/core";
 import { useEffect, useRef } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { WalletConnectModal } from "../components/scaffold-stark/WalletConnect/WalletConnectModal";
