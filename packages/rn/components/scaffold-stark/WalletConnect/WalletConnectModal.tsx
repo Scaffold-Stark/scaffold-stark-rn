@@ -12,6 +12,7 @@ import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { themeColors, useTheme } from "../ThemeProvider";
 import { CopyIcon } from "../icons/CopyIcon";
+import { useAegis } from "@cavos/aegis";
 
 interface WalletConnectModalProps {
   sheetRef: React.RefObject<BottomSheetModal>;
@@ -35,6 +36,8 @@ export function WalletConnectModal({
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
   const [copied, setCopied] = useState(false);
+
+  const { aegisAccount, connectWallet } = useAegis();
 
   const handleConnect = () => {
     const firstAccount = burnerAccounts[0];
