@@ -1,6 +1,6 @@
-import { BurnerConnector } from "@scaffold-stark/stark-burner";
-import { devnet } from "@starknet-react/chains";
-import { StarknetConfig, publicProvider, voyager } from "@starknet-react/core";
+import { appChains, connectors } from "@/configs/connectors";
+import provider from "@/configs/provider";
+import { StarknetConfig, voyager } from "@starknet-react/core";
 import { ThemeProvider } from "./ThemeProvider";
 
 export function ScaffoldStarkAppWithProviders({
@@ -11,9 +11,9 @@ export function ScaffoldStarkAppWithProviders({
   return (
     <ThemeProvider>
       <StarknetConfig
-        chains={[devnet]}
-        provider={publicProvider()}
-        connectors={[new BurnerConnector()]}
+        chains={appChains}
+        provider={provider}
+        connectors={connectors}
         explorer={voyager}
       >
         {children}
