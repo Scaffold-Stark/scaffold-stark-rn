@@ -1,3 +1,6 @@
+import "@/polyfills";
+import "@walletconnect/react-native-compat";
+
 import { ScaffoldStarkAppWithProviders } from "@/components/scaffold-stark/ScaffoldStarkAppWithProviders";
 import { Stack } from "expo-router";
 import React from "react";
