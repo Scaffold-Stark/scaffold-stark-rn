@@ -5,19 +5,16 @@ import ControllerConnector from "@cartridge/connector/controller";
 import { BurnerConnector } from "@scaffold-stark/stark-burner";
 
 // Provide no-op event listeners in RN where they may be missing
-if (typeof window !== "undefined" && !(window as any).addEventListener) {
-  (window as any).addEventListener = () => {};
-  (window as any).removeEventListener = () => {};
-}
+import "@/utils/scaffold-stark/dom-shim";
 
 const targetNetworks = getTargetNetworks();
 
 export const connectors = getConnectors();
 
-const cartridgeConnector = new ControllerConnector();
-
 function getConnectors() {
   const { targetNetworks } = scaffoldConfig;
+
+  const cartridgeConnector = new ControllerConnector({});
 
   const connectors: any[] = [cartridgeConnector];
 

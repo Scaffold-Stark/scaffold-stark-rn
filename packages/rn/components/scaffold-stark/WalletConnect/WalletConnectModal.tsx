@@ -1,3 +1,4 @@
+import { useTargetNetwork } from "@/hooks/scaffold-stark/useTargetNetwork";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   BottomSheetBackdrop,
@@ -5,9 +6,9 @@ import {
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { burnerAccounts, BurnerConnector } from "@scaffold-stark/stark-burner";
-import { useConnect, useDisconnect } from "@starknet-react/core";
+import { Connector, useConnect, useDisconnect } from "@starknet-react/core";
 import * as Clipboard from "expo-clipboard";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { themeColors, useTheme } from "../ThemeProvider";
@@ -35,17 +36,38 @@ export function WalletConnectModal({
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
   const [copied, setCopied] = useState(false);
+  const { targetNetwork } = useTargetNetwork();
+  const [showOtherOptions, setShowOtherOptions] = useState(false);
 
-  const handleConnect = () => {
-    const firstAccount = burnerAccounts[0];
-    if (firstAccount) {
-      const connector = connectors.find((it) => it.id === "burner-wallet");
-      if (connector && connector instanceof BurnerConnector) {
-        connector.burnerAccount = firstAccount;
-        connect({ connector });
-        onClose && onClose();
-      }
+  const isDevnet = targetNetwork.network === "devnet";
+
+  const { mainConnectors, otherConnectors } = useMemo(() => {
+    if (!isDevnet) {
+      return { mainConnectors: connectors, otherConnectors: [] as Connector[] };
     }
+    const mains = connectors.filter((c) => c.id === "burner-wallet");
+    const others = connectors.filter((c) => c.id !== "burner-wallet");
+    return { mainConnectors: mains, otherConnectors: others };
+  }, [connectors, isDevnet]);
+
+  const handleConnectBurner = () => {
+    const firstAccount = burnerAccounts[0];
+    if (!firstAccount) return;
+    const connector = connectors.find((it) => it.id === "burner-wallet");
+    if (connector && connector instanceof BurnerConnector) {
+      connector.burnerAccount = firstAccount;
+      connect({ connector });
+      onClose && onClose();
+    }
+  };
+
+  const handleConnectConnector = (connector: Connector) => {
+    if (connector.id === "burner-wallet") {
+      handleConnectBurner();
+      return;
+    }
+    connect({ connector });
+    onClose && onClose();
   };
 
   const handleDisconnect = () => {
@@ -68,34 +90,31 @@ export function WalletConnectModal({
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  // mockData for wallet options
-  const walletOptions = [
-    {
-      key: "burner",
-      title: "Burner Wallet",
-      disabled: false,
-      iconName: "wallet-outline" as const,
-      iconColor: "#FFFFFF",
-      iconBg: "#3B82F6",
-      onPress: handleConnect,
-    },
-    {
-      key: "phantom",
-      title: "Phantom",
-      disabled: true,
+  const getConnectorDisplay = (connector: Connector) => {
+    const id = connector.id;
+    if (id === "burner-wallet") {
+      return {
+        title: "Burner Wallet",
+        iconName: "wallet-outline" as const,
+        iconBg: "#3B82F6",
+        iconColor: "#FFFFFF",
+      };
+    }
+    if (id === "controller") {
+      return {
+        title: "Controller",
+        iconName: "flash" as const,
+        iconBg: isDark ? "#222222" : "#F0F0F0",
+        iconColor: isDark ? "#F97316" : "#4F46E5",
+      };
+    }
+    return {
+      title: connector.name || connector.id,
       iconName: "logo-react" as const,
-      iconColor: "#E0E7FF",
-      iconBg: "#4F46E5",
-    },
-    {
-      key: "argent",
-      title: "Argent",
-      disabled: true,
-      iconName: "flash" as const,
-      iconColor: "#F97316",
-      iconBg: "#FFFFFF",
-    },
-  ];
+      iconBg: isDark ? "#2C2C2C" : "#F4F4F4",
+      iconColor: isDark ? "#E0E7FF" : "#4F46E5",
+    };
+  };
 
   return (
     <BottomSheetModal
@@ -201,11 +220,16 @@ export function WalletConnectModal({
             </View>
           ) : (
             <View className="space-y-4">
-              {/* Wallet options styled to match design */}
               <View>
-                {walletOptions.map((item, index) => {
+                {(isDevnet && !showOtherOptions
+                  ? mainConnectors
+                  : isDevnet
+                    ? otherConnectors
+                    : connectors
+                ).map((connector, index, arr) => {
+                  const display = getConnectorDisplay(connector);
                   const isFirst = index === 0;
-                  const isLast = index === walletOptions.length - 1;
+                  const isLast = index === arr.length - 1;
                   const borderTopLeftRadius = isFirst ? 18 : 0;
                   const borderTopRightRadius = isFirst ? 18 : 0;
                   const borderBottomLeftRadius = isLast ? 18 : 0;
@@ -227,50 +251,90 @@ export function WalletConnectModal({
                     >
                       <View
                         className="w-8 h-8 rounded-full items-center justify-center mr-4"
-                        style={{ backgroundColor: item.iconBg }}
+                        style={{ backgroundColor: display.iconBg }}
                       >
                         <Ionicons
-                          name={item.iconName}
+                          name={display.iconName}
                           size={24}
-                          color={item.iconColor}
+                          color={display.iconColor}
                         />
                       </View>
                       <Text className="text-lg" style={{ color: colors.text }}>
-                        {item.title}
+                        {display.title}
                       </Text>
                     </View>
                   );
 
                   return (
                     <View
-                      key={item.key}
+                      key={connector.id || index}
                       style={{ marginTop: index > 0 ? 3 : 0 }}
                     >
-                      {item.disabled ? (
-                        <TouchableOpacity disabled className="w-full">
-                          {Container}
-                        </TouchableOpacity>
-                      ) : (
-                        <TouchableOpacity
-                          onPress={item.onPress}
-                          className="w-full"
-                        >
-                          {Container}
-                        </TouchableOpacity>
-                      )}
+                      <TouchableOpacity
+                        onPress={() => handleConnectConnector(connector)}
+                        className="w-full"
+                      >
+                        {Container}
+                      </TouchableOpacity>
                     </View>
                   );
                 })}
-              </View>
 
-              {/* Footer text */}
-              <View className="py-2 items-center">
-                <Text
-                  className="text-sm"
-                  style={{ color: colors.textSecondary }}
-                >
-                  Other wallets
-                </Text>
+                {isDevnet &&
+                  otherConnectors.length > 0 &&
+                  !showOtherOptions && (
+                    <View style={{ marginTop: 8 }}>
+                      <TouchableOpacity
+                        onPress={() => setShowOtherOptions(true)}
+                        className="w-full"
+                      >
+                        <View
+                          style={{
+                            backgroundColor: isDark ? "#1F2937" : "#E5E7EB",
+                            paddingVertical: 10,
+                            paddingHorizontal: 12,
+                            borderRadius: 12,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text
+                            className="text-base"
+                            style={{ color: colors.text }}
+                          >
+                            Other Options
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+
+                {isDevnet && showOtherOptions && (
+                  <View style={{ marginTop: 8 }}>
+                    <TouchableOpacity
+                      onPress={() => setShowOtherOptions(false)}
+                      className="w-full"
+                    >
+                      <View
+                        style={{
+                          backgroundColor: isDark ? "#1F2937" : "#E5E7EB",
+                          paddingVertical: 10,
+                          paddingHorizontal: 12,
+                          borderRadius: 12,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text
+                          className="text-base"
+                          style={{ color: colors.text }}
+                        >
+                          Back
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
             </View>
           )}
