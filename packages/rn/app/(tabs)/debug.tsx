@@ -7,6 +7,7 @@ import React from "react";
 import { ScrollView, StatusBar, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DebugContracts } from "../_components/debug/DebugContracts";
+import Footer from "../_components/Footer";
 
 export default function Debug() {
   const { theme, isDark } = useTheme();
@@ -51,6 +52,8 @@ export default function Debug() {
         </View>
 
         <DebugContracts />
+
+        <Footer />
       </ScrollView>
     </View>
   );
