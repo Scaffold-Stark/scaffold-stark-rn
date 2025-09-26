@@ -12,16 +12,16 @@ export function ScaffoldStarkAppWithProviders({
 }) {
   return (
     <ThemeProvider>
-      <StarknetConfig
+      {/* <StarknetConfig
         chains={appChains}
         provider={provider}
         connectors={connectors}
         explorer={voyager}
-      >
+      > */}
         <AegisProvider config={aegisConfig}>
           {children}
         </AegisProvider>
-      </StarknetConfig>
+      {/* </StarknetConfig> */}
     </ThemeProvider>
   );
 }

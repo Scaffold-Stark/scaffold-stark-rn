@@ -12,8 +12,8 @@ import { ScaffoldBgGradient } from "@/components/scaffold-stark/gradients/Scaffo
 import { useAegis } from "@cavos/aegis";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useAccount } from "@starknet-react/core";
-import { useEffect, useRef } from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { WalletConnectModal } from "../components/scaffold-stark/WalletConnect/WalletConnectModal";
 import "../global.css";
@@ -57,8 +57,9 @@ export default function RootLayout() {
 }
 
 function AppShell({ children }: { children: React.ReactNode }) {
-  const { address } = useAccount();
-  const { connectWallet, deployWallet, aegisAccount, isConnected } = useAegis();
+  // const { address } = useAccount();
+  const [result, setResult] = useState<any>(null);
+  const { connectWallet, deployWallet, aegisAccount, isConnected, currentAddress } = useAegis();
   const walletSheetRef = useRef<any>(null);
 
   const handleConnectWallet = async () => {
@@ -91,10 +92,12 @@ function AppShell({ children }: { children: React.ReactNode }) {
           "1",
         ],
       );
+      setResult(result);
       console.log("approve tx:", result?.transactionHash ?? result);
     } catch (err) {
       const detail = err instanceof Error ? err.message : JSON.stringify(err);
       console.error("approve failed", detail, err);
+      setResult(`"approve failed", ${detail}, ${err}`);
     }
   };
 
@@ -102,19 +105,22 @@ function AppShell({ children }: { children: React.ReactNode }) {
     <ScaffoldBgGradient>
       <Header
         onConnectWallet={handleConnectWallet}
-        isWalletConnected={!!address}
-        walletAddress={address}
+        isWalletConnected={!!currentAddress}
+        walletAddress={currentAddress || undefined}
       />
-      <TouchableOpacity onPress={handleTest}>
-        <Text>Test</Text>
+      <TouchableOpacity onPress={handleTest} className="bg-red-200">
+        <Text className="text-center">Test: {currentAddress}</Text>
       </TouchableOpacity>
-      <WalletConnectModal
+      <View>
+        <Text>{result}</Text>
+      </View>
+      {/* <WalletConnectModal
         sheetRef={walletSheetRef}
         isWalletConnected={!!address}
         walletAddress={address}
         onClose={() => { }}
-      />
-      {children}
+      /> */}
+      {/* {children} */}
     </ScaffoldBgGradient>
   );
 }
