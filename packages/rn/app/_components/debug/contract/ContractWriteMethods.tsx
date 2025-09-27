@@ -1,4 +1,3 @@
-import { WriteOnlyFunctionForm } from "@/app/_components/debug/contract";
 import {
   Contract,
   ContractName,
@@ -6,6 +5,7 @@ import {
 } from "@/utils/scaffold-stark/contract";
 import { Abi } from "abi-wan-kanabi";
 import { Text } from "react-native";
+import { WriteOnlyFunctionForm } from "./WriteOnlyFunctionForm";
 
 export const ContractWriteMethods = ({
   onChange,

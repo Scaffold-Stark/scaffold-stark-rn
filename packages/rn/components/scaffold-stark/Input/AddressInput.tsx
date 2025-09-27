@@ -1,8 +1,9 @@
-import { CommonInputProps, InputBase } from "@/components/scaffold-stark/Input";
 import { Address } from "@starknet-react/chains";
 import { blo } from "blo";
 import { useCallback, useEffect, useState } from "react";
 import { Image, View } from "react-native";
+import { InputBase } from "./InputBase";
+import { CommonInputProps } from "./utils";
 
 /**
  * Avatar component for address input

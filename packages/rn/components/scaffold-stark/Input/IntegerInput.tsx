@@ -1,11 +1,8 @@
-import {
-  CommonInputProps,
-  InputBase,
-  isValidInteger,
-} from "@/components/scaffold-stark/Input";
 import { useCallback, useEffect, useState } from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { parseEther } from "viem";
+import { InputBase } from "./InputBase";
+import { CommonInputProps, isValidInteger } from "./utils";
 
 type IntegerInputProps = CommonInputProps<string | bigint> & {
   variant?: string;
