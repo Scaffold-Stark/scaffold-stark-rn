@@ -3161,7 +3161,7 @@ __metadata:
     react-native: 0.81.4
     react-native-gesture-handler: ~2.28.0
     react-native-get-random-values: ^1.11.0
-    react-native-reanimated: ~4.1.0
+    react-native-reanimated: 4.1.1
     react-native-safe-area-context: ~5.6.0
     react-native-screens: ~4.16.0
     react-native-svg: 15.12.1
@@ -11909,9 +11909,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:~4.1.0":
-  version: 4.1.0
-  resolution: "react-native-reanimated@npm:4.1.0"
+"react-native-reanimated@npm:4.1.1":
+  version: 4.1.1
+  resolution: "react-native-reanimated@npm:4.1.1"
   dependencies:
     react-native-is-edge-to-edge: ^1.2.1
     semver: 7.7.2
@@ -11920,7 +11920,7 @@ __metadata:
     react: "*"
     react-native: "*"
     react-native-worklets: ">=0.5.0"
-  checksum: 72ef1ff148f49bc1d60f772e2969c4583ef98262eccd5bfbcc6dfb9ff8a556d2ec6ad784bf06266d61bc0c4689fc8e928605a038851b077b0e554e3b5565fbe2
+  checksum: 83c0f7aa5682788086d9990d9713241403b33cbae671e6f121e337ef976bf07becf051f987f4f856612871e824cf8f506ddafe485cdc54c1ed40a65ba4e6a1f2
   languageName: node
   linkType: hard
 
