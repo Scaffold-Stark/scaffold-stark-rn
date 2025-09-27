@@ -88,7 +88,7 @@ export class ReadyConnector extends InjectedConnector {
 
     // Use the same approach as App.tsx - direct client.connect
     const { uri, approval } = await wc.client.connect({
-      requiredNamespaces: {
+      optionalNamespaces: {
         starknet: {
           chains: [this.namespaceChainId()],
           methods: [
