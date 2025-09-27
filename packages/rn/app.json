@@ -24,20 +24,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
-      "intentFilters": [
-        {
-          "action": "VIEW",
-          "data": [
-            { "scheme": "ready" },
-            { "scheme": "argent" },
-            { "scheme": "argentx" },
-            { "scheme": "argentmobile" },
-            { "scheme": "wc" }
-          ],
-          "category": ["BROWSABLE", "DEFAULT"]
-        }
-      ]
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro",

@@ -86,57 +86,23 @@ export class ReadyConnector extends InjectedConnector {
   async connect() {
     const wc = await this.ensureProvider();
 
-    // Prefer provider.connect (WC v2) with optionalNamespaces; fallback to client.connect
-    let uri: string | undefined;
-    let approval: () => Promise<any>;
-    if (typeof (wc as any).connect === "function") {
-      const res = await (wc as any).connect({
-        optionalNamespaces: {
-          starknet: {
-            chains: [this.namespaceChainId()],
-            methods: [
-              "starknet_account",
-              "starknet_requestAddInvokeTransaction",
-              "starknet_signTypedData",
-            ],
-            events: ["accountsChanged", "chainChanged"],
-          },
+    // Use the same approach as App.tsx - direct client.connect
+    const { uri, approval } = await wc.client.connect({
+      requiredNamespaces: {
+        starknet: {
+          chains: [this.namespaceChainId()],
+          methods: [
+            "starknet_account",
+            "starknet_requestAddInvokeTransaction",
+            "starknet_signTypedData",
+          ],
+          events: ["accountsChanged", "chainChanged"],
         },
-      });
-      uri = (res as any)?.uri;
-      approval = (res as any).approval;
-    } else {
-      const res = await (wc as any).client.connect({
-        optionalNamespaces: {
-          starknet: {
-            chains: [this.namespaceChainId()],
-            methods: [
-              "starknet_account",
-              "starknet_requestAddInvokeTransaction",
-              "starknet_signTypedData",
-            ],
-            events: ["accountsChanged", "chainChanged"],
-          },
-        },
-      });
-      uri = (res as any)?.uri;
-      approval = (res as any).approval;
-    }
+      },
+    });
 
     if (uri) {
-      try {
-        const encoded = encodeURIComponent(uri);
-        const opened = await this.tryOpenAnyWallet(encoded);
-        if (!opened) {
-          console.warn(
-            "[ReadyConnector] connect(): no wallet scheme available to open.",
-          );
-        }
-      } catch (_) {
-        console.warn(
-          "[ReadyConnector] connect(): failed to open deep link; please open wallet manually",
-        );
-      }
+      await this.openWallet(uri);
     }
 
     const session = await approval();
@@ -157,12 +123,11 @@ export class ReadyConnector extends InjectedConnector {
   async request<T extends RpcMessage["type"]>(
     call: RequestFnCall<T>,
   ): Promise<RpcTypeToMessageMap[T]["result"]> {
-    // Forward all requests through WalletConnect client
     const wc = await this.ensureProvider();
     const session = wc.session ? Object.values(wc.session)[0] : null;
     const topic = (session as any)?.topic;
     if (!topic) throw new Error("No active WalletConnect session");
-    // @ts-ignore - runtime mapping
+
     return wc.client.request({
       topic,
       chainId: this.namespaceChainId(),
@@ -175,64 +140,40 @@ export class ReadyConnector extends InjectedConnector {
   }
 
   private namespaceChainId() {
-    if (this.chain.id === devnet.id) return "starknet:SN_MAIN"; // placeholder; devnet not supported by WC
+    if (this.chain.id === devnet.id) return "starknet:SN_MAIN";
     if (this.chain.id === sepolia.id) return "starknet:SNSEPOLIA";
     return "starknet:SNMAIN";
   }
 
   private async ensureProvider() {
     if (this.provider) return this.provider;
-    try {
-      const provider = await UniversalProvider.init({
-        projectId: this.options.projectId,
-        metadata: this.options.metadata as any,
-        relayUrl: this.options.relayUrl ?? "wss://relay.walletconnect.com",
-      });
 
-      try {
-        // Listen for display_uri to proactively open Ready
-        // @ts-ignore
-        provider.on("display_uri", async (uri: string) => {
-          try {
-            const encoded = encodeURIComponent(uri);
-            const opened = await this.tryOpenAnyWallet(encoded);
-            if (!opened) {
-              console.warn("[ReadyConnector] no wallet scheme could be opened");
-            }
-          } catch (err) {
-            console.error("[ReadyConnector] display_uri open error", err);
-          }
-        });
-      } catch (err) {
-        console.warn(
-          "[ReadyConnector] failed to attach display_uri listener",
-          err,
-        );
-      }
+    const provider = await UniversalProvider.init({
+      projectId: this.options.projectId,
+      metadata: this.options.metadata as any,
+      relayUrl: this.options.relayUrl ?? "wss://relay.walletconnect.com",
+    });
 
-      this.provider = provider;
-      return provider;
-    } catch (err) {
-      console.error("[ReadyConnector] ensureProvider(): init failed", err);
-      throw err;
-    }
+    this.provider = provider;
+    return provider;
   }
 
-  private async tryOpenAnyWallet(encodedUri: string): Promise<boolean> {
-    const schemes = ["ready", "argent", "argentx", "argentmobile", "wc"];
-    for (const scheme of schemes) {
-      const deeplink = `${scheme}://wc?uri=${encodedUri}`;
+  private async openWallet(uri: string) {
+    const encodedUri = encodeURIComponent(uri);
+    const readyScheme = `ready://wc?uri=${encodedUri}`;
+
+    try {
+      await Linking.openURL(readyScheme);
+    } catch (err) {
+      console.warn("Failed to open Ready wallet:", err);
+      // Fallback to generic wc scheme
       try {
-        const canOpen = await Linking.canOpenURL(deeplink);
-        if (canOpen) {
-          await Linking.openURL(deeplink);
-          return true;
-        }
-      } catch (e) {
-        console.warn(`[ReadyConnector] open failed for ${scheme}`, e);
+        const wcScheme = `wc://wc?uri=${encodedUri}`;
+        await Linking.openURL(wcScheme);
+      } catch (fallbackErr) {
+        console.warn("Failed to open wallet with wc scheme:", fallbackErr);
       }
     }
-    return false;
   }
 
   private async getActiveAddress(): Promise<string | undefined> {
