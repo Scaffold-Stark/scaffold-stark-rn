@@ -8,7 +8,7 @@ import { isCairoOption } from "@/utils/scaffold-stark/typeValidations";
 import { Abi } from "abi-wan-kanabi";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { ContractInput } from "./ContractInput";
+import ContractInput from "./ContractInput";
 import { getFunctionInputKey, getInitialTupleFormState } from "./utilsContract";
 import { FormErrorMessageState } from "./utilsDisplay";
 
@@ -151,3 +151,5 @@ export const Struct = ({
     </View>
   );
 };
+
+export default Struct;

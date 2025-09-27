@@ -56,3 +56,5 @@ export function InfoCard({ icon, title, description, onPress }: InfoCardProps) {
     </TouchableOpacity>
   );
 }
+
+export default InfoCard;

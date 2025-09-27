@@ -21,9 +21,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { ContractReadMethods } from "./ContractReadMethods";
-import { ContractVariables } from "./ContractVariables";
-import { ContractWriteMethods } from "./ContractWriteMethods";
+import ContractReadMethods from "./ContractReadMethods";
+import ContractVariables from "./ContractVariables";
+import ContractWriteMethods from "./ContractWriteMethods";
 
 type ContractUIProps = {
   contractName: ContractName;
@@ -219,3 +219,5 @@ export const ContractUI = ({
     </View>
   );
 };
+
+export default ContractUI;

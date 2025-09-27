@@ -12,7 +12,7 @@ import { Abi } from "abi-wan-kanabi";
 import { useEffect, useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { BlockNumber } from "starknet";
-import { ContractInput } from "./ContractInput";
+import ContractInput from "./ContractInput";
 import {
   getArgsAsStringInputFromForm,
   getFunctionInputKey,
@@ -184,3 +184,5 @@ export const ReadOnlyFunctionForm = ({
     </View>
   );
 };
+
+export default ReadOnlyFunctionForm;

@@ -83,3 +83,5 @@ export const TxReceipt = (
     </View>
   );
 };
+
+export default TxReceipt;

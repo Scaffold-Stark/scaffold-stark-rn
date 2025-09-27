@@ -13,8 +13,8 @@ import { Abi } from "abi-wan-kanabi";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { InvokeTransactionReceiptResponse } from "starknet";
-import { ContractInput } from "./ContractInput";
-import { TxReceipt } from "./TxReceipt";
+import ContractInput from "./ContractInput";
+import TxReceipt from "./TxReceipt";
 import {
   getArgsAsStringInputFromForm,
   getFunctionInputKey,
@@ -207,3 +207,5 @@ export const WriteOnlyFunctionForm = ({
     </View>
   );
 };
+
+export default WriteOnlyFunctionForm;

@@ -56,3 +56,5 @@ export function BottomNavigation({
     </View>
   );
 }
+
+export default BottomNavigation;

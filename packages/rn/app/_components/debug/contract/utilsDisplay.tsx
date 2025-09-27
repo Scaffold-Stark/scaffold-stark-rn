@@ -8,8 +8,8 @@ import {
   parseGenericType,
 } from "@/utils/scaffold-stark/typeValidations";
 import { Abi } from "abi-wan-kanabi";
-import { formatEther } from "viem";
 import { getChecksumAddress, Uint256 } from "starknet";
+import { formatEther } from "viem";
 
 type DisplayContent = Uint256 | string | bigint | boolean | Object | unknown;
 
@@ -419,4 +419,14 @@ export const displayType = (type: string) => {
     return type.split("::").pop();
   }
   return type;
+};
+
+export default {
+  addError,
+  clearError,
+  isError,
+  getTopErrorMessage,
+  decodeContractResponse,
+  displayTuple,
+  displayType,
 };

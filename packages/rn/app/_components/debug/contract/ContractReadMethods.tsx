@@ -1,15 +1,15 @@
-import { Text } from "react-native";
+import {
+  themeColors,
+  useTheme,
+} from "@/components/scaffold-stark/ThemeProvider";
 import {
   Contract,
   ContractName,
   getFunctionsByStateMutability,
 } from "@/utils/scaffold-stark/contract";
 import { Abi } from "abi-wan-kanabi";
-import { ReadOnlyFunctionForm } from "./ReadOnlyFunctionForm";
-import {
-  themeColors,
-  useTheme,
-} from "@/components/scaffold-stark/ThemeProvider";
+import { Text } from "react-native";
+import ReadOnlyFunctionForm from "./ReadOnlyFunctionForm";
 
 export const ContractReadMethods = ({
   deployedContractData,
@@ -53,3 +53,5 @@ export const ContractReadMethods = ({
     </>
   );
 };
+
+export default ContractReadMethods;

@@ -1,4 +1,11 @@
 import {
+  AbiEnum,
+  AbiFunction,
+  AbiParameter,
+  AbiStruct,
+  parseTuple,
+} from "@/utils/scaffold-stark/contract";
+import {
   isCairoArray,
   isCairoBigInt,
   isCairoBool,
@@ -10,13 +17,6 @@ import {
   isCairoU256,
   parseGenericType,
 } from "@/utils/scaffold-stark/typeValidations";
-import {
-  AbiEnum,
-  AbiFunction,
-  AbiParameter,
-  AbiStruct,
-  parseTuple,
-} from "@/utils/scaffold-stark/contract";
 import {
   cairo,
   CairoCustomEnum,
@@ -263,4 +263,12 @@ export const transformAbiFunction = (abiFunction: AbiFunction): AbiFunction => {
       adjustInput(value as AbiParameter),
     ),
   };
+};
+
+export default {
+  getFunctionInputKey,
+  getInitialTupleFormState,
+  getInitialFormState,
+  getArgsAsStringInputFromForm,
+  transformAbiFunction,
 };

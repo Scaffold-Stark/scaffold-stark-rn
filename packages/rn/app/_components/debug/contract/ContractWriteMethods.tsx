@@ -47,3 +47,5 @@ export const ContractWriteMethods = ({
     </>
   );
 };
+
+export default ContractWriteMethods;

@@ -4,8 +4,8 @@ import {
   getFunctionsByStateMutability,
 } from "@/utils/scaffold-stark/contract";
 import { Abi } from "abi-wan-kanabi";
-import { DisplayVariable } from "./DisplayVariable";
 import { Text } from "react-native";
+import DisplayVariable from "./DisplayVariable";
 
 export const ContractVariables = ({
   refreshDisplayVariables,
@@ -50,3 +50,5 @@ export const ContractVariables = ({
     </>
   );
 };
+
+export default ContractVariables;
