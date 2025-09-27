@@ -73,3 +73,5 @@ export function Header({
     </View>
   );
 }
+
+export default Header;

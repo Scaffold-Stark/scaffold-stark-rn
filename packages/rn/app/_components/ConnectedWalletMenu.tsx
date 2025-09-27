@@ -148,3 +148,5 @@ export function ConnectedWalletMenu() {
     </View>
   );
 }
+
+export default ConnectedWalletMenu;

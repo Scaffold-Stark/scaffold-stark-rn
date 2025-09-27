@@ -81,3 +81,5 @@ export function DebugContracts() {
     </View>
   );
 }
+
+export default DebugContracts;

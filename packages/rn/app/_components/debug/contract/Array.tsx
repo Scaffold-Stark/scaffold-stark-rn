@@ -8,7 +8,7 @@ import { parseGenericType } from "@/utils/scaffold-stark/typeValidations";
 import { Abi } from "abi-wan-kanabi";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { ContractInput } from "./ContractInput";
+import ContractInput from "./ContractInput";
 import { FormErrorMessageState } from "./utilsDisplay";
 
 type ArrayProps = {
@@ -133,3 +133,5 @@ export const ArrayInput = ({
     </View>
   );
 };
+
+export default ArrayInput;

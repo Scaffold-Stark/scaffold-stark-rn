@@ -1,3 +1,4 @@
+import Address from "@/components/scaffold-stark/Address";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { Text, View } from "react-native";
@@ -5,7 +6,6 @@ import {
   themeColors,
   useTheme,
 } from "../../components/scaffold-stark/ThemeProvider";
-import Address from "@/components/scaffold-stark/Address";
 
 interface WelcomeSectionProps {
   title?: string;
@@ -92,3 +92,5 @@ export function WelcomeSection({
     </View>
   );
 }
+
+export default WelcomeSection;

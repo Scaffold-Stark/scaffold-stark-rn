@@ -136,3 +136,5 @@ export const DisplayVariable = ({
     </View>
   );
 };
+
+export default DisplayVariable;
