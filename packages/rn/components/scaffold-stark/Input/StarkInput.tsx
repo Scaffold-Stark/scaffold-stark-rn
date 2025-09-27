@@ -1,11 +1,8 @@
-import {
-  CommonInputProps,
-  InputBase,
-  SIGNED_NUMBER_REGEX,
-} from "@/components/scaffold-stark/Input";
 import { useGlobalState } from "@/stores/store";
 import { useEffect, useMemo, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { InputBase } from "./InputBase";
+import { CommonInputProps, SIGNED_NUMBER_REGEX } from "./utils";
 
 const MAX_DECIMALS_USD = 2;
 
