@@ -60,16 +60,22 @@ export function WalletConnectModal({
       setIsBurnerWallet(true);
       return;
     }
-    if (connector.id === "ready-mobile") {
-      // Show guidance toast if Ready may not be installed
-      appToast.showPersistentInfo(
-        "Connecting to Ready...",
-        "If Ready doesn't open, install it and try again.",
-        { position: "top" },
-      );
+
+    try {
+      connect({ connector });
+    } catch (error) {
+      if (connector.id === "ready-mobile") {
+        // Show guidance toast if Ready may not be installed
+        appToast.showPersistentInfo(
+          "Connecting to Ready...",
+          "If Ready doesn't open, install it and try again.",
+          { position: "top" },
+        );
+      }
+      console.error("Failed to connect wallet:", error);
+    } finally {
+      onClose && onClose();
     }
-    connect({ connector });
-    onClose && onClose();
   };
 
   const handleConnectBurner = (ix: number) => {
