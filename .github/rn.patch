@@ -1,0 +1,44 @@
+diff --git a/packages/snfoundry/contracts/Scarb.toml b/packages/snfoundry/contracts/Scarb.toml
+index 18cc58b..3874e9a 100644
+--- a/packages/snfoundry/contracts/Scarb.toml
++++ b/packages/snfoundry/contracts/Scarb.toml
+@@ -28,7 +28,7 @@ sort-module-level-items = true
+ 
+ [[tool.snforge.fork]]
+ name = "SEPOLIA_LATEST"
+-url = "https://starknet-sepolia.public.blastapi.io/rpc/v0_9"
++url = "https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_9/_hKu4IgnPgrF8O82GLuYU"
+ block_id.tag = "latest"
+ 
+ [tool]
+diff --git a/packages/snfoundry/package.json b/packages/snfoundry/package.json
+index 3780016..8f993f3 100644
+--- a/packages/snfoundry/package.json
++++ b/packages/snfoundry/package.json
+@@ -1,11 +1,11 @@
+ {
+-  "name": "@ss-2/snfoundry",
++  "name": "@ss-rn/snfoundry",
+   "version": "0.0.1",
+   "scripts": {
+     "chain": "starknet-devnet --seed 0",
+     "deploy": "ts-node scripts-ts/helpers/deploy-wrapper.ts",
+     "deploy:clear": "cd deployments && node clear.mjs $* && cd .. && ts-node scripts-ts/helpers/deploy-wrapper.ts $*",
+-    "deploy:no-reset": "yarn workspace @ss-2/snfoundry deploy --no-reset",
++    "deploy:no-reset": "yarn workspace @ss-rn/snfoundry deploy --no-reset",
+     "test": "cd contracts && snforge test",
+     "test-eslint": "node eslint-contract-name/eslint-plugin-contract-names.test.js",
+     "compile": "ts-node scripts-ts/compile.ts",
+diff --git a/packages/snfoundry/scripts-ts/helpers/parse-deployments.ts b/packages/snfoundry/scripts-ts/helpers/parse-deployments.ts
+index de2dbbc..262947f 100644
+--- a/packages/snfoundry/scripts-ts/helpers/parse-deployments.ts
++++ b/packages/snfoundry/scripts-ts/helpers/parse-deployments.ts
+@@ -3,7 +3,7 @@ import path from "path";
+ import prettier from "prettier";
+ import { Abi, CompiledSierra } from "starknet";
+ 
+-const TARGET_DIR = path.join(__dirname, "../../../nextjs/contracts");
++const TARGET_DIR = path.join(__dirname, "../../../rn/contracts");
+ const deploymentsDir = path.join(__dirname, "../../deployments");
+ const files = fs.readdirSync(deploymentsDir);
+ 
