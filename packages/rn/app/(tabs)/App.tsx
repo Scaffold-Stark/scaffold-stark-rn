@@ -111,7 +111,7 @@ export default function App() {
   const openWallet = async (uri: string) => {
     const encodedUri = encodeURIComponent(uri);
 
-    const readyScheme = `ready://wc?uri=${encodedUri}`; // ready-dev on testnet
+    const readyScheme = `ready-wallet://wc?uri=${encodedUri}`; // ready-dev on testnet
     console.log("Opening Ready with scheme:", readyScheme);
 
     try {
@@ -234,7 +234,7 @@ export default function App() {
       console.log("ETH transfer params:", JSON.stringify(transaction, null, 2));
 
       // First, try to open the wallet app
-      const readyScheme = `ready://`; // or ready-dev
+      const readyScheme = `ready-wallet://`; // or ready-dev
       try {
         await Linking.openURL(readyScheme);
         console.log("Opened Ready app before transaction");

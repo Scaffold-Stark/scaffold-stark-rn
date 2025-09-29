@@ -160,7 +160,7 @@ export class ReadyConnector extends InjectedConnector {
 
   private async openWallet(uri: string) {
     const encodedUri = encodeURIComponent(uri);
-    const readyScheme = `ready://wc?uri=${encodedUri}`;
+    const readyScheme = `ready-wallet://wc?uri=${encodedUri}`;
 
     try {
       await Linking.openURL(readyScheme);
