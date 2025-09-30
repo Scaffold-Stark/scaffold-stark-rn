@@ -9,7 +9,11 @@ import {
   useTheme,
 } from "../../components/scaffold-stark/ThemeProvider";
 
-export function ConnectedWalletMenu() {
+interface ConnectedWalletMenuProps {
+  address?: string;
+}
+
+export function ConnectedWalletMenu({ address }: ConnectedWalletMenuProps) {
   const { theme, isDark } = useTheme();
   const colors = themeColors[theme];
   const insets = useSafeAreaInsets();
@@ -107,43 +111,45 @@ export function ConnectedWalletMenu() {
         </View>
 
         {/* Disconnect Button */}
-        <View
-          style={{
-            // Second, softer shadow layer: 0 2px 4px -2px rgba(0,0,0,0.10)
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: 2,
-            borderRadius: 9999,
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              disconnect();
-            }}
-            className="flex-row items-center justify-center px-3 py-2.5 rounded-full"
+        {address && (
+          <View
             style={{
-              backgroundColor: "#FF0000",
-              // Primary shadow layer: 0 4px 6px -1px rgba(0,0,0,0.10)
+              // Second, softer shadow layer: 0 2px 4px -2px rgba(0,0,0,0.10)
               shadowColor: "#000",
-              shadowOffset: { width: 0, height: 4 },
+              shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.1,
-              shadowRadius: 6,
-              elevation: 4,
+              shadowRadius: 4,
+              elevation: 2,
+              borderRadius: 9999,
             }}
           >
-            <Ionicons
-              name="log-out-outline"
-              size={20}
-              color="white"
-              style={{ marginRight: 4, transform: [{ scaleX: -1 }] }}
-            />
-            <Text className="text-white font-medium text-base">
-              Disconnect Wallet
-            </Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              onPress={() => {
+                disconnect();
+              }}
+              className="flex-row items-center justify-center px-3 py-2.5 rounded-full"
+              style={{
+                backgroundColor: "#FF0000",
+                // Primary shadow layer: 0 4px 6px -1px rgba(0,0,0,0.10)
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.1,
+                shadowRadius: 6,
+                elevation: 4,
+              }}
+            >
+              <Ionicons
+                name="log-out-outline"
+                size={20}
+                color="white"
+                style={{ marginRight: 4, transform: [{ scaleX: -1 }] }}
+              />
+              <Text className="text-white font-medium text-base">
+                Disconnect Wallet
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );
