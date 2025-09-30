@@ -70,12 +70,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
         isWalletConnected={!!address}
         walletAddress={address}
       />
-      <WalletConnectModal
-        sheetRef={walletSheetRef}
-        isWalletConnected={!!address}
-        walletAddress={address}
-        onClose={() => {}}
-      />
+      <WalletConnectModal sheetRef={walletSheetRef} onClose={() => {}} />
       {children}
     </ScaffoldBgGradient>
   );
