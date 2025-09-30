@@ -233,13 +233,6 @@ Currently, we support only Cavos's Aegis Wallet-as-a-Service for sepolia and mai
 
 ### Environment variables (Aegis and AVNU)
 
-Create a `.env` file at `packages/rn/.env` and add the following variables, or copy from the provided example when available:
-
-```bash
-cd packages/rn
-cp .env.example .env
-```
-
 ```
 EXPO_PUBLIC_AEGIS_APP_ID=your_aegis_app_id
 EXPO_PUBLIC_AVNU_API_KEY=your_avnu_api_key
