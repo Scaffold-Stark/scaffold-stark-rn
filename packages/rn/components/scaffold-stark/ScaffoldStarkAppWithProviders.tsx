@@ -1,6 +1,9 @@
-import { BurnerConnector } from "@scaffold-stark/stark-burner";
-import { devnet } from "@starknet-react/chains";
-import { StarknetConfig, publicProvider, voyager } from "@starknet-react/core";
+import { appChains, connectors } from "@/configs/connectors";
+import provider from "@/configs/provider";
+import { StarknetConfig, voyager } from "@starknet-react/core";
+import { ThemeProvider } from "./ThemeProvider";
+import { AegisProvider } from "@cavos/aegis";
+import aegisConfig from "@/configs/aegisConfig";
 
 export function ScaffoldStarkAppWithProviders({
   children,
@@ -8,13 +11,15 @@ export function ScaffoldStarkAppWithProviders({
   children: React.ReactNode;
 }) {
   return (
-    <StarknetConfig
-      chains={[devnet]}
-      provider={publicProvider()}
-      connectors={[new BurnerConnector()]}
-      explorer={voyager}
-    >
-      {children}
-    </StarknetConfig>
+    <ThemeProvider>
+      <StarknetConfig
+        chains={appChains}
+        provider={provider}
+        connectors={connectors}
+        explorer={voyager}
+      >
+        <AegisProvider config={aegisConfig}>{children}</AegisProvider>
+      </StarknetConfig>
+    </ThemeProvider>
   );
 }
