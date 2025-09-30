@@ -21,7 +21,6 @@ import { themeColors, useTheme } from "../ThemeProvider";
 import { CopyIcon } from "../icons/CopyIcon";
 import { ConnectorRow } from "./ConnectorRow";
 import { RNIcon } from "./RNIcon";
-// Svg rendering handled in ConnectorRow; keep connected card simple
 
 interface WalletConnectModalProps {
   sheetRef: React.RefObject<BottomSheetModal>;

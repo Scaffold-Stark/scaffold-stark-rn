@@ -38,15 +38,12 @@ export class CavosConnector extends InjectedConnector {
       },
     });
     this.chain = chain;
-    // minimal logging only if needed
   }
 
   setAegisAccount(aegisAccount: AegisSDK) {
     this._aegisAccount = aegisAccount;
-    // minimal logging
   }
 
-  // Lazily create or return the single Aegis SDK instance
   private async getSdk(): Promise<AegisSDK> {
     if (this._aegisAccount) return this._aegisAccount;
     this._aegisAccount = new AegisSDK(aegisConfig);
@@ -54,7 +51,6 @@ export class CavosConnector extends InjectedConnector {
   }
 
   private async deployWithTimeout(sdk: AegisSDK, ms = 90000): Promise<string> {
-    // minimal logging
     const timeout = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error("Cavos deploy timeout")), ms),
     );
@@ -155,11 +151,9 @@ export class CavosConnector extends InjectedConnector {
   }
 
   async connect(): Promise<ConnectorData> {
-    // If the app already provided an aegisAccount, use it
     if (!this._aegisAccount || !this._aegisAccount.address) {
       try {
         const sdk = await this.getSdk();
-        // minimal logging
         const savedKey = await SecureStore.getItemAsync("cavos_wallet_key");
         if (savedKey) {
           await sdk.connectAccount(savedKey);
