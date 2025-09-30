@@ -9,9 +9,7 @@ const aegisConfig = {
       : ("SN_DEVNET" as const),
   appName: "Starknet React Native",
   appId: process.env.EXPO_PUBLIC_AEGIS_APP_ID || "",
-  paymasterApiKey:
-    process.env.EXPO_PUBLIC_AVNU_API_KEY ||
-    "c37c52b7-ea5a-4426-8121-329a78354b0b",
+  paymasterApiKey: process.env.EXPO_PUBLIC_AVNU_API_KEY || "",
   enableLogging: true,
 };
 
