@@ -3,6 +3,7 @@
 ## Project Setup
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+z
 
 ## Prepare environment
 
@@ -242,3 +243,7 @@ EXPO_PUBLIC_AVNU_API_KEY=your_avnu_api_key
 - EXPO_PUBLIC_AVNU_API_KEY: Used to sponsor gasless transactions via AVNU. A temporary placeholder exists in config and will be removed soon—set your real key here.
 
 After updating the `.env`, restart the dev server so Expo picks up the new values.
+
+## Shipping Your Project on the App Store / Play Store
+
+Refer to the [SUBMIT.md](./SUBMIT.md) file for a detailed guide.
