@@ -1,8 +1,11 @@
 // Strk
 const universalStrkAddress =
   "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d" as const;
+const sepoliaMainnetStrkClassHash =
+  "0x04ad3c1dc8413453db314497945b6903e1c766495a1e60492d44da9c2a986e4b" as const;
 const devnetStrkClassHash =
   "0x046ded64ae2dead6448e247234bab192a9c483644395b66f2155f2614e5804b0" as const;
+
 const universalErc20Abi = [
   {
     type: "impl",
@@ -257,4 +260,9 @@ const universalErc20Abi = [
   },
 ] as const;
 
-export { devnetStrkClassHash, universalErc20Abi, universalStrkAddress };
+export {
+  devnetStrkClassHash,
+  sepoliaMainnetStrkClassHash,
+  universalErc20Abi,
+  universalStrkAddress,
+};

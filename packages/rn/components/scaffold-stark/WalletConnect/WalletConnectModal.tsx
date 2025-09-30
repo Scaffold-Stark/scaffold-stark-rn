@@ -1,3 +1,5 @@
+import { useTargetNetwork } from "@/hooks/scaffold-stark/useTargetNetwork";
+import { appToast } from "@/utils/scaffold-stark/toast";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   BottomSheetBackdrop,
@@ -5,19 +7,24 @@ import {
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { burnerAccounts, BurnerConnector } from "@scaffold-stark/stark-burner";
-import { useConnect, useDisconnect } from "@starknet-react/core";
+import {
+  Connector,
+  useAccount,
+  useConnect,
+  useDisconnect,
+} from "@starknet-react/core";
 import * as Clipboard from "expo-clipboard";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { themeColors, useTheme } from "../ThemeProvider";
 import { CopyIcon } from "../icons/CopyIcon";
+import { ConnectorRow } from "./ConnectorRow";
+import { RNIcon } from "./RNIcon";
 
 interface WalletConnectModalProps {
   sheetRef: React.RefObject<BottomSheetModal>;
   onClose?: () => void;
-  isWalletConnected: boolean;
-  walletAddress?: string;
 }
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -26,8 +33,6 @@ const MODAL_HEIGHT = SCREEN_HEIGHT * 0.6;
 export function WalletConnectModal({
   sheetRef,
   onClose,
-  isWalletConnected,
-  walletAddress,
 }: WalletConnectModalProps) {
   const { theme, isDark } = useTheme();
   const colors = themeColors[theme];
@@ -35,16 +40,61 @@ export function WalletConnectModal({
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
   const [copied, setCopied] = useState(false);
+  const [isBurnerWallet, setIsBurnerWallet] = useState(false);
+  const [showOtherOptions, setShowOtherOptions] = useState(false);
+  const { targetNetwork } = useTargetNetwork();
+  const {
+    address: walletAddress,
+    isConnected: isWalletConnected,
+    connector: connectedConnector,
+  } = useAccount();
+  const isDevnet = targetNetwork.network === "devnet";
 
-  const handleConnect = () => {
-    const firstAccount = burnerAccounts[0];
-    if (firstAccount) {
-      const connector = connectors.find((it) => it.id === "burner-wallet");
-      if (connector && connector instanceof BurnerConnector) {
-        connector.burnerAccount = firstAccount;
-        connect({ connector });
-        onClose && onClose();
+  const { mainConnectors, otherConnectors } = useMemo(() => {
+    const burnerConn = connectors.filter((c) => c.id === "burner-wallet");
+    const others = connectors.filter((c) => c.id !== "burner-wallet");
+
+    if (!isDevnet) {
+      return {
+        mainConnectors: others,
+        otherConnectors: [] as typeof connectors,
+      };
+    }
+
+    return {
+      mainConnectors: [...burnerConn],
+      otherConnectors: others,
+    };
+  }, [connectors, isDevnet]);
+
+  const handleConnectWallet = (connector: Connector) => {
+    if (connector.id === "burner-wallet") {
+      setIsBurnerWallet(true);
+      return;
+    }
+
+    try {
+      connect({ connector });
+    } catch (error) {
+      if (connector.id === "ready-mobile") {
+        appToast.showPersistentInfo(
+          "Connecting to Ready...",
+          "If Ready doesn't open, install it and try again.",
+          { position: "top" },
+        );
       }
+      console.error("Failed to connect wallet:", error);
+    } finally {
+      onClose && onClose();
+    }
+  };
+
+  const handleConnectBurner = (ix: number) => {
+    const connector = connectors.find((it) => it.id === "burner-wallet");
+    if (connector && connector instanceof BurnerConnector) {
+      connector.burnerAccount = burnerAccounts[ix];
+      connect({ connector });
+      onClose && onClose();
     }
   };
 
@@ -68,40 +118,17 @@ export function WalletConnectModal({
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  // mockData for wallet options
-  const walletOptions = [
-    {
-      key: "burner",
-      title: "Burner Wallet",
-      disabled: false,
-      iconName: "wallet-outline" as const,
-      iconColor: "#FFFFFF",
-      iconBg: "#3B82F6",
-      onPress: handleConnect,
-    },
-    {
-      key: "phantom",
-      title: "Phantom",
-      disabled: true,
-      iconName: "logo-react" as const,
-      iconColor: "#E0E7FF",
-      iconBg: "#4F46E5",
-    },
-    {
-      key: "argent",
-      title: "Argent",
-      disabled: true,
-      iconName: "flash" as const,
-      iconColor: "#F97316",
-      iconBg: "#FFFFFF",
-    },
-  ];
+  const handleSheetChange = (index: number) => {
+    setIsBurnerWallet(false);
+    setShowOtherOptions(false);
+  };
 
   return (
     <BottomSheetModal
       ref={sheetRef}
       snapPoints={["85%"]}
       onDismiss={onClose}
+      onChange={handleSheetChange}
       enablePanDownToClose
       backgroundStyle={{ backgroundColor: isDark ? "#000000" : "#FFFFFF" }}
       handleIndicatorStyle={{ backgroundColor: "#8B8B8B" }}
@@ -118,13 +145,19 @@ export function WalletConnectModal({
         {/* Header */}
         <View className="px-6 pb-4">
           <Text className="text-2xl font-bold" style={{ color: colors.text }}>
-            {isWalletConnected ? "Wallet connected" : "Connect a wallet"}
+            {isWalletConnected
+              ? "Wallet connected"
+              : isBurnerWallet
+                ? "Choose account"
+                : showOtherOptions
+                  ? "Other Wallet Options"
+                  : "Connect a wallet"}
           </Text>
           <Text
             className="text-sm mt-1"
             style={{ color: colors.textSecondary }}
           >
-            Get ready by connecting your wallet you preferred wallet below
+            {"Get ready by connecting your wallet you preferred wallet below"}
           </Text>
           {isWalletConnected && walletAddress && (
             <Text
@@ -152,16 +185,21 @@ export function WalletConnectModal({
                 <View className="flex-row items-center mb-3">
                   <View
                     className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                    style={{ backgroundColor: isDark ? "#4DB4FF" : "#3B82F6" }}
+                    style={{ backgroundColor: isDark ? "#2C2C2C" : "#F4F4F4" }}
                   >
-                    <Ionicons name="wallet-outline" size={20} color="white" />
+                    <RNIcon
+                      iconUri={(connectedConnector?.icon as any)?.[theme]}
+                      name="flash"
+                      size={24}
+                      color="#FFFFFF"
+                    />
                   </View>
                   <View className="flex-1">
                     <Text
                       className="font-semibold"
                       style={{ color: colors.text }}
                     >
-                      Burner Wallet
+                      {connectedConnector?.name}
                     </Text>
                     <Text
                       className="text-sm"
@@ -201,77 +239,125 @@ export function WalletConnectModal({
             </View>
           ) : (
             <View className="space-y-4">
-              {/* Wallet options styled to match design */}
-              <View>
-                {walletOptions.map((item, index) => {
-                  const isFirst = index === 0;
-                  const isLast = index === walletOptions.length - 1;
-                  const borderTopLeftRadius = isFirst ? 18 : 0;
-                  const borderTopRightRadius = isFirst ? 18 : 0;
-                  const borderBottomLeftRadius = isLast ? 18 : 0;
-                  const borderBottomRightRadius = isLast ? 18 : 0;
-
-                  const Container = (
-                    <View
-                      style={{
-                        backgroundColor: isDark ? "#2C2C2C" : "#F4F4F4",
-                        paddingVertical: 10,
-                        paddingHorizontal: 12,
-                        borderTopLeftRadius,
-                        borderTopRightRadius,
-                        borderBottomLeftRadius,
-                        borderBottomRightRadius,
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
+              {!isBurnerWallet ? (
+                !showOtherOptions ? (
+                  <>
+                    {mainConnectors.map((connector) => (
                       <View
-                        className="w-8 h-8 rounded-full items-center justify-center mr-4"
-                        style={{ backgroundColor: item.iconBg }}
+                        key={connector.id || connector.name}
+                        style={{ marginTop: 6 }}
                       >
-                        <Ionicons
-                          name={item.iconName}
-                          size={24}
-                          color={item.iconColor}
+                        <ConnectorRow
+                          title={connector.name}
+                          iconUri={(connector.icon as any)[theme]}
+                          iconBg={
+                            connector.id === "burner-wallet"
+                              ? "#3B82F6"
+                              : "#FFFFFF"
+                          }
+                          iconColor={
+                            connector.id === "burner-wallet"
+                              ? "#FFFFFF"
+                              : "#F97316"
+                          }
+                          containerBg={isDark ? "#2C2C2C" : "#F4F4F4"}
+                          textColor={colors.text}
+                          onPress={() => handleConnectWallet(connector)}
                         />
                       </View>
-                      <Text className="text-lg" style={{ color: colors.text }}>
-                        {item.title}
-                      </Text>
-                    </View>
-                  );
-
-                  return (
-                    <View
-                      key={item.key}
-                      style={{ marginTop: index > 0 ? 3 : 0 }}
+                    ))}
+                    {isDevnet && otherConnectors.length > 0 && (
+                      <TouchableOpacity
+                        className="w-full py-3 rounded-xl items-center mt-2"
+                        onPress={() => setShowOtherOptions(true)}
+                        style={{
+                          backgroundColor: isDark ? "#2C2C2C" : "#F4F4F4",
+                        }}
+                      >
+                        <Text style={{ color: colors.text }}>
+                          Other Options
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {otherConnectors.map((connector) => (
+                      <View
+                        key={connector.id || connector.name}
+                        style={{ marginTop: 6 }}
+                      >
+                        <ConnectorRow
+                          title={connector.name}
+                          iconUri={(connector.icon as any)[theme]}
+                          iconBg="#FFFFFF"
+                          iconColor="#F97316"
+                          containerBg={isDark ? "#2C2C2C" : "#F4F4F4"}
+                          textColor={colors.text}
+                          onPress={() => handleConnectWallet(connector)}
+                        />
+                      </View>
+                    ))}
+                    <TouchableOpacity
+                      className="w-full py-3 rounded-xl items-center mt-2"
+                      onPress={() => setShowOtherOptions(false)}
+                      style={{
+                        backgroundColor: isDark ? "#2C2C2C" : "#F4F4F4",
+                      }}
                     >
-                      {item.disabled ? (
-                        <TouchableOpacity disabled className="w-full">
-                          {Container}
-                        </TouchableOpacity>
-                      ) : (
+                      <Text style={{ color: colors.text }}>Back</Text>
+                    </TouchableOpacity>
+                  </>
+                )
+              ) : isBurnerWallet ? (
+                <View className="space-y-4">
+                  <View
+                    style={{
+                      backgroundColor: isDark ? "#2A2A2A" : "#F9FAFB",
+                      borderWidth: 1,
+                      borderColor: isDark ? "#404040" : "#E5E7EB",
+                      borderRadius: 12,
+                      padding: 12,
+                    }}
+                  >
+                    {burnerAccounts.map((burnerAcc, ix) => (
+                      <View
+                        key={burnerAcc.publicKey}
+                        style={{ marginBottom: 8 }}
+                      >
                         <TouchableOpacity
-                          onPress={item.onPress}
-                          className="w-full"
+                          onPress={() => handleConnectBurner(ix)}
+                          style={{
+                            borderRadius: 10,
+                            paddingVertical: 8,
+                            paddingHorizontal: 10,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            borderWidth: isDark ? 1 : 0,
+                            borderColor: isDark ? "#385183" : "transparent",
+                          }}
                         >
-                          {Container}
+                          <View
+                            className="w-8 h-8 rounded-full items-center justify-center mr-4"
+                            style={{
+                              backgroundColor: isDark ? "#4DB4FF" : "#3B82F6",
+                            }}
+                          >
+                            <Ionicons
+                              name="wallet-outline"
+                              size={18}
+                              color="white"
+                            />
+                          </View>
+                          <Text style={{ color: colors.text }}>
+                            {`${burnerAcc.accountAddress.slice(0, 6)}...${burnerAcc.accountAddress.slice(-4)}`}
+                          </Text>
                         </TouchableOpacity>
-                      )}
-                    </View>
-                  );
-                })}
-              </View>
-
-              {/* Footer text */}
-              <View className="py-2 items-center">
-                <Text
-                  className="text-sm"
-                  style={{ color: colors.textSecondary }}
-                >
-                  Other wallets
-                </Text>
-              </View>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              ) : null}
             </View>
           )}
         </View>
