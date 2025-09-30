@@ -9,13 +9,11 @@ import * as SplashScreen from "expo-splash-screen";
 
 import { Header } from "@/app/_components/Header";
 import { ScaffoldBgGradient } from "@/components/scaffold-stark/gradients/ScaffoldBgGradient";
-import { useAegis } from "@cavos/aegis";
+import { TransactionResult, useAegis } from "@cavos/aegis";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useAccount } from "@starknet-react/core";
 import { useEffect, useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { WalletConnectModal } from "../components/scaffold-stark/WalletConnect/WalletConnectModal";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -58,8 +56,14 @@ export default function RootLayout() {
 
 function AppShell({ children }: { children: React.ReactNode }) {
   // const { address } = useAccount();
-  const [result, setResult] = useState<any>(null);
-  const { connectWallet, deployWallet, aegisAccount, isConnected, currentAddress } = useAegis();
+  const [result, setResult] = useState<TransactionResult | string | null>(null);
+  const {
+    connectWallet,
+    deployWallet,
+    aegisAccount,
+    isConnected,
+    currentAddress,
+  } = useAegis();
   const walletSheetRef = useRef<any>(null);
 
   const handleConnectWallet = async () => {
@@ -84,16 +88,17 @@ function AppShell({ children }: { children: React.ReactNode }) {
         }
       }
 
-      const result: any = await aegisAccount.execute(
+      const result = await aegisAccount.execute(
         "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
         "approve",
         [
           "0x06580f9E0914DB9D78Db20a368a1109f71789023B13BaF1Bbe7B1044BfDa98e4",
-          "1",
+          "0x0",
+          "0x0",
         ],
       );
       setResult(result);
-      console.log("approve tx:", result?.transactionHash ?? result);
+      console.log("tx result:", result);
     } catch (err) {
       const detail = err instanceof Error ? err.message : JSON.stringify(err);
       console.error("approve failed", detail, err);
@@ -111,9 +116,16 @@ function AppShell({ children }: { children: React.ReactNode }) {
       <TouchableOpacity onPress={handleTest} className="bg-red-200">
         <Text className="text-center">Test: {currentAddress}</Text>
       </TouchableOpacity>
-      <View>
-        <Text>{result}</Text>
-      </View>
+      {result && (
+        <View>
+          <Text>TX Result:</Text>
+          <Text>{typeof result}</Text>
+          <Text>
+            tx hash:
+            {typeof result === "string" ? result : result.transactionHash}
+          </Text>
+        </View>
+      )}
       {/* <WalletConnectModal
         sheetRef={walletSheetRef}
         isWalletConnected={!!address}
