@@ -229,6 +229,23 @@ If your `starknet-devnet` version is not `0.5.1`, you need to install it.
 
 ## Using Sepolia and Mainnet Wallets
 
-Currently, we support only Cavos's Aegis Wallet-as-a-Service for sepolia and mainnet connections. You would have to obtain your appID and API Keys from the Cavos Aegis Platform. (TODO: provide link here)
+Currently, we support only Cavos's Aegis Wallet-as-a-Service for sepolia and mainnet connections. You would have to obtain your appID and API Keys from the [Cavos Aegis Platform Dashboard](https://services.cavos.xyz/dashboard).
 
-(TODO: Explain how can people set up the environment for this)
+### Environment variables (Aegis and AVNU)
+
+Create a `.env` file at `packages/rn/.env` and add the following variables, or copy from the provided example when available:
+
+```bash
+cd packages/rn
+cp .env.example .env
+```
+
+```
+EXPO_PUBLIC_AEGIS_APP_ID=your_aegis_app_id
+EXPO_PUBLIC_AVNU_API_KEY=your_avnu_api_key
+```
+
+- EXPO_PUBLIC_AEGIS_APP_ID: Obtain from the Cavos Aegis Dashboard under Applications → Your App → App ID.
+- EXPO_PUBLIC_AVNU_API_KEY: Used to sponsor gasless transactions via AVNU. A temporary placeholder exists in config and will be removed soon—set your real key here.
+
+After updating the `.env`, restart the dev server so Expo picks up the new values.
