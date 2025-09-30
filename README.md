@@ -1,5 +1,7 @@
 # Welcome to your Scaffold Stark React Native 👋
 
+## Project Setup
+
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Prepare environment
@@ -123,9 +125,93 @@ You can start developing by editing the files inside the **app** directory. This
 
 ## Environment Requirements
 
-#### Node version
+Before you begin, you need to install the following tools:
 
-node version >= 20.18.0
+- [Node (>= v24)](https://nodejs.org/en/download/) (Recommend to use NVM)
+- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
+- [Git](https://git-scm.com/downloads)
+
+## Installing Starknet developer tools
+
+You can install the developer tools natively with `starkup` and `asdf`.
+
+### Option 1: Natively install developer tools
+
+#### 1.1 Starkup
+
+Tool for installing all the Starknet essentials for development. [Starkup](https://github.com/software-mansion/starkup) will install the latest stable versions of:
+
+- [Scarb](https://docs.swmansion.com/scarb/) - Cairo package manager and build toolchain
+- [Starknet Foundry](https://foundry-rs.github.io/starknet-foundry/index.html) - Development toolchain for testing on Starknet
+- [asdf](https://asdf-vm.com/guide/getting-started.html) - Version manager to easily switch between tool versions
+- [Cairo 1.0 extension](https://marketplace.visualstudio.com/items?itemName=starkware.cairo1) for VSCode - Syntax highlighting and language support
+- [Starknet Devnet](https://0xspaceshard.github.io/starknet-devnet/) - Starknet Devnet
+
+To install `starkup`, run the following command:
+
+```sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.starkup.sh | sh
+```
+
+#### 1.2 Create your project
+
+Open a terminal and run the following command:
+
+```bash
+npx create-stark@latest
+cd my-dapp-example
+yarn install
+```
+
+Now you have a new project with the basic structure.
+
+#### 1.3 Troubleshooting
+
+- If you run into version errors after using `starkup` or `asdf`, you can try to install the dependencies manually. Check the details below.
+
+<details>
+
+#### Installing with ASDF
+
+Using ASDF, you can install the required dependencies of Scaffold Stark 2 in a single command. You can do so by doing
+
+```bash
+asdf install
+```
+
+You can refer to the guide of manual installation of asdf [here](https://asdf-vm.com/guide/getting-started.html).
+
+#### Scarb version
+
+To ensure the proper functioning of scaffold-stark, your `Scarb` version must be `2.12.2`. To accomplish this, first check Scarb version:
+
+```sh
+scarb --version
+```
+
+If your `Scarb` version is not `2.12.2`, you need to install it. If you already have installed `Scarb` via `starkup`, you can setup this specific version with the following command:
+
+```sh
+asdf install scarb 2.12.2 && asdf set scarb 2.12.2
+```
+
+Otherwise, you can install Scarb `2.12.2` following the [instructions](https://docs.swmansion.com/scarb/download.html#install-via-asdf).
+
+#### Starknet Foundry version
+
+To ensure the proper functioning of the tests on scaffold-stark, your `Starknet Foundry` version must be `0.49.0`. To accomplish this, first check your `Starknet Foundry` version:
+
+```sh
+snforge --version
+```
+
+If your `Starknet Foundry` version is not `0.49.0`, you need to install it. If you already have installed `Starknet Foundry` via `starkup`, you can setup this specific version with the following command:
+
+```sh
+asdf install starknet-foundry 0.49.0 && asdf set starknet-foundry 0.49.0
+```
+
+Otherwise, you can install Starknet Foundry `0.49.0` following the [instructions](https://foundry-rs.github.io/starknet-foundry/getting-started/installation.html#installation-via-asdf).
 
 #### Starknet-devnet version
 
@@ -138,3 +224,11 @@ starknet-devnet --version
 If your `starknet-devnet` version is not `0.5.1`, you need to install it.
 
 - Install starknet-devnet `0.5.1` via `asdf` ([instructions](https://github.com/gianalarcon/asdf-starknet-devnet/blob/main/README.md)).
+
+</details>
+
+## Using Sepolia and Mainnet Wallets
+
+Currently, we support only Cavos's Aegis Wallet-as-a-Service for sepolia and mainnet connections. You would have to obtain your appID and API Keys from the Cavos Aegis Platform. (TODO: provide link here)
+
+(TODO: Explain how can people set up the environment for this)
