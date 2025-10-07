@@ -17,6 +17,8 @@ import * as Clipboard from "expo-clipboard";
 import React, { useMemo, useState } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getChecksumAddress } from "starknet";
+import { BlockieAvatar } from "../BlockieAvatar";
 import { themeColors, useTheme } from "../ThemeProvider";
 import { CopyIcon } from "../icons/CopyIcon";
 import { ConnectorRow } from "./ConnectorRow";
@@ -121,6 +123,14 @@ export function WalletConnectModal({
   const handleSheetChange = (index: number) => {
     setIsBurnerWallet(false);
     setShowOtherOptions(false);
+  };
+
+  const toChecksumOrOriginal = (addr: string) => {
+    try {
+      return getChecksumAddress(addr);
+    } catch {
+      return addr;
+    }
   };
 
   return (
@@ -337,16 +347,12 @@ export function WalletConnectModal({
                             borderColor: isDark ? "#385183" : "transparent",
                           }}
                         >
-                          <View
-                            className="w-8 h-8 rounded-full items-center justify-center mr-4"
-                            style={{
-                              backgroundColor: isDark ? "#4DB4FF" : "#3B82F6",
-                            }}
-                          >
-                            <Ionicons
-                              name="wallet-outline"
-                              size={18}
-                              color="white"
+                          <View className="w-8 h-8 rounded-full items-center justify-center mr-4">
+                            <BlockieAvatar
+                              address={toChecksumOrOriginal(
+                                burnerAcc.accountAddress,
+                              )}
+                              size={24}
                             />
                           </View>
                           <Text style={{ color: colors.text }}>
