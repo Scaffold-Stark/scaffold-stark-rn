@@ -1,4 +1,4 @@
-import { appToast } from "@/services/utils/scaffold-stark/toast";
+import { appToast } from "@/utils/scaffold-stark/toast";
 
 jest.mock("react-native", () => ({ Linking: { openURL: jest.fn() } }));
 const mockShow = jest.fn();

@@ -1,7 +1,7 @@
 import * as core from "@starknet-react/core";
 import { renderHook } from "@testing-library/react-native";
 
-jest.mock("@/services/utils/scaffold-stark/contract", () => ({
+jest.mock("@/utils/scaffold-stark/contract", () => ({
   contracts: {
     devnet: {
       TestContract: { address: "0xabc", abi: [] as any, classHash: "0x1" },

@@ -4,7 +4,7 @@ import {
   isJsonString,
   isValidContractArgs,
   replacer,
-} from "@/services/utils/scaffold-stark/common";
+} from "@/utils/scaffold-stark/common";
 
 describe("common utils", () => {
   test("replacer converts bigint to string", () => {

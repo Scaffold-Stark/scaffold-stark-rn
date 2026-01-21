@@ -4,7 +4,7 @@ import {
   getBlockExplorerClasshashLink,
   getBlockExplorerLink,
   getBlockExplorerTxLink,
-} from "@/services/utils/scaffold-stark/network";
+} from "@/utils/scaffold-stark/network";
 
 describe("network utils", () => {
   test("getBlockExplorerTxLink returns empty for unknown network", () => {

@@ -31,6 +31,9 @@ export const Struct = ({
   setFormErrorMessage,
   isDisabled = false,
 }: StructProps) => {
+  const { theme } = useTheme();
+  const colors = themeColors[theme];
+
   const [form, setForm] = useState<Record<string, any>>(() =>
     getInitialTupleFormState(
       abiMember ?? { type: "struct", name: "", members: [] },
@@ -71,9 +74,6 @@ export const Struct = ({
   }, [abiMember, JSON.stringify(form, replacer), activeVariantIndex]);
 
   if (!abiMember) return null;
-
-  const { theme } = useTheme();
-  const colors = themeColors[theme];
 
   return (
     <View>

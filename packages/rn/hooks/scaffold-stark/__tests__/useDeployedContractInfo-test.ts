@@ -1,8 +1,8 @@
-import * as contractUtils from "@/services/utils/scaffold-stark/contract";
+import * as contractUtils from "@/utils/scaffold-stark/contract";
 import { renderHook, waitFor } from "@testing-library/react-native";
 import { useDeployedContractInfo } from "../useDeployedContractInfo";
 
-jest.mock("@/services/utils/scaffold-stark/contract", () => {
+jest.mock("@/utils/scaffold-stark/contract", () => {
   return {
     ContractCodeStatus: { LOADING: 0, DEPLOYED: 1, NOT_FOUND: 2 },
     contracts: {
