@@ -2,7 +2,7 @@ import {
   composeEventFilterKeys,
   parseEventData,
   serializeEventKey,
-} from "@/services/utils/scaffold-stark/events";
+} from "@/utils/scaffold-stark/events";
 import type { Abi } from "starknet";
 
 // Minimal ABI pieces to exercise logic paths

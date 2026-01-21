@@ -4,7 +4,7 @@ import {
   useScaffoldMultiWriteContract,
 } from "../useScaffoldMultiWriteContract";
 
-jest.mock("@/services/utils/scaffold-stark/contract", () => ({
+jest.mock("@/utils/scaffold-stark/contract", () => ({
   contracts: {
     testNetwork: {
       Strk: {

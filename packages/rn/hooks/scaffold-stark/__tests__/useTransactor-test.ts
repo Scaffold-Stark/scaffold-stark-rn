@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react-native";
 
-jest.mock("@/services/utils/scaffold-stark/toast", () => ({
+jest.mock("@/utils/scaffold-stark/toast", () => ({
   appToast: {
     showPersistentInfo: jest.fn(),
     showWaiting: jest.fn(),
@@ -10,7 +10,7 @@ jest.mock("@/services/utils/scaffold-stark/toast", () => ({
   },
 }));
 
-jest.mock("@/services/utils/scaffold-stark/network", () => ({
+jest.mock("@/utils/scaffold-stark/network", () => ({
   getBlockExplorerTxLink: (_net: string, hash: string) =>
     `https://explorer/tx/${hash}`,
 }));

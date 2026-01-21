@@ -16,7 +16,7 @@ import {
   isCairoU256,
   isCairoVoid,
   parseGenericType,
-} from "@/services/utils/scaffold-stark/typeValidations";
+} from "@/utils/scaffold-stark/typeValidations";
 
 describe("typeValidations", () => {
   test("isCairoInt matches small ints", () => {

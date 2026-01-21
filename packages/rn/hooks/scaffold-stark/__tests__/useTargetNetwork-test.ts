@@ -8,7 +8,7 @@ jest.mock("@/scaffold.config", () => ({
 }));
 
 const state = { targetNetwork: { id: 1, network: "devnet" } } as any;
-jest.mock("@/services/store", () => ({
+jest.mock("@/stores/store", () => ({
   useGlobalState: (selector: any) =>
     selector({
       targetNetwork: state.targetNetwork,
