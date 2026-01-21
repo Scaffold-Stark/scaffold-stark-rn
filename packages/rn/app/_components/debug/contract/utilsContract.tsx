@@ -163,7 +163,7 @@ export const getArgsAsStringInputFromForm = (form: Record<string, any>) => {
               ),
             );
           else if (
-            typeof (enumObject.Err as FormStructValue).value !== undefined
+            (enumObject.Err as FormStructValue).value !== undefined
           ) {
             return new CairoResult(
               CairoResultVariant.Err,

@@ -4,7 +4,7 @@ import {
   getFunctionsByStateMutability,
   parseParamWithType,
   parseTuple,
-} from "@/services/utils/scaffold-stark/contract";
+} from "@/utils/scaffold-stark/contract";
 
 describe("contract utils", () => {
   test("deepMergeContracts merges nested objects preferring external values", () => {
