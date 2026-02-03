@@ -20,3 +20,8 @@ export * from "./useSwitchNetwork";
 export * from "./useAutoConnect";
 export * from "./useNativeCurrencyPrice";
 export * from "./useAnimationConfig";
+
+// WebSocket hooks
+export * from "./useWebSocketData";
+export * from "./useScaffoldWebSocketEvents";
+export * from "./useScaffoldWatchContractEvent";
