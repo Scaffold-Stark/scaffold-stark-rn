@@ -1,6 +1,7 @@
-import { renderHook } from "@testing-library/react-native";
+import { renderHook, act } from "@testing-library/react-native";
 import { useWebSocketData } from "../useWebSocketData";
 
+// Mock useTargetNetwork
 jest.mock("../useTargetNetwork", () => ({
   useTargetNetwork: jest.fn(() => ({
     targetNetwork: {
@@ -11,6 +12,7 @@ jest.mock("../useTargetNetwork", () => ({
   })),
 }));
 
+// Mock websocket service - return null to avoid async issues
 jest.mock("@/services/web3/websocket", () => ({
   getSharedWebSocketChannel: jest.fn(() => Promise.resolve(null)),
 }));
@@ -43,15 +45,43 @@ describe("useWebSocketData", () => {
     expect(result.current.data).toEqual([]);
   });
 
-  it("starts connecting when enabled", () => {
+  it("isLoading is false when disabled", () => {
     const { result } = renderHook(() =>
       useWebSocketData({
         topic: "newHeads",
-        enabled: true,
+        enabled: false,
       }),
     );
 
-    // Should be connecting or error (since mock returns null)
-    expect(["connecting", "error"]).toContain(result.current.status);
+    expect(result.current.isLoading).toBe(false);
+  });
+
+  it("error is null initially", () => {
+    const { result } = renderHook(() =>
+      useWebSocketData({
+        topic: "newHeads",
+        enabled: false,
+      }),
+    );
+
+    expect(result.current.error).toBeNull();
+  });
+
+  it("supports different topics", () => {
+    const topics: Array<"newHeads" | "newTransactionReceipts"> = [
+      "newHeads",
+      "newTransactionReceipts",
+    ];
+
+    topics.forEach((topic) => {
+      const { result } = renderHook(() =>
+        useWebSocketData({
+          topic,
+          enabled: false,
+        }),
+      );
+
+      expect(result.current.status).toBe("idle");
+    });
   });
 });

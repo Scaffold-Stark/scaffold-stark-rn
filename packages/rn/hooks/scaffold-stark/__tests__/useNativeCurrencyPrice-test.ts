@@ -1,53 +1,55 @@
 import { renderHook } from "@testing-library/react-native";
 import { useNativeCurrencyPrice } from "../useNativeCurrencyPrice";
 
-const mockStartPolling = jest.fn();
-const mockStopPolling = jest.fn();
-const mockGetNextId = jest.fn(() => 1);
+// Mock the store
+jest.mock("@/stores/store", () => ({
+  useGlobalState: jest.fn(() => jest.fn()),
+}));
 
+// Mock the price service
 jest.mock("@/services/web3/PriceService", () => ({
   priceService: {
-    startPolling: mockStartPolling,
-    stopPolling: mockStopPolling,
-    getNextId: mockGetNextId,
+    getNextId: jest.fn(() => 123),
+    startPolling: jest.fn(),
+    stopPolling: jest.fn(),
   },
 }));
 
-const mockSetNativeCurrencyPrice = jest.fn();
-
-jest.mock("@/stores/store", () => ({
-  useGlobalState: jest.fn((selector) =>
-    selector({
-      setNativeCurrencyPrice: mockSetNativeCurrencyPrice,
-    }),
-  ),
-}));
-
 describe("useNativeCurrencyPrice", () => {
+  const mockSetNativeCurrencyPrice = jest.fn();
+
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Setup store mock to return the setter
+    const { useGlobalState } = require("@/stores/store");
+    useGlobalState.mockImplementation(() => mockSetNativeCurrencyPrice);
   });
 
-  it("starts polling on mount", () => {
+  it("should start polling on mount", () => {
+    const { priceService } = require("@/services/web3/PriceService");
+
     renderHook(() => useNativeCurrencyPrice());
 
-    expect(mockStartPolling).toHaveBeenCalledWith(
-      "1",
+    expect(priceService.getNextId).toHaveBeenCalled();
+    expect(priceService.startPolling).toHaveBeenCalledWith(
+      "123",
       mockSetNativeCurrencyPrice,
     );
   });
 
-  it("stops polling on unmount", () => {
-    const { unmount } = renderHook(() => useNativeCurrencyPrice());
+  it("should stop polling on unmount", () => {
+    const { priceService } = require("@/services/web3/PriceService");
 
+    const { unmount } = renderHook(() => useNativeCurrencyPrice());
     unmount();
 
-    expect(mockStopPolling).toHaveBeenCalledWith("1");
+    expect(priceService.stopPolling).toHaveBeenCalledWith("123");
   });
 
-  it("gets a unique ID for polling", () => {
-    renderHook(() => useNativeCurrencyPrice());
-
-    expect(mockGetNextId).toHaveBeenCalled();
+  it("should not throw errors", () => {
+    expect(() => {
+      renderHook(() => useNativeCurrencyPrice());
+    }).not.toThrow();
   });
 });
