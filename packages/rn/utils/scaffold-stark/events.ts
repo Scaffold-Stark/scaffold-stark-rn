@@ -8,9 +8,95 @@ import {
   createAbiParser,
   getChecksumAddress,
   parseCalldataField,
+  events as starknetEvents,
+  RpcProvider,
+  hash,
 } from "starknet";
 import { feltToHex } from "./common";
 import { ContractAbi, ContractName } from "./contract";
+
+/**
+ * Resolves an event ABI entry by event name from the contract ABI.
+ */
+export function resolveEventAbi<
+  TContractName extends ContractName,
+  TEventName extends ExtractAbiEventNames<ContractAbi<TContractName>>,
+>(abi: Abi | undefined, eventName: string) {
+  const matches = (abi as Abi | undefined)?.filter(
+    (part) =>
+      part.type === "event" && part.name.split("::").slice(-1)[0] === eventName,
+  ) as ExtractAbiEvent<ContractAbi<TContractName>, TEventName>[] | undefined;
+  if (!matches || matches.length === 0) return undefined;
+  if (matches.length > 1)
+    throw new Error(`Ambiguous event "${String(eventName)}"`);
+  return matches[0];
+}
+
+/**
+ * Parses event logs and extracts the arguments.
+ */
+export function parseLogsArgs(abi: Abi, fullEventName: string, logs: any[]) {
+  const cloned = logs.map((l) => JSON.parse(JSON.stringify(l)));
+  const parsed = starknetEvents.parseEvents(
+    cloned,
+    starknetEvents.getAbiEvents(abi),
+    CallData.getAbiStruct(abi),
+    CallData.getAbiEnum(abi),
+    createAbiParser(abi),
+  );
+  return parsed.length ? parsed[0][fullEventName] : {};
+}
+
+/**
+ * Enriches a log with block, transaction, and receipt data.
+ */
+export async function enrichLog(
+  client: RpcProvider,
+  log: any,
+  opts: { block?: boolean; transaction?: boolean; receipt?: boolean },
+) {
+  const [block, transaction, receipt] = await Promise.all([
+    opts.block && log.block_hash !== null
+      ? client.getBlockWithTxHashes(log.block_hash)
+      : Promise.resolve(null),
+    opts.transaction && log.transaction_hash !== null
+      ? client.getTransactionByHash(log.transaction_hash)
+      : Promise.resolve(null),
+    opts.receipt && log.transaction_hash !== null
+      ? client.getTransactionReceipt(log.transaction_hash)
+      : Promise.resolve(null),
+  ]);
+  return { block, transaction, receipt };
+}
+
+/**
+ * Gets the latest accepted block number.
+ */
+export async function getLatestAcceptedBlockNumber(
+  client: RpcProvider,
+): Promise<bigint> {
+  const latest = await client.getBlockLatestAccepted();
+  return BigInt(latest.block_number);
+}
+
+/**
+ * Builds event keys for WebSocket subscription filtering.
+ */
+export function buildEventKeys(
+  eventName: string,
+  filters: Record<string, unknown> | undefined,
+  eventAbi: any,
+  abi: Abi,
+  maxKeys = 16,
+) {
+  let keys: string[][] = [[hash.getSelectorFromName(eventName)]];
+  if (filters) {
+    keys = keys.concat(
+      composeEventFilterKeys(filters as any, eventAbi as any, abi),
+    );
+  }
+  return keys.slice(0, maxKeys);
+}
 
 const stringToByteArrayFelt = (str: string): string[] => {
   const bytes = new TextEncoder().encode(str);
