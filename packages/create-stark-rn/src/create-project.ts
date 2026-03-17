@@ -119,8 +119,8 @@ export async function createProject(options: ProjectOptions): Promise<void> {
     fs.writeFileSync(path.join(projectDir, "pnpm-workspace.yaml"), pnpmWorkspace);
   }
 
-  // Create .env.example
-  createEnvExample(projectDir);
+  // Create .env.example (committed to git)
+  createEnvExample(projectDir, false);
 
   // Create .gitignore
   createGitignore(projectDir);
@@ -139,9 +139,15 @@ export async function createProject(options: ProjectOptions): Promise<void> {
       await execa("git", ["commit", "-m", "chore: initial scaffold from create-stark-rn"], { cwd: projectDir });
       logSuccess("Git repository initialized.");
     } catch {
-      logWarning("Could not initialize git repository. You can do this manually later.");
+      logWarning(
+        "Could not initialize git repository. This is usually because git user.name and user.email are not configured. " +
+        "You can set them with: git config --global user.name \"Your Name\" && git config --global user.email \"you@example.com\"",
+      );
     }
   }
+
+  // Create .env file after git init so it's not committed (it's in .gitignore)
+  createEnvExample(projectDir, true);
 
   // Step 8: Install dependencies
   if (!skipInstall) {
@@ -205,9 +211,8 @@ function createRootPackageJson(
     },
   };
 
-  // npm and yarn use the workspaces field in package.json
-  // pnpm uses pnpm-workspace.yaml (created separately) but also supports this field
-  pkg.workspaces = { packages: workspacePackages };
+  // All package managers support the flat array form for workspaces
+  pkg.workspaces = workspacePackages;
 
   if (packageManager === "yarn") {
     pkg.packageManager = "yarn@3.2.3";
@@ -216,7 +221,7 @@ function createRootPackageJson(
   return pkg;
 }
 
-function createEnvExample(projectDir: string): void {
+function createEnvExample(projectDir: string, dotEnvOnly: boolean): void {
   const envContent = `# Provider URLs
 # Devnet: local starknet-devnet instance
 EXPO_PUBLIC_DEVNET_PROVIDER_URL=http://127.0.0.1:5050
@@ -227,10 +232,14 @@ EXPO_PUBLIC_DEVNET_PROVIDER_URL=http://127.0.0.1:5050
 # Mainnet (get a free key from https://www.alchemy.com/)
 # EXPO_PUBLIC_MAINNET_PROVIDER_URL=
 `;
-  fs.writeFileSync(path.join(projectDir, ".env.example"), envContent);
 
-  // Also create a .env with defaults
-  fs.writeFileSync(path.join(projectDir, "packages", "rn", ".env"), envContent);
+  if (dotEnvOnly) {
+    // Create .env with defaults (after git init so it's not committed)
+    fs.writeFileSync(path.join(projectDir, "packages", "rn", ".env"), envContent);
+  } else {
+    // Create .env.example (this gets committed to git)
+    fs.writeFileSync(path.join(projectDir, ".env.example"), envContent);
+  }
 }
 
 function createGitignore(projectDir: string): void {
@@ -271,7 +280,6 @@ Thumbs.db
 pnpm-debug.log*
 
 # npm
-package-lock.json
 npm-debug.log*
 
 # Misc
