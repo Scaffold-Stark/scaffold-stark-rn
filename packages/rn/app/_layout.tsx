@@ -1,4 +1,3 @@
-import "@/polyfills";
 import { ScaffoldStarkAppWithProviders } from "@/components/scaffold-stark/ScaffoldStarkAppWithProviders";
 import { Stack } from "expo-router";
 import React from "react";
