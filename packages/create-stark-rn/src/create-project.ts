@@ -160,6 +160,18 @@ export async function createProject(options: ProjectOptions): Promise<void> {
   printNextSteps(projectName, packageManager, includeContracts);
 }
 
+function getWorkspaceRunCmd(packageManager: string, workspaceName: string, script: string, extraArgs?: string): string {
+  const args = extraArgs ? ` ${extraArgs}` : "";
+  switch (packageManager) {
+    case "yarn":
+      return `yarn workspace ${workspaceName} ${script}${args}`;
+    case "pnpm":
+      return `pnpm --filter ${workspaceName} ${script}${args}`;
+    default:
+      return `npm run ${script} -w ${workspaceName}${args ? ` --${args}` : ""}`;
+  }
+}
+
 function createRootPackageJson(
   projectName: string,
   slug: string,
@@ -167,17 +179,20 @@ function createRootPackageJson(
   workspacePackages: string[],
   includeContracts: boolean,
 ): Record<string, unknown> {
+  const rnPkg = `@${slug}/rn`;
+  const snPkg = `@${slug}/snfoundry`;
+
   const scripts: Record<string, string> = {
-    start: `${packageManager === "npm" ? "npm run --workspace" : packageManager + " workspace"} @${slug}/rn start`,
-    "start:ios": `${packageManager === "npm" ? "npm run --workspace" : packageManager + " workspace"} @${slug}/rn start -- --ios`,
-    "start:android": `${packageManager === "npm" ? "npm run --workspace" : packageManager + " workspace"} @${slug}/rn start -- --android`,
+    start: getWorkspaceRunCmd(packageManager, rnPkg, "start"),
+    "start:ios": getWorkspaceRunCmd(packageManager, rnPkg, "start", "--ios"),
+    "start:android": getWorkspaceRunCmd(packageManager, rnPkg, "start", "--android"),
   };
 
   if (includeContracts) {
-    scripts.chain = `${packageManager === "npm" ? "npm run --workspace" : packageManager + " workspace"} @${slug}/snfoundry chain`;
-    scripts.deploy = `${packageManager === "npm" ? "npm run --workspace" : packageManager + " workspace"} @${slug}/snfoundry deploy`;
-    scripts.compile = `${packageManager === "npm" ? "npm run --workspace" : packageManager + " workspace"} @${slug}/snfoundry compile`;
-    scripts.test = `${packageManager === "npm" ? "npm run --workspace" : packageManager + " workspace"} @${slug}/snfoundry test`;
+    scripts.chain = getWorkspaceRunCmd(packageManager, snPkg, "chain");
+    scripts.deploy = getWorkspaceRunCmd(packageManager, snPkg, "deploy");
+    scripts.compile = getWorkspaceRunCmd(packageManager, snPkg, "compile");
+    scripts.test = getWorkspaceRunCmd(packageManager, snPkg, "test");
   }
 
   const pkg: Record<string, unknown> = {
@@ -190,13 +205,9 @@ function createRootPackageJson(
     },
   };
 
-  // Set up workspaces based on package manager
-  if (packageManager === "pnpm") {
-    // pnpm uses pnpm-workspace.yaml, but also supports workspaces field
-    pkg.workspaces = { packages: workspacePackages };
-  } else {
-    pkg.workspaces = { packages: workspacePackages };
-  }
+  // npm and yarn use the workspaces field in package.json
+  // pnpm uses pnpm-workspace.yaml (created separately) but also supports this field
+  pkg.workspaces = { packages: workspacePackages };
 
   if (packageManager === "yarn") {
     pkg.packageManager = "yarn@3.2.3";

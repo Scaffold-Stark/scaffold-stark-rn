@@ -57,15 +57,6 @@ export async function getProjectOptions(projectNameArg?: string): Promise<Projec
 
   const projectName = projectNameArg || responses.projectName;
 
-  // Validate project name from argument
-  if (projectNameArg) {
-    const validation = validateProjectName(projectNameArg);
-    if (validation !== true) {
-      logError(validation);
-      return null;
-    }
-  }
-
   return {
     projectName,
     includeContracts: responses.includeContracts ?? true,

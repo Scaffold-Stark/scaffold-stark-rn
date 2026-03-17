@@ -24,6 +24,10 @@ export function detectPackageManager(): "npm" | "yarn" | "pnpm" {
 }
 
 export function isCommandAvailable(command: string): boolean {
+  // Sanitize: only allow simple command names (no paths, flags, or shell metacharacters)
+  if (!/^[a-zA-Z0-9_-]+$/.test(command)) {
+    return false;
+  }
   try {
     const whichCmd = process.platform === "win32" ? "where" : "which";
     execSync(`${whichCmd} ${command}`, { stdio: "ignore" });
