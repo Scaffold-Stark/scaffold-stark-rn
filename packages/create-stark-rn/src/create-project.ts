@@ -110,7 +110,7 @@ export async function createProject(options: ProjectOptions): Promise<void> {
     workspacePackages.push("packages/snfoundry");
   }
 
-  const rootPkg = createRootPackageJson(projectName, slug, packageManager, workspacePackages, includeContracts);
+  const rootPkg = createRootPackageJson(slug, packageManager, workspacePackages, includeContracts);
   fs.writeJsonSync(path.join(projectDir, "package.json"), rootPkg, { spaces: 2 });
 
   // Create pnpm-workspace.yaml if using pnpm
@@ -166,22 +166,29 @@ export async function createProject(options: ProjectOptions): Promise<void> {
   printNextSteps(projectName, packageManager, includeContracts);
 }
 
-function getWorkspaceRunCmd(packageManager: string, workspaceName: string, script: string, extraArgs?: string): string {
-  const args = extraArgs ? ` ${extraArgs}` : "";
+function getWorkspaceRunCmd(packageManager: "npm" | "yarn" | "pnpm", workspaceName: string, script: string, extraArgs?: string): string {
   switch (packageManager) {
     case "yarn":
-      return `yarn workspace ${workspaceName} ${script}${args}`;
+      // yarn workspace @pkg/name <script> [args]
+      return extraArgs
+        ? `yarn workspace ${workspaceName} ${script} ${extraArgs}`
+        : `yarn workspace ${workspaceName} ${script}`;
     case "pnpm":
-      return `pnpm --filter ${workspaceName} ${script}${args}`;
+      // pnpm --filter @pkg/name <script> [-- args]
+      return extraArgs
+        ? `pnpm --filter ${workspaceName} ${script} -- ${extraArgs}`
+        : `pnpm --filter ${workspaceName} ${script}`;
     default:
-      return `npm run ${script} -w ${workspaceName}${args ? ` --${args}` : ""}`;
+      // npm run <script> -w @pkg/name [-- args]
+      return extraArgs
+        ? `npm run ${script} -w ${workspaceName} -- ${extraArgs}`
+        : `npm run ${script} -w ${workspaceName}`;
   }
 }
 
 function createRootPackageJson(
-  projectName: string,
   slug: string,
-  packageManager: string,
+  packageManager: "npm" | "yarn" | "pnpm",
   workspacePackages: string[],
   includeContracts: boolean,
 ): Record<string, unknown> {
