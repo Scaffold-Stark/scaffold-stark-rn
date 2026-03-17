@@ -280,8 +280,8 @@ describe("useWebSocketData", () => {
       }),
     );
 
-    // Wait a tick
-    await new Promise((r) => setTimeout(r, 50));
-    expect(mockSubscribeNewHeads).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockSubscribeNewHeads).not.toHaveBeenCalled();
+    });
   });
 });

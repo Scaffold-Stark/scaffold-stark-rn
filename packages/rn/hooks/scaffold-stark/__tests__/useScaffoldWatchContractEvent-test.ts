@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react-native";
+import { renderHook, waitFor, act } from "@testing-library/react-native";
 
 // --- Mocks ---------------------------------------------------------------
 
@@ -213,7 +213,7 @@ describe("useScaffoldWatchContractEvent", () => {
 
     const { useScaffoldWatchContractEvent } = require("../useScaffoldWatchContractEvent");
 
-    renderHook(() =>
+    const { result } = renderHook(() =>
       useScaffoldWatchContractEvent({
         contractName: "YourContract" as any,
         eventName: "Transfer" as any,
@@ -221,8 +221,15 @@ describe("useScaffoldWatchContractEvent", () => {
       }),
     );
 
-    // Advance timers to trigger the polling fallback interval
-    jest.advanceTimersByTime(30000);
+    // The hook should have set error from wsError
+    expect(result.current.error).toBeDefined();
+    expect(result.current.error?.message).toBe("WebSocket unavailable");
+
+    // Advance timers to trigger the polling fallback interval (30s from config)
+    // The polling fallback setInterval should fire and toggle isLoading
+    act(() => {
+      jest.advanceTimersByTime(30000);
+    });
 
     jest.useRealTimers();
   });

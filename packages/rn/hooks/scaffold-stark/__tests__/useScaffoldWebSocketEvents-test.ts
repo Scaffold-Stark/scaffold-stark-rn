@@ -186,8 +186,9 @@ describe("useScaffoldWebSocketEvents", () => {
       }),
     );
 
-    await new Promise((r) => setTimeout(r, 50));
-    expect(mockSubscribeEvents).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockSubscribeEvents).not.toHaveBeenCalled();
+    });
   });
 
   it("does not subscribe when contract is still loading", async () => {
@@ -207,8 +208,9 @@ describe("useScaffoldWebSocketEvents", () => {
       }),
     );
 
-    await new Promise((r) => setTimeout(r, 50));
-    expect(mockSubscribeEvents).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockSubscribeEvents).not.toHaveBeenCalled();
+    });
 
     // Restore for other tests
     useDeployedContractInfo.mockReturnValue({

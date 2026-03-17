@@ -96,12 +96,14 @@ describe("useScaffoldContract", () => {
     const { useAccount } = require("@starknet-react/core");
     useAccount.mockReturnValue({ account: null });
 
-    renderHook(() =>
+    const { result } = renderHook(() =>
       // @ts-ignore
       useScaffoldContract({ contractName: "YourContract" }),
     );
 
-    await waitFor(() => {});
+    await waitFor(() => {
+      expect(result.current.data).toBeDefined();
+    });
     expect(mockConnect).not.toHaveBeenCalled();
   });
 
