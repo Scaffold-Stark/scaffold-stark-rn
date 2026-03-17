@@ -1,31 +1,28 @@
-import { supportedChains } from "@/constants/supportedChains";
 import scaffoldConfig from "@/scaffold.config";
-import { CavosConnector } from "@/services/cavos/connector";
+import { CavosWallet } from "@/services/cavos/connector";
 import { getTargetNetworks } from "@/utils/scaffold-stark/network";
-import { BurnerConnector } from "@scaffold-stark/stark-burner";
-import { InjectedConnector } from "@starknet-start/react";
+import { createBurnerWallet } from "@scaffold-stark/stark-burner";
+import type { WalletWithStarknetFeatures } from "@starknet-io/get-starknet-wallet-standard/features";
 
 const targetNetworks = getTargetNetworks();
 
 export const connectors = getConnectors();
 
-function getConnectors() {
+function getConnectors(): WalletWithStarknetFeatures[] {
   const { targetNetworks } = scaffoldConfig;
 
-  const cavosConnector = new CavosConnector(targetNetworks[0]);
+  const cavosWallet = new CavosWallet(targetNetworks[0]);
 
-  const connectors: InjectedConnector[] = [cavosConnector];
+  const wallets: WalletWithStarknetFeatures[] = [cavosWallet];
 
   const isDevnet = targetNetworks.some(
     (network) => (network.network as string) === "devnet",
   );
   if (isDevnet) {
-    const burnerConnector = new BurnerConnector();
-    burnerConnector.chain = supportedChains.devnet;
-    connectors.push(burnerConnector);
+    wallets.push(createBurnerWallet(targetNetworks[0]));
   }
 
-  return connectors;
+  return wallets;
 }
 
 export const appChains = targetNetworks;

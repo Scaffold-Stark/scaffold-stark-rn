@@ -98,8 +98,10 @@ export const useAutoConnect = (): void => {
     const ttlExpired =
       now - (lastConnectionTime || 0) > scaffoldConfig.autoConnectTTL;
 
-    const connector = connectors.find((c) => c.id === savedConnector?.id);
-    if (!connector || !connector.ready) return;
+    const connector = connectors.find(
+      (c) => c.features["starknet:walletApi"].id === savedConnector?.id,
+    );
+    if (!connector) return;
 
     if (ttlExpired || account) return;
 
