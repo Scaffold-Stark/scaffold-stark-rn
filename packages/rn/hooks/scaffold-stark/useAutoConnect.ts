@@ -101,12 +101,10 @@ export const useAutoConnect = (): void => {
     const connector = connectors.find((c) => c.id === savedConnector?.id);
     if (!connector || !connector.ready) return;
 
-    const shouldReconnect = !account || ttlExpired;
+    if (ttlExpired || account) return;
 
-    if (shouldReconnect) {
-      hasAutoConnected.current = true;
-      connect({ connector });
-    }
+    hasAutoConnected.current = true;
+    connect({ connector });
   }, [
     isStorageLoaded,
     connect,

@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useProvider } from "@starknet-start/react";
 import { ExtractAbiEventNames } from "abi-wan-kanabi/kanabi";
 import { Abi } from "abi-wan-kanabi/kanabi";
-import { useTargetNetwork } from "./useTargetNetwork";
 import { useScaffoldWebSocketEvents } from "./useScaffoldWebSocketEvents";
 import { useDeployedContractInfo } from "./useDeployedContractInfo";
 import {
@@ -11,7 +9,6 @@ import {
   UseScaffoldWatchContractEventConfig,
 } from "@/utils/scaffold-stark/contract";
 import { resolveEventAbi } from "@/utils/scaffold-stark/events";
-import scaffoldConfig from "@/scaffold.config";
 
 /**
  * Watches for specific contract events and triggers a callback when events are detected.
@@ -37,8 +34,6 @@ export const useScaffoldWatchContractEvent = <
 }: UseScaffoldWatchContractEventConfig<TContractName, TEventName>) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | undefined>();
-  const { provider } = useProvider();
-  const { targetNetwork } = useTargetNetwork();
 
   // Validate event existence in ABI
   const { data: deployedContractData, isLoading: deployedContractLoading } =
@@ -89,34 +84,15 @@ export const useScaffoldWatchContractEvent = <
     if (wsError) setError(wsError);
   }, [wsLoading, wsError]);
 
-  // Polling fallback when WebSocket is not available
+  // Log warning when WebSocket is unavailable (no RPC polling fallback yet)
   useEffect(() => {
-    if (!wsError) return;
-
-    let stopped = false;
-    const tick = async () => {
-      try {
-        setIsLoading(true);
-        // Touch provider to maintain dependency
-        void provider;
-      } catch (e: any) {
-        setError(e instanceof Error ? e : new Error(String(e)));
-      } finally {
-        if (!stopped) setIsLoading(false);
-      }
-    };
-
-    const id = setInterval(
-      tick,
-      targetNetwork ? scaffoldConfig.pollingInterval : 4000,
-    );
-
-    return () => {
-      stopped = true;
-      clearInterval(id);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wsError, provider, targetNetwork]);
+    if (wsError) {
+      console.warn(
+        `[useScaffoldWatchContractEvent] WebSocket unavailable for ${String(eventName)} on ${contractName}. ` +
+          "Real-time event watching is disabled.",
+      );
+    }
+  }, [wsError, eventName, contractName]);
 
   return { isLoading, error };
 };
