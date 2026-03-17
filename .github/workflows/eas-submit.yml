@@ -53,7 +53,9 @@ jobs:
         working-directory: .
 
       - name: Submit to stores
-        run: eas submit --platform ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --non-interactive --latest
+        run: eas submit --platform "$INPUT_PLATFORM" --profile "$INPUT_PROFILE" --non-interactive --latest
         env:
+          INPUT_PLATFORM: ${{ github.event.inputs.platform }}
+          INPUT_PROFILE: ${{ github.event.inputs.profile }}
           EXPO_APPLE_ID: ${{ secrets.EXPO_APPLE_ID }}
           EXPO_APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.EXPO_APPLE_APP_SPECIFIC_PASSWORD }}

@@ -24,7 +24,7 @@ cd packages/rn
 eas build:configure
 ```
 
-### 2b. Configure OTA updates (required for EAS Update)
+### 3. Configure OTA updates (required for EAS Update)
 
 ```bash
 cd packages/rn
@@ -33,7 +33,7 @@ eas update:configure
 
 This will add the `expo-updates` plugin and `updates.url` to your `app.json`. Without this step, OTA updates will not work.
 
-### 3. Update eas.json credentials
+### 4. Update eas.json credentials
 
 Edit `packages/rn/eas.json` and fill in the `submit.production` section:
 
@@ -46,7 +46,7 @@ Edit `packages/rn/eas.json` and fill in the `submit.production` section:
 - `serviceAccountKeyPath`: Path to your Google Play service account JSON key file (see below)
 - `track`: The release track (`internal`, `alpha`, `beta`, or `production`)
 
-### 4. Set up Google Play service account
+### 5. Set up Google Play service account
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com)
 2. Create a service account with Google Play Developer API access
@@ -54,7 +54,7 @@ Edit `packages/rn/eas.json` and fill in the `submit.production` section:
 4. Place it in a secure location and update `serviceAccountKeyPath` in `eas.json`
 5. In Google Play Console, grant the service account access under Settings > API access
 
-### 5. Configure GitHub Secrets (for CI/CD)
+### 6. Configure GitHub Secrets (for CI/CD)
 
 Add these secrets in your GitHub repository settings (Settings > Secrets and variables > Actions):
 
