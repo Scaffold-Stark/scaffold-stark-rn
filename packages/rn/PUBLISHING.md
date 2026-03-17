@@ -24,6 +24,15 @@ cd packages/rn
 eas build:configure
 ```
 
+### 2b. Configure OTA updates (required for EAS Update)
+
+```bash
+cd packages/rn
+eas update:configure
+```
+
+This will add the `expo-updates` plugin and `updates.url` to your `app.json`. Without this step, OTA updates will not work.
+
 ### 3. Update eas.json credentials
 
 Edit `packages/rn/eas.json` and fill in the `submit.production` section:

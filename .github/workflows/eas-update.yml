@@ -62,7 +62,11 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "branch=${{ github.event.inputs.branch }}" >> "$GITHUB_OUTPUT"
-            echo "message=${{ github.event.inputs.message }}" >> "$GITHUB_OUTPUT"
+            MSG="${{ github.event.inputs.message }}"
+            if [ -z "$MSG" ]; then
+              MSG="Manual OTA update for ${{ github.event.inputs.branch }}"
+            fi
+            echo "message=$MSG" >> "$GITHUB_OUTPUT"
           else
             echo "branch=production" >> "$GITHUB_OUTPUT"
             echo "message=OTA update from commit ${{ github.sha }}" >> "$GITHUB_OUTPUT"
