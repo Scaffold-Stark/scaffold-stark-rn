@@ -62,6 +62,7 @@ describe("useScaffoldStrkBalance", () => {
         address: "0xstrk",
         watch: true,
         enabled: true,
+        blockIdentifier: "pre_confirmed",
       }),
     );
   });

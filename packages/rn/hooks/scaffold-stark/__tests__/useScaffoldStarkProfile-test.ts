@@ -164,18 +164,19 @@ describe("useScaffoldStarkProfile", () => {
     });
   });
 
-  it("returns empty profile when address is undefined", async () => {
+  it("returns empty profile and skips fetch when address is undefined", async () => {
     const { result } = renderHook(() =>
       useScaffoldStarkProfile(undefined),
     );
 
-    // Should immediately set empty profile (not loading)
+    // Should immediately set empty profile (not loading) and never call fetch
     await waitFor(() => {
       expect(result.current.data).toEqual({
         name: "",
         profilePicture: "",
       });
     });
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it("returns empty profile when API returns error", async () => {
@@ -195,12 +196,16 @@ describe("useScaffoldStarkProfile", () => {
     });
   });
 
-  it("sets empty profile when address is not provided", async () => {
+  it("returns empty profile for unsupported network (devnet)", async () => {
+    // Override config to use devnet (unsupported for profiles)
+    const scaffoldConfig = require("@/scaffold.config").default;
+    const originalNetworks = scaffoldConfig.targetNetworks;
+    scaffoldConfig.targetNetworks = [{ network: "devnet" }];
+
     const { result } = renderHook(() =>
-      useScaffoldStarkProfile(undefined),
+      useScaffoldStarkProfile("0xuser" as any),
     );
 
-    // When address is undefined, the hook skips fetch and sets empty profile
     await waitFor(() => {
       expect(result.current.data).toEqual({
         name: "",
@@ -209,5 +214,8 @@ describe("useScaffoldStarkProfile", () => {
     });
 
     expect(global.fetch).not.toHaveBeenCalled();
+
+    // Restore
+    scaffoldConfig.targetNetworks = originalNetworks;
   });
 });

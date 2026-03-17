@@ -127,13 +127,21 @@ describe("useScaffoldContract", () => {
 
     await waitFor(() => expect(result.current.data).toBeDefined());
 
-    // The wrapped call method should try parseResponse: false first,
-    // then fall back
+    // The wrapped call method should try with parseResponse: false first,
+    // and when that throws, fall back to calling without it
     const contractInstance = result.current.data;
-    if (contractInstance) {
-      const callResult = await contractInstance.call("some_method");
-      expect(callResult).toBe("fallback_result");
-      expect(originalCall).toHaveBeenCalledTimes(2);
-    }
+    expect(contractInstance).toBeDefined();
+    const callResult = await contractInstance!.call("some_method");
+    expect(callResult).toBe("fallback_result");
+    expect(originalCall).toHaveBeenCalledTimes(2);
+    // First call should include { parseResponse: false }
+    expect(originalCall.mock.calls[0]).toEqual(
+      expect.arrayContaining([
+        "some_method",
+        expect.objectContaining({ parseResponse: false }),
+      ]),
+    );
+    // Second (fallback) call should not include parseResponse
+    expect(originalCall.mock.calls[1][0]).toBe("some_method");
   });
 });

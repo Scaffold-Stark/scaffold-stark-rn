@@ -98,6 +98,17 @@ describe("useTransactor", () => {
 
     // execute should be called once with fallback params after estimation failed
     expect(mockExecute).toHaveBeenCalledTimes(1);
+    // Verify fallback params include resourceBounds for RPC 0.8 compatibility
+    const callArgs = mockExecute.mock.calls[0];
+    expect(callArgs[1]).toEqual(
+      expect.objectContaining({
+        maxFee: "0x1000000000",
+        resourceBounds: expect.objectContaining({
+          l1_gas: expect.objectContaining({ max_amount: 0x1000000n }),
+          l2_gas: expect.objectContaining({ max_amount: 0x1000000n }),
+        }),
+      }),
+    );
   });
 
   it("shows error toast when no wallet is connected", async () => {
