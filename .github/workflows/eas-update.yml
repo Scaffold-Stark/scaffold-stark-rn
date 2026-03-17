@@ -59,17 +59,22 @@ jobs:
 
       - name: Determine update branch
         id: branch
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_BRANCH: ${{ github.event.inputs.branch }}
+          INPUT_MESSAGE: ${{ github.event.inputs.message }}
+          COMMIT_SHA: ${{ github.sha }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "branch=${{ github.event.inputs.branch }}" >> "$GITHUB_OUTPUT"
-            MSG="${{ github.event.inputs.message }}"
-            if [ -z "$MSG" ]; then
-              MSG="Manual OTA update for ${{ github.event.inputs.branch }}"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "branch=$INPUT_BRANCH" >> "$GITHUB_OUTPUT"
+            if [ -z "$INPUT_MESSAGE" ]; then
+              echo "message=Manual OTA update for $INPUT_BRANCH" >> "$GITHUB_OUTPUT"
+            else
+              echo "message=$INPUT_MESSAGE" >> "$GITHUB_OUTPUT"
             fi
-            echo "message=$MSG" >> "$GITHUB_OUTPUT"
           else
             echo "branch=production" >> "$GITHUB_OUTPUT"
-            echo "message=OTA update from commit ${{ github.sha }}" >> "$GITHUB_OUTPUT"
+            echo "message=OTA update from commit $COMMIT_SHA" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Publish OTA update

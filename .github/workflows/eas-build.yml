@@ -93,11 +93,16 @@ jobs:
 
       - name: Determine build profile
         id: profile
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_PROFILE: ${{ github.event.inputs.profile }}
+          INPUT_PLATFORM: ${{ github.event.inputs.platform }}
+          GIT_REF: ${{ github.ref }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "profile=${{ github.event.inputs.profile }}" >> "$GITHUB_OUTPUT"
-            echo "platform=${{ github.event.inputs.platform }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "profile=$INPUT_PROFILE" >> "$GITHUB_OUTPUT"
+            echo "platform=$INPUT_PLATFORM" >> "$GITHUB_OUTPUT"
+          elif [ "$GIT_REF" = "refs/heads/main" ]; then
             echo "profile=production" >> "$GITHUB_OUTPUT"
             echo "platform=all" >> "$GITHUB_OUTPUT"
           else
