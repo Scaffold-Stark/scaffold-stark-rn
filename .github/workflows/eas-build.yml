@@ -8,6 +8,8 @@ on:
     paths:
       - "packages/rn/**"
       - ".github/workflows/eas-build.yml"
+      - "!packages/rn/**/*.md"
+      - "!packages/rn/store-assets/**"
   workflow_dispatch:
     inputs:
       profile:

@@ -8,7 +8,7 @@ on:
       - "packages/rn/**"
       - ".github/workflows/eas-update.yml"
       - "!packages/rn/eas.json"
-      - "!packages/rn/PUBLISHING.md"
+      - "!packages/rn/**/*.md"
       - "!packages/rn/store-assets/**"
   workflow_dispatch:
     inputs:
