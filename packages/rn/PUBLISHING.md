@@ -129,7 +129,7 @@ yarn update:production
 yarn update:preview
 
 # Custom update with message
-yarn update -- --message "Fix login issue"
+eas update --branch production --message "Fix login issue"
 ```
 
 OTA updates also trigger automatically when pushing changes to `main` that affect `packages/rn/`.

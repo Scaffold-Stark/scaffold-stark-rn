@@ -27,10 +27,9 @@
     "build:prod": "eas build --profile production --platform all",
     "build:ios": "eas build --profile production --platform ios",
     "build:android": "eas build --profile production --platform android",
-    "submit:ios": "eas submit --platform ios",
-    "submit:android": "eas submit --platform android",
-    "submit:all": "eas submit --platform all",
-    "update": "eas update",
+    "submit:ios": "eas submit --platform ios --profile production --latest",
+    "submit:android": "eas submit --platform android --profile production --latest",
+    "submit:all": "eas submit --platform all --profile production --latest",
     "update:preview": "eas update --branch preview",
     "update:production": "eas update --branch production"
   },

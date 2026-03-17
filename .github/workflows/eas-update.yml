@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "packages/rn/**"
+      - ".github/workflows/eas-update.yml"
       - "!packages/rn/eas.json"
       - "!packages/rn/PUBLISHING.md"
       - "!packages/rn/store-assets/**"
@@ -44,6 +45,7 @@ jobs:
         with:
           node-version: 20
           cache: yarn
+          cache-dependency-path: yarn.lock
 
       - name: Setup Expo and EAS CLI
         uses: expo/expo-github-action@v8
@@ -52,7 +54,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
         working-directory: .
 
       - name: Determine update branch
