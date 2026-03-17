@@ -25,7 +25,8 @@ export function detectPackageManager(): "npm" | "yarn" | "pnpm" {
 
 export function isCommandAvailable(command: string): boolean {
   try {
-    execSync(`which ${command}`, { stdio: "ignore" });
+    const whichCmd = process.platform === "win32" ? "where" : "which";
+    execSync(`${whichCmd} ${command}`, { stdio: "ignore" });
     return true;
   } catch {
     return false;

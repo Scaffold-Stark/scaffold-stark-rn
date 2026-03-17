@@ -19,14 +19,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 function getTemplateDir(): string {
-  // In built dist/, template is sibling to dist/
-  const fromDist = path.resolve(__dirname, "..", "template");
-  if (fs.existsSync(fromDist)) {
-    return fromDist;
+  // Both in built dist/ and dev src/, template is a sibling directory
+  const templateDir = path.resolve(__dirname, "..", "template");
+  if (!fs.existsSync(templateDir)) {
+    throw new Error(
+      `Template directory not found at ${templateDir}. This is a bug in create-stark-rn.`,
+    );
   }
-  // In dev src/, template is sibling to src/
-  const fromSrc = path.resolve(__dirname, "..", "template");
-  return fromSrc;
+  return templateDir;
 }
 
 export async function createProject(options: ProjectOptions): Promise<void> {
