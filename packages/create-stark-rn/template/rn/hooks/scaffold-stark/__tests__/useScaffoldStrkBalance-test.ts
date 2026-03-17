@@ -19,7 +19,7 @@ jest.mock("starknet", () => ({
   BlockNumber: {},
 }));
 
-jest.mock("viem", () => ({
+jest.mock("@/utils/scaffold-stark/ethUnits", () => ({
   formatUnits: (value: bigint, decimals: number) => {
     return (Number(value) / 10 ** decimals).toString();
   },

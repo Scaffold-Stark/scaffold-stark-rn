@@ -8,7 +8,7 @@ import {
   parseGenericType,
 } from "@/utils/scaffold-stark/typeValidations";
 import { Abi } from "abi-wan-kanabi";
-import { formatEther } from "viem";
+import { formatEther } from "@/utils/scaffold-stark/ethUnits";
 import { getChecksumAddress, Uint256 } from "starknet";
 
 type DisplayContent = Uint256 | string | bigint | boolean | Object | unknown;

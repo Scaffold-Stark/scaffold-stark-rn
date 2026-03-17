@@ -2,7 +2,7 @@ import { Address } from "@starknet-react/chains";
 import { useReadContract } from "@starknet-react/core";
 import { Abi } from "abi-wan-kanabi";
 import { BlockNumber } from "starknet";
-import { formatUnits } from "viem";
+import { formatUnits } from "@/utils/scaffold-stark/ethUnits";
 import { useDeployedContractInfo } from "./useDeployedContractInfo";
 
 type UseScaffoldStrkBalanceProps = {

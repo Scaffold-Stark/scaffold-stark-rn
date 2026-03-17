@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Text, TouchableOpacity } from "react-native";
-import { parseEther } from "viem";
+import { parseEther } from "@/utils/scaffold-stark/ethUnits";
 import { InputBase } from "./InputBase";
 import { CommonInputProps, isValidInteger } from "./utils";
 
