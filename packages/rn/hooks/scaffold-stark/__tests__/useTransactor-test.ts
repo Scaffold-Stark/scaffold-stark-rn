@@ -80,6 +80,13 @@ describe("useTransactor", () => {
 
     expect(mockExecute).toHaveBeenCalled();
     expect(mockEstimateInvokeFee).toHaveBeenCalled();
+    // Verify fee estimation: overall_fee "0x10" (16) * 1.5 = 24 = 0x18
+    const executeArgs = mockExecute.mock.calls[0];
+    expect(executeArgs[1]).toEqual(
+      expect.objectContaining({
+        maxFee: "0x18",
+      }),
+    );
   });
 
   it("falls back to default fee values when estimation fails", async () => {
@@ -155,7 +162,10 @@ describe("useTransactor", () => {
       ).rejects.toThrow();
     });
 
-    expect(mockAppToast.showError).toHaveBeenCalled();
+    // Verify the error regex extracts the message from 'Contract (.*?)"}'
+    expect(mockAppToast.showError).toHaveBeenCalledWith(
+      expect.stringContaining("insufficient funds"),
+    );
   });
 
   it("handles sendAsync returning object with transaction_hash", async () => {

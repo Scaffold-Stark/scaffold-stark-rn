@@ -282,4 +282,22 @@ describe("useScaffoldEventHistory", () => {
     expect(result.current.isLoading).toBe(true);
     expect(mockGetEvents).not.toHaveBeenCalled();
   });
+
+  it("passes watch flag correctly to the hook", async () => {
+    const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
+
+    const { result } = renderHook(() =>
+      useScaffoldEventHistory({
+        contractName: "YourContract" as any,
+        eventName: "Transfer" as any,
+        fromBlock: BigInt(0),
+        watch: true,
+      }),
+    );
+
+    // When watch is true, the hook still performs the initial fetch
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(mockGetEvents).toHaveBeenCalled();
+    expect(Array.isArray(result.current.data)).toBe(true);
+  });
 });
