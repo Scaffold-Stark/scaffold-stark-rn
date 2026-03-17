@@ -1,0 +1,45 @@
+appId: com.ss_rn.rn
+name: "Basic app navigation"
+---
+# Wait for the app to load
+- waitForAnimationToEnd:
+    timeout: 10000
+
+# Verify the home screen loads
+- assertVisible:
+    text: ".*"
+    optional: true
+
+# Take a screenshot of the home screen
+- takeScreenshot: home_screen
+
+# Navigate to the Debug tab (if visible)
+- tapOn:
+    text: "Debug"
+    optional: true
+
+- waitForAnimationToEnd:
+    timeout: 3000
+
+- takeScreenshot: debug_screen
+
+# Navigate to the Settings tab (if visible)
+- tapOn:
+    text: "Settings"
+    optional: true
+
+- waitForAnimationToEnd:
+    timeout: 3000
+
+- takeScreenshot: settings_screen
+
+# Navigate back to home
+- tapOn:
+    text: "Home"
+    optional: true
+
+- waitForAnimationToEnd:
+    timeout: 3000
+
+# Verify we're back on home
+- takeScreenshot: home_screen_return

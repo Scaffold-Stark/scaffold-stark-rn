@@ -38,3 +38,6 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# test coverage
+coverage/
