@@ -32,6 +32,7 @@
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
     "@scaffold-stark/stark-burner": "^1.0.0",
+    "@starknet-io/get-starknet-modal": "^5.0.0",
     "@starknet-start/chains": "^1.0.0",
     "@starknet-start/explorers": "^1.0.0",
     "@starknet-start/providers": "^1.0.0",
