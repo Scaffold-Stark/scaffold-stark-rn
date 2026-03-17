@@ -3,7 +3,7 @@ import scaffoldConfig from "@/scaffold.config";
 import { CavosConnector } from "@/services/cavos/connector";
 import { getTargetNetworks } from "@/utils/scaffold-stark/network";
 import { BurnerConnector } from "@scaffold-stark/stark-burner";
-import { InjectedConnector } from "@starknet-react/core";
+import { InjectedConnector } from "@starknet-start/react";
 
 const targetNetworks = getTargetNetworks();
 

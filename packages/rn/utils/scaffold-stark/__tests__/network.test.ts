@@ -27,9 +27,9 @@ describe("network utils", () => {
   });
 
   test("getBlockExplorerLink returns expected base", () => {
-    expect(getBlockExplorerLink(chains.mainnet)).toBe("https://starkscan.co/");
+    expect(getBlockExplorerLink(chains.mainnet)).toBe("https://voyager.online/");
     expect(getBlockExplorerLink(chains.sepolia)).toBe(
-      "https://sepolia.starkscan.co/",
+      "https://sepolia.voyager.online/",
     );
   });
 });

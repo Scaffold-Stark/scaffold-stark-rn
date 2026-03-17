@@ -12,7 +12,7 @@ import {
   useAccount,
   useConnect,
   useDisconnect,
-} from "@starknet-react/core";
+} from "@starknet-start/react";
 import * as Clipboard from "expo-clipboard";
 import React, { useMemo, useState } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";

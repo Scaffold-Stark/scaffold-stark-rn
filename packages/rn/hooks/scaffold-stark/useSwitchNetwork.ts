@@ -1,4 +1,4 @@
-import { useAccount } from "@starknet-react/core";
+import { useAccount } from "@starknet-start/react";
 import { useGlobalState } from "@/stores/store";
 import scaffoldConfig from "@/scaffold.config";
 import { ChainWithAttributes } from "@/utils/scaffold-stark/network";

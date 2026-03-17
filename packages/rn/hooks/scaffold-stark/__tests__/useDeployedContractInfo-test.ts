@@ -36,7 +36,7 @@ jest.mock("@/utils/scaffold-stark/contract", () => {
   } as any;
 });
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useProvider: () => ({ provider: { getClassHashAt: jest.fn() } }),
 }));
 

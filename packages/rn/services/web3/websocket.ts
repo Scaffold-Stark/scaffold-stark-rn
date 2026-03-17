@@ -1,4 +1,4 @@
-import { Chain } from "@starknet-react/chains";
+import { Chain } from "@starknet-start/chains";
 import { WebSocketChannel } from "starknet";
 import scaffoldConfig from "@/scaffold.config";
 

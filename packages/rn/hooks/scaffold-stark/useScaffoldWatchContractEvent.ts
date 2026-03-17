@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useProvider } from "@starknet-react/core";
+import { useProvider } from "@starknet-start/react";
 import { ExtractAbiEventNames } from "abi-wan-kanabi/kanabi";
 import { Abi } from "abi-wan-kanabi/kanabi";
 import { useTargetNetwork } from "./useTargetNetwork";

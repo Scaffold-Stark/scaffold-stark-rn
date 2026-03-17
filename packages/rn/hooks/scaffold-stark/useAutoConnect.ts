@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useConnect, useAccount } from "@starknet-react/core";
+import { useConnect, useAccount } from "@starknet-start/react";
 import * as SecureStore from "expo-secure-store";
 import scaffoldConfig from "@/scaffold.config";
 

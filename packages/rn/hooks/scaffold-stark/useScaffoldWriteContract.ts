@@ -4,7 +4,7 @@ import {
   ExtractAbiFunctionNamesScaffold,
   UseScaffoldWriteConfig,
 } from "@/utils/scaffold-stark/contract";
-import { Abi, useNetwork } from "@starknet-react/core";
+import { Abi, useNetwork } from "@starknet-start/react";
 import { useCallback } from "react";
 import { Contract as StarknetJsContract } from "starknet";
 import { useDeployedContractInfo } from "./useDeployedContractInfo";

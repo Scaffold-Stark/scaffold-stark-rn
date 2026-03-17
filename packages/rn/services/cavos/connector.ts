@@ -5,8 +5,8 @@ import {
   RpcMessage,
   RpcTypeToMessageMap,
 } from "@starknet-io/types-js";
-import { Chain, sepolia } from "@starknet-react/chains";
-import { InjectedConnector, starknetChainId } from "@starknet-react/core";
+import { Chain, sepolia } from "@starknet-start/chains";
+import { InjectedConnector, starknetChainId } from "@starknet-start/react";
 import * as SecureStore from "expo-secure-store";
 import { Account, AccountInterface, CallData, RpcProvider } from "starknet";
 

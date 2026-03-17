@@ -1,6 +1,6 @@
 import { ConnectedWalletMenu } from "@/app/_components/ConnectedWalletMenu";
 import { WelcomeSection } from "@/app/_components/WelcomeSection";
-import { useAccount } from "@starknet-react/core";
+import { useAccount } from "@starknet-start/react";
 import React from "react";
 import { ScrollView, StatusBar, View } from "react-native";
 
