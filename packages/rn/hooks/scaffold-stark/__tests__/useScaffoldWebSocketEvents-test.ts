@@ -90,6 +90,12 @@ describe("useScaffoldWebSocketEvents", () => {
     mockSubscribeEvents.mockReset();
     mockUnsubscribe.mockReset();
     mockGetSharedWebSocketChannel.mockReset();
+    // Ensure useDeployedContractInfo returns the default value for each test
+    const { useDeployedContractInfo } = require("../useDeployedContractInfo");
+    useDeployedContractInfo.mockReturnValue({
+      data: mockDeployedContract,
+      isLoading: false,
+    });
   });
 
   it("returns initial state with empty events", () => {
@@ -210,12 +216,6 @@ describe("useScaffoldWebSocketEvents", () => {
 
     await waitFor(() => {
       expect(mockSubscribeEvents).not.toHaveBeenCalled();
-    });
-
-    // Restore for other tests
-    useDeployedContractInfo.mockReturnValue({
-      data: mockDeployedContract,
-      isLoading: false,
     });
   });
 
