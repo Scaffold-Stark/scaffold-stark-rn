@@ -1,49 +1,51 @@
 /**
- * Polyfills for browser APIs that @starknet-io/get-starknet-discovery
- * and @wallet-standard/base expect but don't exist in React Native.
+ * Polyfills for browser APIs used by @starknet-io/get-starknet-discovery
+ * and @wallet-standard/base that don't exist in React Native / Hermes.
  *
  * Must be imported before any starknet packages load.
  */
 
 const g = globalThis as any;
 
-// Event class polyfill
+// Event class polyfill.
+// AppReadyEvent in get-starknet-discovery does `class AppReadyEvent extends Event`
+// and overrides `get type()`. Hermes transpiles class fields as assignments in the
+// constructor, so we must use Object.defineProperty for `type` to allow subclass
+// getter overrides without "Cannot assign to property which has only a getter".
 if (typeof g.Event === "undefined") {
-  g.Event = class Event {
-    type: string;
-    bubbles: boolean;
-    cancelable: boolean;
-    composed: boolean;
-    constructor(
-      type: string,
-      opts?: { bubbles?: boolean; cancelable?: boolean; composed?: boolean },
-    ) {
-      this.type = type;
-      this.bubbles = opts?.bubbles ?? false;
-      this.cancelable = opts?.cancelable ?? false;
-      this.composed = opts?.composed ?? false;
-    }
-    preventDefault() {}
-    stopPropagation() {}
-    stopImmediatePropagation() {}
+  g.Event = function Event(
+    this: any,
+    type: string,
+    opts?: { bubbles?: boolean; cancelable?: boolean; composed?: boolean },
+  ) {
+    Object.defineProperty(this, "type", {
+      value: type,
+      writable: true,
+      configurable: true,
+    });
+    this.bubbles = opts?.bubbles ?? false;
+    this.cancelable = opts?.cancelable ?? false;
+    this.composed = opts?.composed ?? false;
   };
+  g.Event.prototype.preventDefault = function () {};
+  g.Event.prototype.stopPropagation = function () {};
+  g.Event.prototype.stopImmediatePropagation = function () {};
 }
 
 // CustomEvent polyfill
 if (typeof g.CustomEvent === "undefined") {
-  g.CustomEvent = class CustomEvent extends g.Event {
-    detail: any;
-    constructor(type: string, opts?: any) {
-      super(type, opts);
-      this.detail = opts?.detail ?? null;
-    }
+  g.CustomEvent = function CustomEvent(this: any, type: string, opts?: any) {
+    g.Event.call(this, type, opts);
+    this.detail = opts?.detail ?? null;
   };
+  g.CustomEvent.prototype = Object.create(g.Event.prototype);
+  g.CustomEvent.prototype.constructor = g.CustomEvent;
 }
 
 // window.addEventListener / removeEventListener / dispatchEvent polyfill.
 // @starknet-io/get-starknet-discovery calls these during module init
-// to register wallet discovery listeners. In React Native `window` exists
-// (as an alias for `global`) but lacks DOM EventTarget methods.
+// for wallet discovery. In React Native `window` exists but lacks
+// DOM EventTarget methods.
 if (typeof g.window !== "undefined" && typeof g.window.addEventListener !== "function") {
   const listeners: Record<string, Function[]> = {};
 
@@ -54,7 +56,7 @@ if (typeof g.window !== "undefined" && typeof g.window.addEventListener !== "fun
 
   g.window.removeEventListener = (type: string, handler: Function) => {
     if (!listeners[type]) return;
-    listeners[type] = listeners[type].filter((h) => h !== handler);
+    listeners[type] = listeners[type].filter((h: Function) => h !== handler);
   };
 
   g.window.dispatchEvent = (event: any) => {
