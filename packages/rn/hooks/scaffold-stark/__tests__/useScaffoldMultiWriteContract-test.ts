@@ -26,9 +26,12 @@ jest.mock("@starknet-react/core", () => ({
 }));
 
 jest.mock("starknet", () => ({
-  Contract: jest.fn().mockImplementation(() => ({
+  // The source uses new StarknetJsContract({ abi, address }) (object form)
+  Contract: jest.fn().mockImplementation(({ abi, address } = {}) => ({
+    abi,
+    address,
     populate: jest.fn().mockReturnValue({
-      contractAddress: "0x123",
+      contractAddress: address || "0x123",
       entrypoint: "transfer",
       calldata: ["0x1234", "1000"],
     }),
@@ -140,7 +143,7 @@ describe("useScaffoldMultiWriteContract Hook", () => {
     expect(mockWriteTransaction).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({
-          contractAddress: "0x123",
+          contractAddress: "0x12345",
           entrypoint: "transfer",
         }),
       ]),
