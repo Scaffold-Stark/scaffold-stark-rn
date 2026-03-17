@@ -21,7 +21,18 @@
     "postinstall": "patch-package",
     "test:watch": "jest --watchAll",
     "test": "jest",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "build:dev": "eas build --profile development --platform all",
+    "build:preview": "eas build --profile preview --platform all",
+    "build:prod": "eas build --profile production --platform all",
+    "build:ios": "eas build --profile production --platform ios",
+    "build:android": "eas build --profile production --platform android",
+    "submit:ios": "eas submit --platform ios",
+    "submit:android": "eas submit --platform android",
+    "submit:all": "eas submit --platform all",
+    "update": "eas update",
+    "update:preview": "eas update --branch preview",
+    "update:production": "eas update --branch production"
   },
   "dependencies": {
     "@cavos/aegis": "^0.1.5",
