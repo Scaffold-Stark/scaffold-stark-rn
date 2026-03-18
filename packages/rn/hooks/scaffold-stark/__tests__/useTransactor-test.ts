@@ -15,7 +15,7 @@ jest.mock("@/utils/scaffold-stark/network", () => ({
     `https://explorer/tx/${hash}`,
 }));
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useAccount: () => ({
     account: {
       execute: jest.fn(async () => ({ transaction_hash: "0xhash" })),

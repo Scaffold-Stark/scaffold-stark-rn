@@ -9,8 +9,8 @@ import {
   composeEventFilterKeys,
   parseEventData,
 } from "@/utils/scaffold-stark/events";
-import { devnet } from "@starknet-react/chains";
-import { useProvider } from "@starknet-react/core";
+import { devnet } from "@starknet-start/chains";
+import { useProvider } from "@starknet-start/react";
 import {
   Abi,
   ExtractAbiEvent,

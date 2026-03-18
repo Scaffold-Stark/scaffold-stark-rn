@@ -8,7 +8,7 @@ jest.mock("expo-secure-store", () => ({
 }));
 
 // Mock starknet-react/core
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useConnect: jest.fn(() => ({
     connect: jest.fn(),
     connectors: [{ id: "test-connector", ready: true }],
@@ -46,7 +46,7 @@ describe("useAutoConnect", () => {
   });
 
   it("does not connect when no saved connector", async () => {
-    const { useConnect } = require("@starknet-react/core");
+    const { useConnect } = require("@starknet-start/react");
     const mockConnect = jest.fn();
     useConnect.mockReturnValue({
       connect: mockConnect,
@@ -69,7 +69,7 @@ describe("useAutoConnect", () => {
       },
     }));
 
-    const { useConnect } = require("@starknet-react/core");
+    const { useConnect } = require("@starknet-start/react");
     const mockConnect = jest.fn();
     useConnect.mockReturnValue({
       connect: mockConnect,

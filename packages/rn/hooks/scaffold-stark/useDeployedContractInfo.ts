@@ -5,7 +5,7 @@ import {
   ContractName,
   contracts,
 } from "@/utils/scaffold-stark/contract";
-import { useProvider } from "@starknet-react/core";
+import { useProvider } from "@starknet-start/react";
 import { useEffect, useState } from "react";
 import { BlockIdentifier } from "starknet";
 import { useTargetNetwork } from "./useTargetNetwork";

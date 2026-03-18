@@ -13,7 +13,7 @@ jest.mock("../useDeployedContractInfo", () => ({
   })),
 }));
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useProvider: () => ({ provider: { callContract: jest.fn() } }),
   useAccount: () => ({ account: null }),
 }));

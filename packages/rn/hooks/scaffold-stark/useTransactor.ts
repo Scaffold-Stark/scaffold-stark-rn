@@ -6,7 +6,7 @@ import {
   UseSendTransactionResult,
   useTransactionReceipt,
   UseTransactionReceiptResult,
-} from "@starknet-react/core";
+} from "@starknet-start/react";
 import { useEffect, useState } from "react";
 import {
   AccountInterface,
