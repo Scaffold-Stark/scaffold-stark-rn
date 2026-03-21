@@ -19,8 +19,12 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "postinstall": "patch-package",
+    "test": "jest --forceExit",
     "test:watch": "jest --watchAll",
-    "test": "jest",
+    "test:coverage": "jest --coverage --forceExit --collectCoverageFrom='hooks/scaffold-stark/**/*.ts' --collectCoverageFrom='!hooks/scaffold-stark/__tests__/**' --collectCoverageFrom='!hooks/scaffold-stark/index.ts' --collectCoverageFrom='utils/scaffold-stark/**/*.ts' --collectCoverageFrom='!utils/scaffold-stark/__tests__/**'",
+    "test:hooks": "jest hooks/scaffold-stark/__tests__/ --forceExit",
+    "test:utils": "jest utils/scaffold-stark/__tests__/ --forceExit",
+    "test:e2e": "maestro test .maestro/",
     "format": "prettier --write .",
     "build:dev": "eas build --profile development --platform all",
     "build:preview": "eas build --profile preview --platform all",
@@ -105,6 +109,9 @@
   },
   "jest": {
     "preset": "jest-expo",
+    "setupFiles": [
+      "./test/setup.ts"
+    ],
     "moduleNameMapper": {
       "^@/(.*)": "<rootDir>/$1"
     },
@@ -113,9 +120,23 @@
       "\\.mjs$": "babel-jest"
     },
     "transformIgnorePatterns": [
-      "/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|react-native-svg|@starknet-start|@scaffold-stark|starknet))",
+      "/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|react-native-svg|@starknet-start|@scaffold-stark|starknet|viem|abi-wan-kanabi))",
       "/node_modules/react-native-reanimated/plugin/"
-    ]
+    ],
+    "coverageReporters": [
+      "text",
+      "text-summary",
+      "lcov",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 85,
+        "branches": 70,
+        "functions": 85,
+        "lines": 85
+      }
+    }
   },
   "private": true
 }

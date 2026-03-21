@@ -41,3 +41,6 @@ google-service-account.json
 *.tsbuildinfo
 
 app-example
+
+# test coverage
+coverage/
