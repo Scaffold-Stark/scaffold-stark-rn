@@ -4,7 +4,7 @@ const mockSetTargetNetwork = jest.fn();
 const mockRequest = jest.fn();
 
 // Mock starknet-react/core
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useAccount: jest.fn(() => ({
     connector: {
       request: mockRequest,

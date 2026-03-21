@@ -17,7 +17,7 @@ jest.mock("../useDeployedContractInfo", () => ({
   })),
 }));
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useProvider: jest.fn(() => ({ provider: { callContract: jest.fn() } })),
   useAccount: jest.fn(() => ({ account: null })),
 }));
@@ -80,7 +80,7 @@ describe("useScaffoldContract", () => {
   });
 
   it("connects account to contract when account is available", async () => {
-    const { useAccount } = require("@starknet-react/core");
+    const { useAccount } = require("@starknet-start/react");
     useAccount.mockReturnValue({ account: mockAccount });
 
     const { result } = renderHook(() =>
@@ -93,7 +93,7 @@ describe("useScaffoldContract", () => {
   });
 
   it("does not connect account when account is null", async () => {
-    const { useAccount } = require("@starknet-react/core");
+    const { useAccount } = require("@starknet-start/react");
     useAccount.mockReturnValue({ account: null });
 
     const { result } = renderHook(() =>

@@ -7,8 +7,8 @@ import {
 import { useTargetNetwork } from "@/hooks/scaffold-stark/useTargetNetwork";
 import { useTransactor } from "@/hooks/scaffold-stark/useTransactor";
 import { AbiFunction } from "@/utils/scaffold-stark/contract";
-import { Address } from "@starknet-react/chains";
-import { useAccount, useContract, useNetwork } from "@starknet-react/core";
+import { Address } from "@starknet-start/chains";
+import { useAccount, useContract, useNetwork } from "@starknet-start/react";
 import { Abi } from "abi-wan-kanabi";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";

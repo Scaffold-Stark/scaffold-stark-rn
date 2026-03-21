@@ -22,7 +22,7 @@ const mockEstimateInvokeFee = jest.fn(async () => ({ overall_fee: "0x10" }));
 const mockGetChainId = jest.fn(async () => 1);
 const mockSendAsync = jest.fn(async () => "0xhash");
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useAccount: jest.fn(() => ({
     account: {
       execute: mockExecute,
@@ -119,7 +119,7 @@ describe("useTransactor", () => {
   });
 
   it("shows error toast when no wallet is connected", async () => {
-    const { useAccount } = require("@starknet-react/core");
+    const { useAccount } = require("@starknet-start/react");
     useAccount.mockReturnValueOnce({ account: undefined });
 
     const { useTransactor } = require("../useTransactor");

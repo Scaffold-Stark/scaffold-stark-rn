@@ -17,7 +17,7 @@ jest.mock("expo-secure-store", () => ({
 }));
 
 // Mock starknet-react/core
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useConnect: jest.fn(() => ({
     connect: mockConnect,
     connectors: [{ id: "test-connector", ready: true }],
@@ -63,15 +63,12 @@ describe("useAutoConnect", () => {
   });
 
   it("does not connect when walletAutoConnect is disabled", async () => {
-    // Even with a valid saved connector, when walletAutoConnect is disabled
-    // the hook should not attempt to connect. Since jest.mock is hoisted and
-    // cannot be conditionally changed within the same module scope, we verify
-    // the behavior by providing saved connector data but ensuring the hook's
-    // internal check prevents connection.
-    // Note: the module-level jest.mock sets walletAutoConnect: true, so this
-    // test verifies the "no saved connector" path instead. For a true config
-    // toggle test, the module would need to be re-required with jest.isolateModules.
-    mockGetItemAsync.mockResolvedValue(null);
+    jest.doMock("@/scaffold.config", () => ({
+      default: {
+        walletAutoConnect: false,
+        autoConnectTTL: 60000,
+      },
+    }));
 
     renderHook(() => useAutoConnect());
 
@@ -142,7 +139,7 @@ describe("useAutoConnect", () => {
   });
 
   it("does not connect when connector is not ready", async () => {
-    const { useConnect } = require("@starknet-react/core");
+    const { useConnect } = require("@starknet-start/react");
     useConnect.mockReturnValue({
       connect: mockConnect,
       connectors: [{ id: "test-connector", ready: false }],

@@ -1,0 +1,15 @@
+diff --git a/node_modules/@noble/hashes/package.json b/node_modules/@noble/hashes/package.json
+index 1234567..abcdef0 100644
+--- a/node_modules/@noble/hashes/package.json
++++ b/node_modules/@noble/hashes/package.json
+@@ -66,6 +66,10 @@
+       },
+       "import": "./esm/crypto.js",
+       "default": "./crypto.js"
++    },
++    "./crypto.js": {
++      "import": "./esm/crypto.js",
++      "require": "./crypto.js"
+     },
+     "./_assert": {
+       "import": "./esm/_assert.js",

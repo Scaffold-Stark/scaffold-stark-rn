@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Contract, Abi } from "starknet";
-import { useProvider, useAccount } from "@starknet-react/core";
+import { useProvider, useAccount } from "@starknet-start/react";
 import { useDeployedContractInfo } from "./useDeployedContractInfo";
 import { ContractName } from "@/utils/scaffold-stark/contract";
 

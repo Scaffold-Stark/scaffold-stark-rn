@@ -1,0 +1,114 @@
+name: EAS Build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "packages/rn/**"
+      - ".github/workflows/eas-build.yml"
+      - "!packages/rn/**/*.md"
+      - "!packages/rn/store-assets/**"
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Build profile"
+        required: true
+        default: "preview"
+        type: choice
+        options:
+          - development
+          - preview
+          - production
+      platform:
+        description: "Platform to build"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - ios
+          - android
+
+concurrency:
+  group: eas-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/rn
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn install --immutable
+        working-directory: .
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Run tests
+        run: yarn test --ci --passWithNoTests
+
+  build:
+    name: EAS Build
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/rn
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
+      - name: Setup Expo and EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: yarn install --immutable
+        working-directory: .
+
+      - name: Determine build profile
+        id: profile
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_PROFILE: ${{ github.event.inputs.profile }}
+          INPUT_PLATFORM: ${{ github.event.inputs.platform }}
+          GIT_REF: ${{ github.ref }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "profile=$INPUT_PROFILE" >> "$GITHUB_OUTPUT"
+            echo "platform=$INPUT_PLATFORM" >> "$GITHUB_OUTPUT"
+          elif [ "$GIT_REF" = "refs/heads/main" ]; then
+            echo "profile=production" >> "$GITHUB_OUTPUT"
+            echo "platform=all" >> "$GITHUB_OUTPUT"
+          else
+            echo "profile=preview" >> "$GITHUB_OUTPUT"
+            echo "platform=all" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build app
+        run: eas build --profile ${{ steps.profile.outputs.profile }} --platform ${{ steps.profile.outputs.platform }} --non-interactive --no-wait
