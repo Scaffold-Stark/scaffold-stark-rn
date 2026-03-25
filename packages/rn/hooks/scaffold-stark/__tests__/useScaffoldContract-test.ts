@@ -8,7 +8,6 @@ const mockContract = {
 
 const mockConnect = jest.fn();
 const mockCall = jest.fn(async () => "result");
-const mockAccount = { address: "0xacc" };
 
 jest.mock("../useDeployedContractInfo", () => ({
   useDeployedContractInfo: jest.fn(() => ({
@@ -19,7 +18,6 @@ jest.mock("../useDeployedContractInfo", () => ({
 
 jest.mock("@starknet-start/react", () => ({
   useProvider: jest.fn(() => ({ provider: { callContract: jest.fn() } })),
-  useAccount: jest.fn(() => ({ account: null })),
 }));
 
 jest.mock("starknet", () => ({
@@ -79,31 +77,14 @@ describe("useScaffoldContract", () => {
     expect(result.current.isLoading).toBe(true);
   });
 
-  it("connects account to contract when account is available", async () => {
-    const { useAccount } = require("@starknet-start/react");
-    useAccount.mockReturnValue({ account: mockAccount });
-
+  it("does not call contract.connect (account is managed by wallet provider)", async () => {
     const { result } = renderHook(() =>
       // @ts-ignore
       useScaffoldContract({ contractName: "YourContract" }),
     );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(mockConnect).toHaveBeenCalledWith(mockAccount);
-  });
-
-  it("does not connect account when account is null", async () => {
-    const { useAccount } = require("@starknet-start/react");
-    useAccount.mockReturnValue({ account: null });
-
-    const { result } = renderHook(() =>
-      // @ts-ignore
-      useScaffoldContract({ contractName: "YourContract" }),
-    );
-
-    await waitFor(() => {
-      expect(result.current.data).toBeDefined();
-    });
+    expect(result.current.data).toBeDefined();
     expect(mockConnect).not.toHaveBeenCalled();
   });
 

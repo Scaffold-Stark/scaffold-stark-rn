@@ -68,7 +68,7 @@ export const useAutoConnect = (): void => {
   const [isStorageLoaded, setIsStorageLoaded] = useState(false);
 
   const { connect, connectors } = useConnect();
-  const { account } = useAccount();
+  const { isConnected } = useAccount();
 
   const hasAutoConnected = useRef(false);
 
@@ -103,7 +103,7 @@ export const useAutoConnect = (): void => {
     );
     if (!connector) return;
 
-    if (ttlExpired || account) return;
+    if (ttlExpired || isConnected) return;
 
     hasAutoConnected.current = true;
     connect({ connector });
@@ -113,7 +113,7 @@ export const useAutoConnect = (): void => {
     connectors,
     savedConnector,
     lastConnectionTime,
-    account,
+    isConnected,
     wasDisconnectedManually,
   ]);
 };

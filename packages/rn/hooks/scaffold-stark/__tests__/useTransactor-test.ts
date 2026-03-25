@@ -17,18 +17,11 @@ jest.mock("@/utils/scaffold-stark/network", () => ({
     `https://explorer/tx/${hash}`,
 }));
 
-const mockExecute = jest.fn(async () => ({ transaction_hash: "0xhash" }));
-const mockEstimateInvokeFee = jest.fn(async () => ({ overall_fee: "0x10" }));
-const mockGetChainId = jest.fn(async () => 1);
 const mockSendAsync = jest.fn(async () => "0xhash");
 
 jest.mock("@starknet-start/react", () => ({
   useAccount: jest.fn(() => ({
-    account: {
-      execute: mockExecute,
-      getChainId: mockGetChainId,
-      estimateInvokeFee: mockEstimateInvokeFee,
-    },
+    status: "connected",
   })),
   useSendTransaction: jest.fn(() => ({ sendAsync: mockSendAsync })),
   useTransactionReceipt: jest.fn(() => ({ data: {}, status: "pending" })),
@@ -41,8 +34,6 @@ jest.mock("../useTargetNetwork", () => ({
 describe("useTransactor", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockExecute.mockResolvedValue({ transaction_hash: "0xhash" });
-    mockEstimateInvokeFee.mockResolvedValue({ overall_fee: "0x10" });
     mockSendAsync.mockResolvedValue("0xhash");
   });
 
@@ -66,9 +57,16 @@ describe("useTransactor", () => {
     );
   });
 
-  it("sends transaction via account.execute (withSendTransaction=false)", async () => {
+  it("sends transaction via walletClient.execute (withSendTransaction=false)", async () => {
+    const mockExecute = jest.fn(async () => ({ transaction_hash: "0xhash" }));
+    const mockEstimateInvokeFee = jest.fn(async () => ({ overall_fee: "0x10" }));
+    const externalAccount = {
+      execute: mockExecute,
+      estimateInvokeFee: mockEstimateInvokeFee,
+    };
+
     const { useTransactor } = require("../useTransactor");
-    const { result } = renderHook(() => useTransactor());
+    const { result } = renderHook(() => useTransactor(externalAccount as any));
 
     await act(async () => {
       const hash = await result.current.writeTransaction(
@@ -90,10 +88,15 @@ describe("useTransactor", () => {
   });
 
   it("falls back to default fee values when estimation fails", async () => {
-    mockEstimateInvokeFee.mockRejectedValue(new Error("estimation failed"));
+    const mockExecute = jest.fn(async () => ({ transaction_hash: "0xhash" }));
+    const mockEstimateInvokeFee = jest.fn().mockRejectedValue(new Error("estimation failed"));
+    const externalAccount = {
+      execute: mockExecute,
+      estimateInvokeFee: mockEstimateInvokeFee,
+    };
 
     const { useTransactor } = require("../useTransactor");
-    const { result } = renderHook(() => useTransactor());
+    const { result } = renderHook(() => useTransactor(externalAccount as any));
 
     await act(async () => {
       const hash = await result.current.writeTransaction(
@@ -103,9 +106,7 @@ describe("useTransactor", () => {
       expect(hash).toBe("0xhash");
     });
 
-    // execute should be called once with fallback params after estimation failed
     expect(mockExecute).toHaveBeenCalledTimes(1);
-    // Verify fallback params include resourceBounds for RPC 0.8 compatibility
     const callArgs = mockExecute.mock.calls[0];
     expect(callArgs[1]).toEqual(
       expect.objectContaining({
@@ -118,9 +119,9 @@ describe("useTransactor", () => {
     );
   });
 
-  it("shows error toast when no wallet is connected", async () => {
+  it("shows error toast when wallet is not connected", async () => {
     const { useAccount } = require("@starknet-start/react");
-    useAccount.mockReturnValueOnce({ account: undefined });
+    useAccount.mockReturnValueOnce({ status: "disconnected" });
 
     const { useTransactor } = require("../useTransactor");
     const { result } = renderHook(() => useTransactor());
@@ -132,7 +133,7 @@ describe("useTransactor", () => {
       expect(hash).toBeUndefined();
     });
 
-    expect(mockAppToast.showError).toHaveBeenCalledWith("Cannot access account");
+    expect(mockAppToast.showError).toHaveBeenCalledWith("Wallet not connected");
   });
 
   it("throws error when tx is null", async () => {
@@ -162,7 +163,6 @@ describe("useTransactor", () => {
       ).rejects.toThrow();
     });
 
-    // Verify the error regex extracts the message from 'Contract (.*?)"}'
     expect(mockAppToast.showError).toHaveBeenCalledWith(
       expect.stringContaining("insufficient funds"),
     );
@@ -205,10 +205,9 @@ describe("useTransactor", () => {
     );
   });
 
-  it("accepts an external walletClient", async () => {
+  it("accepts an external walletClient for direct execution", async () => {
     const externalAccount = {
       execute: jest.fn(async () => ({ transaction_hash: "0xext" })),
-      getChainId: jest.fn(async () => 1),
       estimateInvokeFee: jest.fn(async () => ({ overall_fee: "0x1" })),
     };
 
@@ -224,5 +223,20 @@ describe("useTransactor", () => {
     });
 
     expect(externalAccount.execute).toHaveBeenCalled();
+  });
+
+  it("falls back to sendAsync when withSendTransaction=false but no walletClient", async () => {
+    const { useTransactor } = require("../useTransactor");
+    const { result } = renderHook(() => useTransactor());
+
+    await act(async () => {
+      const hash = await result.current.writeTransaction(
+        [{ to: "0xabc" }] as any,
+        false,
+      );
+      expect(hash).toBe("0xhash");
+    });
+
+    expect(mockSendAsync).toHaveBeenCalled();
   });
 });
