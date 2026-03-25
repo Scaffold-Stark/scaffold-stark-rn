@@ -224,24 +224,17 @@ export const getArgsAsStringInputFromForm = (form: Record<string, any>) => {
     // translate boolean input
     if (isCairoBool(key)) return convertStringInputToBool(value);
 
-    if (
-      isValidHexNumber(value) &&
-      (isCairoBigInt(key) ||
-        isCairoInt(key) ||
-        isCairoFelt(key) ||
-        isCairoU256(key))
-    ) {
-      return num.toBigInt(value);
-    }
+    const isNumericType =
+      isCairoBigInt(key) || isCairoInt(key) || isCairoFelt(key) || isCairoU256(key);
 
-    if (
-      isValidNumber(value) &&
-      (isCairoBigInt(key) ||
-        isCairoInt(key) ||
-        isCairoFelt(key) ||
-        isCairoU256(key))
-    ) {
-      return num.toBigInt(value);
+    if (isNumericType) {
+      // Empty or whitespace-only strings default to 0n for numeric types
+      if (typeof value === "string" && value.trim() === "") {
+        return 0n;
+      }
+      if (isValidHexNumber(value) || isValidNumber(value)) {
+        return num.toBigInt(value);
+      }
     }
 
     return value;
