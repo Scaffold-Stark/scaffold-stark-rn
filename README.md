@@ -1,239 +1,359 @@
-# Welcome to your Scaffold Stark React Native 👋
+# Scaffold Stark React Native
 
-## Project Setup
+<h4 align="center">
+  <a href="https://docs.scaffoldstark.com/react-native">Documentation</a> |
+  <a href="https://scaffoldstark.com/">Website</a>
+</h4>
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-z
+An open-source mobile toolkit for building decentralized applications (dApps) on Starknet. The React Native counterpart to [Scaffold Stark 2](https://github.com/Scaffold-Stark/scaffold-stark-2) — same developer experience, built for iOS and Android.
 
-## Environment Requirements
+Built using **Expo**, **starknet.js**, **Scarb**, **Starknet Foundry**, and **NativeWind (TailwindCSS)**.
 
-Before you begin, you need to install the following tools:
+- **Contract Fast Reload** — Your app auto-adapts to your smart contracts as you deploy them.
+- **Custom Hooks** — Type-safe React hooks for reading, writing, and subscribing to Starknet contracts, mirroring the Scaffold Stark 2 web hooks.
+- **Debug Contracts Screen** — Inspect and interact with every function on your deployed contracts directly from the app.
+- **Wallet-as-a-Service** — Seamless onboarding with [Cavos Aegis](https://services.cavos.xyz/dashboard) for Sepolia and Mainnet.
+- **Burner Wallet** — Instant devnet testing without external wallet setup.
+- **NativeWind Styling** — Write TailwindCSS classes in React Native via [NativeWind](https://www.nativewind.dev/).
 
-- [Node (>= v24)](https://nodejs.org/en/download/) (Recommend to use NVM)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+## How It Compares to Scaffold Stark 2 (Web)
 
-## Installing Starknet developer tools
+| Feature | Scaffold Stark 2 (Web) | Scaffold Stark RN (Mobile) |
+|---------|----------------------|---------------------------|
+| Framework | Next.js | Expo (React Native) |
+| Styling | TailwindCSS | NativeWind (TailwindCSS) |
+| Wallet Connection | Browser wallets (Argent, Braavos) | Cavos Aegis (WaaS) + Burner |
+| Hook API | `useScaffoldReadContract`, etc. | Identical API signatures |
+| Contract Debugging | `/debug` page | Debug tab in-app |
+| Smart Contracts | Scarb + Starknet Foundry | Same (shared `snfoundry` workspace) |
+| Deployment | Vercel / static hosting | App Store / Play Store via EAS |
+| Scaffolder CLI | `npx create-stark@latest` | `npx create-stark-rn@latest` |
 
-You can install the developer tools natively with `starkup` and `asdf`.
+The smart contract workspace (`packages/snfoundry`) is shared — if you've used Scaffold Stark 2 before, the contract development workflow is identical.
 
-### Option 1: Natively install developer tools
+---
 
-#### 1.1 Starkup
+## Prerequisites
 
-Tool for installing all the Starknet essentials for development. [Starkup](https://github.com/software-mansion/starkup) will install the latest stable versions of:
+### Required Software
 
-- [Scarb](https://docs.swmansion.com/scarb/) - Cairo package manager and build toolchain
-- [Starknet Foundry](https://foundry-rs.github.io/starknet-foundry/index.html) - Development toolchain for testing on Starknet
-- [asdf](https://asdf-vm.com/guide/getting-started.html) - Version manager to easily switch between tool versions
-- [Cairo 1.0 extension](https://marketplace.visualstudio.com/items?itemName=starkware.cairo1) for VSCode - Syntax highlighting and language support
-- [Starknet Devnet](https://0xspaceshard.github.io/starknet-devnet/) - Starknet Devnet
+| Tool | Version | Purpose |
+|------|---------|---------|
+| [Node.js](https://nodejs.org/) | >= v24 | Runtime (recommend [nvm](https://github.com/nvm-sh/nvm)) |
+| [Yarn](https://yarnpkg.com/) | v3+ (or [v1 classic](https://classic.yarnpkg.com/)) | Package manager |
+| [Git](https://git-scm.com/) | Latest | Version control |
 
-To install `starkup`, run the following command:
+### Starknet Developer Tools
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| [Scarb](https://docs.swmansion.com/scarb/) | 2.16.0 | Cairo package manager and build toolchain |
+| [Starknet Foundry](https://foundry-rs.github.io/starknet-foundry/) | 0.57.0 | Testing and deployment toolchain |
+| [Starknet Devnet](https://0xspaceshard.github.io/starknet-devnet/) | 0.7.2 | Local Starknet node |
+| [asdf](https://asdf-vm.com/) | Latest | Version manager for the above tools |
+
+Install all Starknet tools at once with [starkup](https://github.com/software-mansion/starkup):
 
 ```sh
 curl --proto '=https' --tlsv1.2 -sSf https://sh.starkup.sh | sh
 ```
 
-#### 1.2 Troubleshooting
+Then pin the exact versions this project requires:
 
-- If you run into version errors after using `starkup` or `asdf`, you can try to install the dependencies manually. Check the details below.
-
-<details>
-
-#### Installing with ASDF
-
-Using ASDF, you can install the required dependencies of Scaffold Stark 2 in a single command. You can do so by doing
-
-```bash
+```sh
 asdf install
 ```
 
-You can refer to the guide of manual installation of asdf [here](https://asdf-vm.com/guide/getting-started.html).
+This reads `.tool-versions` in the repo root and installs the correct Scarb, Starknet Foundry, and Devnet versions.
 
-#### Scarb version
-
-To ensure the proper functioning of scaffold-stark, your `Scarb` version must be `2.12.2`. To accomplish this, first check Scarb version:
-
-```sh
-scarb --version
-```
-
-If your `Scarb` version is not `2.12.2`, you need to install it. If you already have installed `Scarb` via `starkup`, you can setup this specific version with the following command:
+<details>
+<summary>Manual version pinning (if asdf install doesn't work)</summary>
 
 ```sh
-asdf install scarb 2.12.2 && asdf set scarb 2.12.2
+# Scarb
+asdf install scarb 2.16.0 && asdf set scarb 2.16.0
+
+# Starknet Foundry
+asdf install starknet-foundry 0.57.0 && asdf set starknet-foundry 0.57.0
+
+# Starknet Devnet
+asdf install starknet-devnet 0.7.2 && asdf set starknet-devnet 0.7.2
 ```
 
-Otherwise, you can install Scarb `2.12.2` following the [instructions](https://docs.swmansion.com/scarb/download.html#install-via-asdf).
-
-#### Starknet Foundry version
-
-To ensure the proper functioning of the tests on scaffold-stark, your `Starknet Foundry` version must be `0.49.0`. To accomplish this, first check your `Starknet Foundry` version:
+Verify:
 
 ```sh
-snforge --version
+scarb --version          # 2.16.0
+snforge --version        # 0.57.0
+starknet-devnet --version # 0.7.2
 ```
-
-If your `Starknet Foundry` version is not `0.49.0`, you need to install it. If you already have installed `Starknet Foundry` via `starkup`, you can setup this specific version with the following command:
-
-```sh
-asdf install starknet-foundry 0.49.0 && asdf set starknet-foundry 0.49.0
-```
-
-Otherwise, you can install Starknet Foundry `0.49.0` following the [instructions](https://foundry-rs.github.io/starknet-foundry/getting-started/installation.html#installation-via-asdf).
-
-#### Starknet-devnet version
-
-To ensure the proper functioning of scaffold-stark, your `starknet-devnet` version must be `0.5.1`. To accomplish this, first check your `starknet-devnet` version:
-
-```sh
-starknet-devnet --version
-```
-
-If your `starknet-devnet` version is not `0.5.1`, you need to install it.
-
-- Install starknet-devnet `0.5.1` via `asdf` ([instructions](https://github.com/gianalarcon/asdf-starknet-devnet/blob/main/README.md)).
 
 </details>
 
-## Preparing your Mobile Development Setup
+### Mobile Development Setup
 
-### iOS simulator
+You need at least one of the following to run the app:
 
-1. Install Xcode
-   Open up the Mac App Store, search for [Xcode](https://apps.apple.com/us/app/xcode/id497799835), and click Install (or Update if you have it already).
+#### iOS (macOS only)
 
-2. Install Xcode Command Line Tools
-   Open Xcode, choose Settings... from the Xcode menu (or press cmd ⌘ + ,). Go to the Locations and install the tools by selecting the most recent version in the Command Line Tools dropdown.
+1. Install **Xcode** from the Mac App Store.
+2. Install Xcode Command Line Tools: Xcode > Settings > Locations > Command Line Tools (select the most recent version in the dropdown).
 
-   ![image](./doc/ios.png)
+   ![Xcode Command Line Tools](./doc/ios.png)
 
-3. Install an iOS Simulator in Xcode
-   To install an iOS Simulator, open Xcode > Settings... > Components, and under Platform Support > iOS ..., click Get.
-
-4. Install Watchman
-   [Watchman](https://facebook.github.io/watchman/docs/install#macos) is a tool for watching changes in the filesystem. Installing it will result in better performance. You can install it with:
-
-   ```
-   brew update
-   brew install watchman
+3. Install an iOS Simulator: Xcode > Settings > Components > iOS.
+4. Install [Watchman](https://facebook.github.io/watchman/):
+   ```sh
+   brew update && brew install watchman
    ```
 
-### Android Emulator
+#### Android
 
-1. Download and install [Android Studio](https://developer.android.com/studio).
+1. Install [Android Studio](https://developer.android.com/studio).
+2. In Android Studio, go to Settings > Languages & Frameworks > Android SDK. From the **SDK Platforms** tab, select the latest Android version (API level).
 
-2. Open the Android Studio app, click More Actions and select SDK Manager.
+   ![Android SDK Platforms](./doc/android-sdk.png)
 
-3. Open Android Studio, go to Settings > Languages & Frameworks > Android SDK. From the SDK Platforms tab, select the latest Android version (API level).
+   Then click the **SDK Tools** tab and make sure you have at least one version of the Android SDK Build-Tools and Android Emulator installed.
 
-![image](./doc/android-sdk.png)
+   ![Android SDK Tools](./doc/android-emulater.png)
 
-Then, click on the SDK Tools tab and make sure you have at least one version of the Android SDK Build-Tools and Android Emulator installed.
+3. Add to your shell profile (`~/.zshrc` or `~/.bashrc`):
+   ```sh
+   export ANDROID_HOME=$HOME/Library/Android/sdk  # adjust for Linux
+   export PATH=$PATH:$ANDROID_HOME/emulator
+   export PATH=$PATH:$ANDROID_HOME/platform-tools
+   ```
+4. Reload your shell: `source ~/.zshrc`
+5. Create a virtual device: Android Studio > Virtual Device Manager > Create Device.
 
-![image](./doc/android-emulater.png)
+   ![Android Virtual Device Manager](./doc/android-device.png)
 
-4. Copy or remember the path listed in the box that says Android SDK Location.
+   Choose a hardware profile (the newest Pixel is a good default):
 
-5. Click Apply and OK to install the Android SDK and related build tools.
+   ![Android Device Selection](./doc/android-device-detail.png)
 
-6. If you are on macOS or Linux, add an environment variable pointing to the Android SDK location in ~/.bash_profile (or ~/.zshrc if you use Zsh). For example: export ANDROID_HOME=/your/path/here.
-   Add the following lines to your /.zprofile or ~/.zshrc (if you are using bash, then ~/.bash_profile or ~/.bashrc) config file:
+#### Physical Device (optional)
 
-```
-export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$PATH:$ANDROID_HOME/emulator
-export PATH=$PATH:$ANDROID_HOME/platform-tools
-```
+Install [Expo Go](https://expo.dev/go) from the App Store or Google Play. When you start the dev server, scan the QR code with your camera (iOS) or Expo Go (Android).
 
-7. Reload the path environment variables in your current shell:
+---
 
-```
-# for zsh
-source $HOME/.zshrc
+## Installation
 
-# for bash
-source $HOME/.bashrc
-```
+### Option 1: Create a new project (recommended)
 
-### Set up an emulator
-
-1. On the Android Studio main screen, click More Actions, then Virtual Device Manager in the dropdown.
-
-2. Click the Create device button.
-
-   ![image](./doc/android-device.png)
-
-3. Under Select Hardware, choose the type of hardware you'd like to emulate. We recommend testing against a variety of devices, but if you're unsure where to start, the newest device in the Pixel line could be a good choice.
-
-![image](./doc/android-device-detail.png)
-
-### Install Expo Go
-
-When you start a development server with `npx expo start` on the start developing page, press i to open the iOS Simulator. Expo CLI will install Expo Go automatically.
-
-### Run on real device
-
-1. Install `Expo Go` from Apple Store or Google Play.
-
-2. `npx expo start --ios` or `npx expo start --android`, a QR code will be shown in terminal use iOS camera or android `Expo Go` to scan it. then App will run in your `Expo Go`
-
-## Running your project
-
-Make sure you have installed all simulators and the Starknet Devtools to begin using Scaffold Stark.
-
-1. Install dependencies
-
-```bash
+```sh
+npx create-stark-rn@latest
+cd my-mobile-dapp
 yarn install
 ```
 
-2. Start dev net
+### Option 2: Clone the repo
 
-```bash
-yarn run chain
+```sh
+git clone https://github.com/Scaffold-Stark/scaffold-stark-rn.git
+cd scaffold-stark-rn
+yarn install
 ```
 
-3. Deploy sample contracts
+---
 
-```bash
-yarn run deploy
+## Quick Start
+
+Open **three terminal windows** and run:
+
+**Terminal 1 — Start the local Starknet devnet:**
+
+```sh
+yarn chain
 ```
 
-4. Start the app on iOS simulator
+**Terminal 2 — Deploy the sample contracts:**
 
-```bash
-yarn run ios
+```sh
+yarn deploy
 ```
 
-In the output, you'll find options to open the app in a
+**Terminal 3 — Launch the app:**
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+```sh
+# iOS Simulator
+yarn start:ios
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+# Android Emulator
+yarn run start -- --android
 
-3. Style your component, you can tailwind style to write css with [Nativewind](https://www.nativewind.dev/)
-
-## Using Sepolia and Mainnet Wallets
-
-Currently, we support only Cavos's Aegis Wallet-as-a-Service for sepolia and mainnet connections. You would have to obtain your appID and API Keys from the [Cavos Aegis Platform Dashboard](https://services.cavos.xyz/dashboard).
-
-### Environment variables (Aegis and AVNU)
-
-```
-EXPO_PUBLIC_AEGIS_APP_ID=your_aegis_app_id
-EXPO_PUBLIC_AVNU_API_KEY=your_avnu_api_key
+# Or start the Expo dev server and choose from the menu
+yarn start
 ```
 
-- EXPO_PUBLIC_AEGIS_APP_ID: Obtain from the Cavos Aegis Dashboard under Applications → Your App → App ID.
-- EXPO_PUBLIC_AVNU_API_KEY: Used to sponsor gasless transactions via AVNU. A temporary placeholder exists in config and will be removed soon—set your real key here.
+The app connects to devnet by default. Edit files inside `packages/rn/app/` to start building — the project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-After updating the `.env`, restart the dev server so Expo picks up the new values.
+---
 
-## Shipping Your Project on the App Store / Play Store
+## Recipes
 
-Refer to the [SUBMIT.md](./SUBMIT.md) file for a detailed guide.
+### Read from a contract
+
+```tsx
+import { useScaffoldReadContract } from "@/hooks/scaffold-stark";
+
+const { data, isLoading } = useScaffoldReadContract({
+  contractName: "YourContract",
+  functionName: "get_balance",
+  args: ["0x123..."],
+});
+```
+
+### Write to a contract
+
+```tsx
+import { useScaffoldWriteContract } from "@/hooks/scaffold-stark";
+
+const { sendAsync, isLoading } = useScaffoldWriteContract({
+  contractName: "YourContract",
+  functionName: "transfer",
+  args: [recipientAddress, amount],
+});
+
+// Call it from a button press
+<Button title="Transfer" onPress={() => sendAsync()} disabled={isLoading} />
+```
+
+### Batch multiple writes
+
+```tsx
+import { useScaffoldMultiWriteContract } from "@/hooks/scaffold-stark";
+
+const { sendAsync } = useScaffoldMultiWriteContract({
+  calls: [
+    { contractName: "Token", functionName: "approve", args: [spender, amount] },
+    { contractName: "Vault", functionName: "deposit", args: [amount] },
+  ],
+});
+```
+
+### Get deployed contract info
+
+```tsx
+import { useDeployedContractInfo } from "@/hooks/scaffold-stark";
+
+const { data, status } = useDeployedContractInfo("YourContract");
+// status: "LOADING" | "DEPLOYED" | "NOT_FOUND"
+// data?.address, data?.abi
+```
+
+### Check STRK balance
+
+```tsx
+import { useScaffoldStrkBalance } from "@/hooks/scaffold-stark";
+
+const { value, formatted, isLoading } = useScaffoldStrkBalance({
+  address: "0x123...",
+});
+```
+
+### Listen to contract events
+
+```tsx
+import { useScaffoldEventHistory } from "@/hooks/scaffold-stark";
+
+const { data: events, isLoading } = useScaffoldEventHistory({
+  contractName: "YourContract",
+  eventName: "Transfer",
+  fromBlock: 0n,
+});
+```
+
+---
+
+## Environment Variables
+
+Copy the example env files and fill in your values:
+
+```sh
+# Automatically copied on yarn install for snfoundry
+# For the RN app:
+cp packages/rn/.env.example packages/rn/.env
+```
+
+### React Native app (`packages/rn/.env`)
+
+| Variable | Description |
+|----------|-------------|
+| `EXPO_PUBLIC_AEGIS_APP_ID` | Your [Cavos Aegis](https://services.cavos.xyz/dashboard) app ID for Sepolia/Mainnet wallets |
+| `EXPO_PUBLIC_AVNU_API_KEY` | [AVNU](https://www.avnu.fi/) API key for gasless transaction sponsoring |
+
+### Smart contracts (`packages/snfoundry/.env`)
+
+| Variable | Description |
+|----------|-------------|
+| `PRIVATE_KEY_SEPOLIA` | Deployer private key for Sepolia testnet |
+| `ACCOUNT_ADDRESS_SEPOLIA` | Deployer account address for Sepolia |
+| `RPC_URL_SEPOLIA` | Sepolia RPC endpoint |
+| `PRIVATE_KEY_MAINNET` | Deployer private key for Mainnet |
+| `ACCOUNT_ADDRESS_MAINNET` | Deployer account address for Mainnet |
+| `RPC_URL_MAINNET` | Mainnet RPC endpoint |
+
+After updating `.env` files, restart the dev server so Expo picks up the new values.
+
+---
+
+## Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `yarn install` | Install all dependencies |
+| `yarn chain` | Start local Starknet devnet (seed 0) |
+| `yarn deploy` | Compile and deploy contracts to devnet |
+| `yarn deploy:clear` | Clear previous deployments and redeploy |
+| `yarn start` | Start Expo dev server |
+| `yarn start:ios` | Start Expo and open iOS Simulator |
+| `yarn compile` | Compile Cairo contracts |
+| `yarn test` | Run smart contract tests (snforge) |
+| `yarn test:rn` | Run React Native unit tests (Jest) |
+| `yarn format` | Format all code (Prettier + Scarb) |
+
+---
+
+## Project Structure
+
+```
+scaffold-stark-rn/
+  packages/
+    rn/                    # React Native (Expo) app
+      app/                 # File-based routes (Expo Router)
+        (tabs)/            # Tab navigator screens
+      hooks/scaffold-stark # Contract interaction hooks
+      utils/scaffold-stark # Utilities and helpers
+      components/          # Reusable UI components
+    snfoundry/             # Smart contracts workspace
+      contracts/           # Cairo contracts
+      scripts-ts/          # Deployment scripts
+      deployments/         # Generated deployment artifacts
+```
+
+---
+
+## Deploying to App Store / Play Store
+
+See [SUBMIT.md](./SUBMIT.md) for the full guide on building and submitting with [EAS Build](https://docs.expo.dev/build/introduction/) and [EAS Submit](https://docs.expo.dev/submit/introduction/).
+
+---
+
+## Documentation
+
+Full documentation — including hook references, mobile-specific considerations, and more recipes — is available at:
+
+**[docs.scaffoldstark.com/react-native](https://docs.scaffoldstark.com/react-native)**
+
+---
+
+## Contributing
+
+We welcome contributions. Please open an issue or pull request on [GitHub](https://github.com/Scaffold-Stark/scaffold-stark-rn).
+
+## License
+
+MIT
