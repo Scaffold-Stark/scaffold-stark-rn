@@ -97,7 +97,10 @@ You need at least one of the following to run the app:
 #### iOS (macOS only)
 
 1. Install **Xcode** from the Mac App Store.
-2. Install Xcode Command Line Tools: Xcode > Settings > Locations > Command Line Tools.
+2. Install Xcode Command Line Tools: Xcode > Settings > Locations > Command Line Tools (select the most recent version in the dropdown).
+
+   ![Xcode Command Line Tools](./doc/ios.png)
+
 3. Install an iOS Simulator: Xcode > Settings > Components > iOS.
 4. Install [Watchman](https://facebook.github.io/watchman/):
    ```sh
@@ -107,9 +110,14 @@ You need at least one of the following to run the app:
 #### Android
 
 1. Install [Android Studio](https://developer.android.com/studio).
-2. In Android Studio, go to Settings > Languages & Frameworks > Android SDK:
-   - **SDK Platforms tab**: install the latest Android API level.
-   - **SDK Tools tab**: install Android SDK Build-Tools and Android Emulator.
+2. In Android Studio, go to Settings > Languages & Frameworks > Android SDK. From the **SDK Platforms** tab, select the latest Android version (API level).
+
+   ![Android SDK Platforms](./doc/android-sdk.png)
+
+   Then click the **SDK Tools** tab and make sure you have at least one version of the Android SDK Build-Tools and Android Emulator installed.
+
+   ![Android SDK Tools](./doc/android-emulater.png)
+
 3. Add to your shell profile (`~/.zshrc` or `~/.bashrc`):
    ```sh
    export ANDROID_HOME=$HOME/Library/Android/sdk  # adjust for Linux
@@ -118,6 +126,12 @@ You need at least one of the following to run the app:
    ```
 4. Reload your shell: `source ~/.zshrc`
 5. Create a virtual device: Android Studio > Virtual Device Manager > Create Device.
+
+   ![Android Virtual Device Manager](./doc/android-device.png)
+
+   Choose a hardware profile (the newest Pixel is a good default):
+
+   ![Android Device Selection](./doc/android-device-detail.png)
 
 #### Physical Device (optional)
 
