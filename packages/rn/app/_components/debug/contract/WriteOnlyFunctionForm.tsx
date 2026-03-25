@@ -48,7 +48,7 @@ export const WriteOnlyFunctionForm = ({
   );
   const [formErrorMessage, setFormErrorMessage] =
     useState<FormErrorMessageState>({});
-  const { status: walletStatus, isConnected, account, chainId } = useAccount();
+  const { status: walletStatus, isConnected, chainId } = useAccount();
   const { chain } = useNetwork();
   const {
     writeTransaction,
