@@ -16,7 +16,7 @@ export function ScaffoldStarkAppWithProviders({
       <StarknetConfig
         chains={appChains}
         provider={provider}
-        connectors={connectors}
+        extraWallets={connectors}
         explorer={voyager}
       >
         <AegisProvider config={aegisConfig}>{children}</AegisProvider>
