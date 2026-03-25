@@ -14,7 +14,7 @@ jest.mock("../useTargetNetwork", () => ({
   })),
 }));
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useProvider: () => ({ provider: {} }),
 }));
 
