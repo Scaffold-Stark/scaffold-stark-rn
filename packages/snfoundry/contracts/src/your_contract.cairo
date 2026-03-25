@@ -9,7 +9,7 @@ pub trait IYourContract<TContractState> {
 #[starknet::contract]
 pub mod YourContract {
     use openzeppelin_access::ownable::OwnableComponent;
-    use openzeppelin_token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
+    use openzeppelin_interfaces::token::erc20::{IERC20Dispatcher, IERC20DispatcherTrait};
     use starknet::storage::{
         Map, StorageMapReadAccess, StorageMapWriteAccess, StoragePointerReadAccess,
         StoragePointerWriteAccess,
@@ -105,7 +105,7 @@ pub mod YourContract {
         }
         fn withdraw(ref self: ContractState) {
             self.ownable.assert_only_owner();
-            let strk_contract_address = FELT_STRK_CONTRACT.try_into().unwrap();
+            let strk_contract_address: ContractAddress = FELT_STRK_CONTRACT.try_into().unwrap();
             let strk_dispatcher = IERC20Dispatcher { contract_address: strk_contract_address };
             let balance = strk_dispatcher.balance_of(get_contract_address());
             strk_dispatcher.transfer(self.ownable.owner(), balance);

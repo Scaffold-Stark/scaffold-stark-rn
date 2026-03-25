@@ -9,10 +9,10 @@ edition = "2024_07"
 starknet = ">=2.14.0"
 openzeppelin_access = ">=2.0.0"
 openzeppelin_token = ">=2.0.0"
+openzeppelin_interfaces = ">=2.0.0"
 
 [dev-dependencies]
 openzeppelin_utils = ">=2.0.0"
-# openzeppelin_testing = "6.1.0"
 snforge_std = "0.57.0"
 
 [[target.starknet-contract]]
