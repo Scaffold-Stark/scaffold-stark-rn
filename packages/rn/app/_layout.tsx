@@ -10,11 +10,19 @@ import * as SplashScreen from "expo-splash-screen";
 import { Header } from "@/app/_components/Header";
 import { ScaffoldBgGradient } from "@/components/scaffold-stark/gradients/ScaffoldBgGradient";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useAccount } from "@starknet-react/core";
-import { useEffect, useRef } from "react";
+import { useAccount } from "@starknet-start/react";
+import { createContext, useContext, useEffect, useRef } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { WalletConnectModal } from "../components/scaffold-stark/WalletConnect/WalletConnectModal";
 import "../global.css";
+
+const WalletModalContext = createContext<{ openConnectModal: () => void }>({
+  openConnectModal: () => {},
+});
+
+export function useWalletModal() {
+  return useContext(WalletModalContext);
+}
 
 SplashScreen.preventAutoHideAsync();
 
@@ -64,14 +72,16 @@ function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ScaffoldBgGradient>
-      <Header
-        onConnectWallet={handleConnectWallet}
-        isWalletConnected={!!address}
-        walletAddress={address}
-      />
-      <WalletConnectModal sheetRef={walletSheetRef} onClose={() => {}} />
-      {children}
-    </ScaffoldBgGradient>
+    <WalletModalContext.Provider value={{ openConnectModal: handleConnectWallet }}>
+      <ScaffoldBgGradient>
+        <Header
+          onConnectWallet={handleConnectWallet}
+          isWalletConnected={!!address}
+          walletAddress={address}
+        />
+        <WalletConnectModal sheetRef={walletSheetRef} onClose={() => {}} />
+        {children}
+      </ScaffoldBgGradient>
+    </WalletModalContext.Provider>
   );
 }

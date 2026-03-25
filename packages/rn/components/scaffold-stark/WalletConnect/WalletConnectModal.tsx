@@ -6,21 +6,29 @@ import {
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { burnerAccounts, BurnerConnector } from "@scaffold-stark/stark-burner";
+import { burnerAccounts, burnerWalletId } from "@scaffold-stark/stark-burner";
 import {
-  Connector,
+  MockWallet,
   useAccount,
   useConnect,
   useDisconnect,
-} from "@starknet-react/core";
+} from "@starknet-start/react";
+import type { WalletWithStarknetFeatures } from "@starknet-io/get-starknet-wallet-standard/features";
 import * as Clipboard from "expo-clipboard";
 import React, { useMemo, useState } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getChecksumAddress } from "starknet";
+import { BlockieAvatar } from "../BlockieAvatar";
 import { themeColors, useTheme } from "../ThemeProvider";
 import { CopyIcon } from "../icons/CopyIcon";
 import { ConnectorRow } from "./ConnectorRow";
 import { RNIcon } from "./RNIcon";
+
+/** Get the wallet standard ID from a WalletWithStarknetFeatures instance. */
+function getWalletId(wallet: WalletWithStarknetFeatures): string {
+  return wallet.features["starknet:walletApi"].id;
+}
 
 interface WalletConnectModalProps {
   sheetRef: React.RefObject<BottomSheetModal>;
@@ -51,8 +59,8 @@ export function WalletConnectModal({
   const isDevnet = targetNetwork.network === "devnet";
 
   const { mainConnectors, otherConnectors } = useMemo(() => {
-    const burnerConn = connectors.filter((c) => c.id === "burner-wallet");
-    const others = connectors.filter((c) => c.id !== "burner-wallet");
+    const burnerConn = connectors.filter((c) => getWalletId(c) === burnerWalletId);
+    const others = connectors.filter((c) => getWalletId(c) !== burnerWalletId);
 
     if (!isDevnet) {
       return {
@@ -67,8 +75,8 @@ export function WalletConnectModal({
     };
   }, [connectors, isDevnet]);
 
-  const handleConnectWallet = (connector: Connector) => {
-    if (connector.id === "burner-wallet") {
+  const handleConnectWallet = (connector: WalletWithStarknetFeatures) => {
+    if (getWalletId(connector) === burnerWalletId) {
       setIsBurnerWallet(true);
       return;
     }
@@ -76,7 +84,7 @@ export function WalletConnectModal({
     try {
       connect({ connector });
     } catch (error) {
-      if (connector.id === "ready-mobile") {
+      if (getWalletId(connector) === "ready-mobile") {
         appToast.showPersistentInfo(
           "Connecting to Ready...",
           "If Ready doesn't open, install it and try again.",
@@ -90,10 +98,12 @@ export function WalletConnectModal({
   };
 
   const handleConnectBurner = (ix: number) => {
-    const connector = connectors.find((it) => it.id === "burner-wallet");
-    if (connector && connector instanceof BurnerConnector) {
-      connector.burnerAccount = burnerAccounts[ix];
-      connect({ connector });
+    const wallet = connectors.find(
+      (it) => getWalletId(it) === burnerWalletId,
+    );
+    if (wallet && wallet instanceof MockWallet) {
+      wallet.switchAccount(ix);
+      connect({ connector: wallet });
       onClose && onClose();
     }
   };
@@ -121,6 +131,14 @@ export function WalletConnectModal({
   const handleSheetChange = (index: number) => {
     setIsBurnerWallet(false);
     setShowOtherOptions(false);
+  };
+
+  const toChecksumOrOriginal = (addr: string) => {
+    try {
+      return getChecksumAddress(addr);
+    } catch {
+      return addr;
+    }
   };
 
   return (
@@ -244,19 +262,19 @@ export function WalletConnectModal({
                   <>
                     {mainConnectors.map((connector) => (
                       <View
-                        key={connector.id || connector.name}
+                        key={getWalletId(connector) || connector.name}
                         style={{ marginTop: 6 }}
                       >
                         <ConnectorRow
                           title={connector.name}
                           iconUri={(connector.icon as any)[theme]}
                           iconBg={
-                            connector.id === "burner-wallet"
+                            getWalletId(connector) === burnerWalletId
                               ? "#3B82F6"
                               : "#FFFFFF"
                           }
                           iconColor={
-                            connector.id === "burner-wallet"
+                            getWalletId(connector) === burnerWalletId
                               ? "#FFFFFF"
                               : "#F97316"
                           }
@@ -284,7 +302,7 @@ export function WalletConnectModal({
                   <>
                     {otherConnectors.map((connector) => (
                       <View
-                        key={connector.id || connector.name}
+                        key={getWalletId(connector) || connector.name}
                         style={{ marginTop: 6 }}
                       >
                         <ConnectorRow
@@ -337,16 +355,12 @@ export function WalletConnectModal({
                             borderColor: isDark ? "#385183" : "transparent",
                           }}
                         >
-                          <View
-                            className="w-8 h-8 rounded-full items-center justify-center mr-4"
-                            style={{
-                              backgroundColor: isDark ? "#4DB4FF" : "#3B82F6",
-                            }}
-                          >
-                            <Ionicons
-                              name="wallet-outline"
-                              size={18}
-                              color="white"
+                          <View className="w-8 h-8 rounded-full items-center justify-center mr-4">
+                            <BlockieAvatar
+                              address={toChecksumOrOriginal(
+                                burnerAcc.accountAddress,
+                              )}
+                              size={24}
                             />
                           </View>
                           <Text style={{ color: colors.text }}>

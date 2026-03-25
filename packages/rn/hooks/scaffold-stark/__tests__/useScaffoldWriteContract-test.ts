@@ -11,7 +11,7 @@ jest.mock("starknet", () => ({
   })),
 }));
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useSendTransaction: jest.fn(),
   useNetwork: jest.fn(() => ({ chain: { id: 1 } })),
 }));
@@ -44,7 +44,7 @@ describe("useScaffoldWriteContract", () => {
   const { useDeployedContractInfo } = jest.requireMock(
     "../useDeployedContractInfo",
   );
-  const { useSendTransaction } = jest.requireMock("@starknet-react/core");
+  const { useSendTransaction } = jest.requireMock("@starknet-start/react");
   const { useTransactor, __mocks: transactorMocks } =
     jest.requireMock("../useTransactor");
   const { useTargetNetwork } = jest.requireMock("../useTargetNetwork");

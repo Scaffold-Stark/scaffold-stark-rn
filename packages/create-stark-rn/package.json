@@ -1,0 +1,51 @@
+{
+  "name": "create-stark-rn",
+  "version": "0.1.0",
+  "description": "CLI tool to scaffold a new Scaffold Stark React Native project",
+  "author": "Q3 Labs",
+  "license": "MIT",
+  "bin": {
+    "create-stark-rn": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "template"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm run build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "execa": "^9.5.2",
+    "fs-extra": "^11.2.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.10.0",
+    "@types/prompts": "^2.4.9",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "scaffold-stark",
+    "starknet",
+    "react-native",
+    "expo",
+    "cli",
+    "scaffolding"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Scaffold-Stark/scaffold-stark-rn.git",
+    "directory": "packages/create-stark-rn"
+  }
+}

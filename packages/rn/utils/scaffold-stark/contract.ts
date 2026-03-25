@@ -17,11 +17,11 @@ import {
   isCairoU256,
   parseGenericType,
 } from "@/utils/scaffold-stark/typeValidations";
-import { Address } from "@starknet-react/chains";
+import { Address } from "@starknet-start/chains";
 import {
   UseReadContractProps,
   UseSendTransactionProps,
-} from "@starknet-react/core";
+} from "@starknet-start/react";
 import type {
   Abi,
   ExtractAbiEventNames,
@@ -385,6 +385,19 @@ export type UseScaffoldWatchContractEventConfig<
   contractName: TContractName;
   eventName: BaseName<IsContractDeclarationMissing<string, TEventName>>;
   onLogs: (log: any) => void;
+};
+
+export type UseScaffoldWebSocketEventsConfig<
+  TContractName extends ContractName,
+  TEventName extends ExtractAbiEventNames<ContractAbi<TContractName>>,
+> = {
+  contractName: TContractName;
+  eventName: BaseName<IsContractDeclarationMissing<string, TEventName>>;
+  fromBlock?: bigint;
+  filters?: Record<string, unknown>;
+  enrich?: boolean;
+  enabled?: boolean;
+  onEvent?: (event: any) => void;
 };
 
 /// export all the types from kanabi

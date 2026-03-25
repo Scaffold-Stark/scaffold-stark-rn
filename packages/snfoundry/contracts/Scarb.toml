@@ -9,11 +9,11 @@ edition = "2024_07"
 starknet = ">=2.14.0"
 openzeppelin_access = ">=2.0.0"
 openzeppelin_token = ">=2.0.0"
+openzeppelin_interfaces = ">=2.0.0"
 
 [dev-dependencies]
 openzeppelin_utils = ">=2.0.0"
-openzeppelin_testing = ">=4.6.0"
-snforge_std = ">=0.54.1, <0.55.0"
+snforge_std = "0.57.0"
 
 [[target.starknet-contract]]
 casm = true # taggle this to `false` to speed up compilation/script tests
@@ -28,9 +28,8 @@ sort-module-level-items = true
 
 [[tool.snforge.fork]]
 name = "SEPOLIA_LATEST"
-url = "https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_10/_hKu4IgnPgrF8O82GLuYU" # replace with your own RPC
+url = "https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_10/_hKu4IgnPgrF8O82GLuYU"
 block_id.tag = "latest"
 
 [tool]
 panic-backtrace = true
-

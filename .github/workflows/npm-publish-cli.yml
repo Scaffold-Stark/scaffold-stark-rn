@@ -1,0 +1,65 @@
+name: Publish create-stark-rn to npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g. 1.0.0). Leave empty to use version from package.json."
+        required: false
+        type: string
+      dry_run:
+        description: "Dry run (skip actual publish)"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: npm-publish-cli
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build and Publish
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/create-stark-rn
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build CLI
+        run: npm run build
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Set version (if provided)
+        if: ${{ github.event.inputs.version != '' }}
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: npm version "$INPUT_VERSION" --no-git-tag-version
+
+      - name: Verify package
+        run: npm pack --dry-run
+
+      - name: Publish to npm
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Dry run publish
+        if: ${{ github.event.inputs.dry_run == 'true' }}
+        run: npm publish --access public --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
