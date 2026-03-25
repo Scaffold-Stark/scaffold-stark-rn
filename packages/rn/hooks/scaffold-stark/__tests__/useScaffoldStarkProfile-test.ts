@@ -15,7 +15,7 @@ jest.mock("@/scaffold.config", () => ({
   },
 }));
 
-jest.mock("@starknet-react/chains", () => ({
+jest.mock("@starknet-start/chains", () => ({
   devnet: { network: "devnet" },
   mainnet: { network: "mainnet" },
 }));

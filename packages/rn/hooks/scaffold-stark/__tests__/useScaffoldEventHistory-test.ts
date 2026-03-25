@@ -89,7 +89,7 @@ jest.mock("../useDeployedContractInfo", () => ({
     mockUseDeployedContractInfo(...args),
 }));
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useProvider: () => ({ provider: {} }),
 }));
 
@@ -103,7 +103,7 @@ jest.mock("../useTargetNetwork", () => ({
   }),
 }));
 
-jest.mock("@starknet-react/chains", () => ({
+jest.mock("@starknet-start/chains", () => ({
   devnet: { id: 99, network: "devnet" },
 }));
 

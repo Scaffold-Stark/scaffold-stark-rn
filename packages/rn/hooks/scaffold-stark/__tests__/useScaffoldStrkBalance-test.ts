@@ -11,7 +11,7 @@ jest.mock("../useDeployedContractInfo", () => ({
   })),
 }));
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useReadContract: (...args: any[]) => mockUseReadContract(...args),
 }));
 

@@ -70,7 +70,7 @@ describe("network utils", () => {
 
   test("getBlockExplorerLink returns sepolia url for devnet", () => {
     expect(getBlockExplorerLink(chains.devnet)).toBe(
-      "https://sepolia.starkscan.co/",
+      "https://sepolia.voyager.online/",
     );
   });
 

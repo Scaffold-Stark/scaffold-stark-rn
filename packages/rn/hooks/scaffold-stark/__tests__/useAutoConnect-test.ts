@@ -20,7 +20,13 @@ jest.mock("expo-secure-store", () => ({
 jest.mock("@starknet-start/react", () => ({
   useConnect: jest.fn(() => ({
     connect: mockConnect,
-    connectors: [{ id: "test-connector", ready: true }],
+    connectors: [
+      {
+        id: "test-connector",
+        ready: true,
+        features: { "starknet:walletApi": { id: "test-connector" } },
+      },
+    ],
   })),
   useAccount: jest.fn(() => ({ account: null })),
 }));
@@ -128,21 +134,25 @@ describe("useAutoConnect", () => {
 
     renderHook(() => useAutoConnect());
 
-    // TTL expired but shouldReconnect is actually true when ttlExpired is true
-    // (the source checks: const shouldReconnect = !account || ttlExpired)
-    // So with TTL expired AND account null, it should still reconnect
+    // TTL expired: source checks `if (ttlExpired || account) return;`
+    // so with TTL expired it should NOT reconnect
     await waitFor(() => {
-      expect(mockConnect).toHaveBeenCalledWith({
-        connector: expect.objectContaining({ id: "test-connector" }),
-      });
+      expect(mockGetItemAsync).toHaveBeenCalledTimes(3);
     });
+    expect(mockConnect).not.toHaveBeenCalled();
   });
 
   it("does not connect when connector is not ready", async () => {
     const { useConnect } = require("@starknet-start/react");
     useConnect.mockReturnValue({
       connect: mockConnect,
-      connectors: [{ id: "test-connector", ready: false }],
+      connectors: [
+        {
+          id: "test-connector",
+          ready: false,
+          features: { "starknet:walletApi": { id: "test-connector" } },
+        },
+      ],
     });
 
     const savedConnector = JSON.stringify({ id: "test-connector" });
