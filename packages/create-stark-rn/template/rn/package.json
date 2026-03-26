@@ -1,7 +1,7 @@
 {
   "name": "@my-stark-app/rn",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "overrides": {
     "chalk": "5.3.0",
     "strip-ansi": "7.1.0",
