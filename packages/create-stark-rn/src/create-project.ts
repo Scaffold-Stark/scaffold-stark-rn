@@ -121,8 +121,7 @@ export async function createProject(options: ProjectOptions): Promise<void> {
 
   // Create .yarnrc.yml if using yarn — React Native/Expo requires node-modules linker, not PnP
   if (packageManager === "yarn") {
-    const yarnRc = `nodeLinker: node-modules\n`;
-    fs.writeFileSync(path.join(projectDir, ".yarnrc.yml"), yarnRc);
+    fs.writeFileSync(path.join(projectDir, ".yarnrc.yml"), "nodeLinker: node-modules\n");
   }
 
   // Create .env.example (committed to git)
