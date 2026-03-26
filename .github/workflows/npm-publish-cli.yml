@@ -49,11 +49,16 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Set version (if provided)
-        if: ${{ github.event.inputs.version != '' }}
-        env:
-          INPUT_VERSION: ${{ github.event.inputs.version }}
-        run: npm version "$INPUT_VERSION" --no-git-tag-version
+      - name: Set create-stark-rn version
+        run: |
+          if [ "${{ github.event.inputs.version }}" != "" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+            echo "Using manual version from workflow input: $VERSION"
+          else
+            VERSION=$(node -pe "require('../../package.json').version")
+            echo "Using scaffold-stark-rn version from root package.json: $VERSION"
+          fi
+          npm version "$VERSION" --no-git-tag-version
 
       - name: Verify package
         run: npm pack --dry-run
