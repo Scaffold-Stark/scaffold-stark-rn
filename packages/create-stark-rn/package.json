@@ -1,6 +1,6 @@
 {
   "name": "create-stark-rn",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "CLI tool to scaffold a new Scaffold Stark React Native project",
   "author": "Q3 Labs",
   "license": "MIT",
