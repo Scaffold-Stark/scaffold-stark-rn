@@ -1,0 +1,130 @@
+name: Version Bump
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Release type"
+        required: true
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+
+concurrency:
+  group: version-bump
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: Bump versions
+    runs-on: ubuntu-latest
+
+    # Skip version-bump commits pushed by this workflow to prevent loops
+    if: "!startsWith(github.event.head_commit.message, 'chore(release):')"
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Determine release type
+        id: release
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TYPE="${{ github.event.inputs.release_type }}"
+            echo "Manual trigger — release type: $TYPE"
+          else
+            # Get commits since the last tag (or all commits if no tag exists)
+            LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -n "$LAST_TAG" ]; then
+              COMMITS=$(git log "${LAST_TAG}..HEAD" --format="%s%n%b")
+            else
+              COMMITS=$(git log --format="%s%n%b")
+            fi
+
+            echo "Commits since ${LAST_TAG:-beginning}:"
+            echo "$COMMITS"
+            echo "---"
+
+            # Conventional commits: BREAKING CHANGE or ! before colon → major
+            # feat: or feat(*): → minor
+            # everything else → patch
+            if echo "$COMMITS" | grep -qE "(BREAKING CHANGE|^.+!:)"; then
+              TYPE="major"
+            elif echo "$COMMITS" | grep -qE "^feat(\([^)]+\))?(\!)?:"; then
+              TYPE="minor"
+            else
+              TYPE="patch"
+            fi
+            echo "Auto-detected release type: $TYPE"
+          fi
+          echo "type=$TYPE" >> "$GITHUB_OUTPUT"
+
+      - name: Compute new version
+        id: version
+        run: |
+          CURRENT=$(node -pe "require('./package.json').version")
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          TYPE="${{ steps.release.outputs.type }}"
+
+          case "$TYPE" in
+            major) NEW="$((MAJOR + 1)).0.0" ;;
+            minor) NEW="${MAJOR}.$((MINOR + 1)).0" ;;
+            *)     NEW="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
+          esac
+
+          echo "Bumping $CURRENT → $NEW ($TYPE)"
+          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+          echo "new=$NEW" >> "$GITHUB_OUTPUT"
+
+      - name: Update package.json files
+        run: |
+          VERSION="${{ steps.version.outputs.new }}"
+          PACKAGES=(
+            "package.json"
+            "packages/rn/package.json"
+            "packages/snfoundry/package.json"
+            "packages/create-stark-rn/package.json"
+            "packages/create-stark-rn/template/rn/package.json"
+            "packages/create-stark-rn/template/snfoundry/package.json"
+          )
+          for PKG in "${PACKAGES[@]}"; do
+            node -e "
+              const fs = require('fs');
+              const pkg = JSON.parse(fs.readFileSync('$PKG', 'utf8'));
+              pkg.version = '$VERSION';
+              fs.writeFileSync('$PKG', JSON.stringify(pkg, null, 2) + '\n');
+            "
+            echo "  ✓ $PKG → $VERSION"
+          done
+
+      - name: Commit and tag
+        run: |
+          VERSION="${{ steps.version.outputs.new }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add \
+            package.json \
+            packages/rn/package.json \
+            packages/snfoundry/package.json \
+            packages/create-stark-rn/package.json \
+            packages/create-stark-rn/template/rn/package.json \
+            packages/create-stark-rn/template/snfoundry/package.json
+          git commit -m "chore(release): $VERSION"
+          git tag "v$VERSION"
+          git push origin main --follow-tags
