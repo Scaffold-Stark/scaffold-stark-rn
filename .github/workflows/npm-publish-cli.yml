@@ -34,7 +34,7 @@ jobs:
           echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
           echo "cwd=$(pwd)"
           rm -rf template/rn/*
-          rsync -a --delete --exclude='node_modules' --exclude='.git' --exclude='**/build' --exclude='**/dist' "$GITHUB_WORKSPACE/rn/" template/rn/
+          rsync -a --delete --exclude='node_modules' --exclude='.git' --exclude='**/build' --exclude='**/dist' "$GITHUB_WORKSPACE/packages/rn/" template/rn/
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
