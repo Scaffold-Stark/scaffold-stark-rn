@@ -28,6 +28,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Sync template from main rn app
+        run: |
+          echo "Syncing packages/create-stark-rn/template/rn with run-time app rn/"
+          rm -rf template/rn/*
+          rsync -a --delete --exclude='node_modules' --exclude='.git' --exclude='**/build' --exclude='**/dist' ../../rn/ template/rn/
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
