@@ -6,7 +6,7 @@ import {
   UseSendTransactionResult,
   useTransactionReceipt,
   UseTransactionReceiptResult,
-} from "@starknet-react/core";
+} from "@starknet-start/react";
 import { useEffect, useState } from "react";
 import {
   AccountInterface,
@@ -35,7 +35,7 @@ interface UseTransactorReturn {
  * transaction state tracking, and block explorer integration. It supports both prepared transactions
  * (using starknet-react's sendTransaction) and direct execution with automatic fee estimation.
  *
- * @param _walletClient - Optional wallet client to use. If not provided, will use the connected account from useAccount
+ * @param _walletClient - Optional wallet client for direct execution path (withSendTransaction=false)
  * @returns {UseTransactorReturn} An object containing:
  *   - writeTransaction: (tx: Call[], withSendTransaction?: boolean) => Promise<string | undefined> - Async function that sends transactions with fee estimation, notifications, and state management
  *   - transactionReceiptInstance: UseTransactionReceiptResult - Transaction receipt data and status from useTransactionReceipt
@@ -45,12 +45,8 @@ interface UseTransactorReturn {
 export const useTransactor = (
   _walletClient?: AccountInterface,
 ): UseTransactorReturn => {
-  let walletClient = _walletClient;
-  const { account } = useAccount();
+  const { status: walletStatus } = useAccount();
   const { targetNetwork } = useTargetNetwork();
-  if (walletClient === undefined && account) {
-    walletClient = account;
-  }
   const sendTransactionInstance = useSendTransaction({});
 
   const [hasActiveToast, setHasActiveToast] = useState<boolean>(false);
@@ -91,9 +87,10 @@ export const useTransactor = (
     withSendTransaction: boolean = true,
   ): Promise<string | undefined> => {
     resetStates();
-    if (!walletClient) {
-      appToast.showError("Cannot access account");
-      console.error("⚡️ ~ file: useTransactor.tsx ~ error");
+
+    if (walletStatus !== "connected") {
+      appToast.showError("Wallet not connected");
+      console.error("⚡️ ~ useTransactor: wallet not connected");
       return;
     }
 
@@ -101,38 +98,35 @@ export const useTransactor = (
       | Awaited<InvokeFunctionResponse>["transaction_hash"]
       | undefined = undefined;
     try {
-      const networkId = await walletClient.getChainId();
       appToast.showPersistentInfo("Awaiting user confirmation", undefined, {
         position: "top",
         useModal: true,
       });
       setHasActiveToast(true);
       if (tx != null && withSendTransaction) {
-        // Tx is already prepared by the caller
+        // Tx is already prepared by the caller — send via wallet request API
         const result = await sendTransactionInstance.sendAsync(tx);
         if (typeof result === "string") {
           transactionHash = result;
         } else {
           transactionHash = result.transaction_hash;
         }
-      } else if (tx != null) {
+      } else if (tx != null && _walletClient) {
+        // Direct execution path — requires an explicit AccountInterface
         try {
-          // First try to estimate fees
-          const estimatedFee = await walletClient.estimateInvokeFee(
+          const estimatedFee = await _walletClient.estimateInvokeFee(
             tx as Call[],
           );
 
-          // Use estimated fee with a safety margin (multiply by 1.5)
           const maxFee =
             (BigInt(estimatedFee.overall_fee) * BigInt(15)) / BigInt(10);
 
-          // Set RPC 0.8 compatible parameters with estimated fees
           const txOptions = {
             version: ETransactionVersion.V3,
             maxFee: "0x" + maxFee.toString(16),
           };
 
-          transactionHash = (await walletClient.execute(tx, txOptions))
+          transactionHash = (await _walletClient.execute(tx, txOptions))
             .transaction_hash;
         } catch (feeEstimationError) {
           console.warn(
@@ -140,12 +134,9 @@ export const useTransactor = (
             feeEstimationError,
           );
 
-          // Fallback to safe default values if estimation fails
           const txOptions = {
             version: ETransactionVersion.V3,
-            // Use a reasonable maxFee value that won't exceed account balance
             maxFee: "0x1000000000",
-            // Set resource bounds for RPC 0.8 compatibility
             resourceBounds: {
               l1_gas: {
                 max_amount: 0x1000000n,
@@ -162,8 +153,16 @@ export const useTransactor = (
             },
           };
 
-          transactionHash = (await walletClient.execute(tx, txOptions))
+          transactionHash = (await _walletClient.execute(tx, txOptions))
             .transaction_hash;
+        }
+      } else if (tx != null) {
+        // withSendTransaction=false but no walletClient provided — fall back to sendAsync
+        const result = await sendTransactionInstance.sendAsync(tx);
+        if (typeof result === "string") {
+          transactionHash = result;
+        } else {
+          transactionHash = result.transaction_hash;
         }
       } else {
         throw new Error("Incorrect transaction passed to transactor");
@@ -175,9 +174,10 @@ export const useTransactor = (
         setHasActiveToast(false);
       }
 
-      const blockExplorerTxURL = networkId
-        ? getBlockExplorerTxLink(targetNetwork.network, transactionHash)
-        : "";
+      const blockExplorerTxURL = getBlockExplorerTxLink(
+        targetNetwork.network,
+        transactionHash,
+      );
       setBlockExplorerTxURL(blockExplorerTxURL);
       appToast.showWaiting(
         "Waiting for transaction to complete",

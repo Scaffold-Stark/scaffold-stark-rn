@@ -7,7 +7,7 @@ import {
   UseScaffoldArgsParam,
   UseScaffoldWriteConfig,
 } from "@/utils/scaffold-stark/contract";
-import { Abi, useNetwork } from "@starknet-react/core";
+import { Abi, useNetwork } from "@starknet-start/react";
 import {
   Call,
   InvocationsDetails,

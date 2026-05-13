@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useConnect, useAccount } from "@starknet-react/core";
+import { useConnect, useAccount } from "@starknet-start/react";
 import * as SecureStore from "expo-secure-store";
 import scaffoldConfig from "@/scaffold.config";
 
@@ -68,7 +68,7 @@ export const useAutoConnect = (): void => {
   const [isStorageLoaded, setIsStorageLoaded] = useState(false);
 
   const { connect, connectors } = useConnect();
-  const { account } = useAccount();
+  const { isConnected } = useAccount();
 
   const hasAutoConnected = useRef(false);
 
@@ -98,22 +98,22 @@ export const useAutoConnect = (): void => {
     const ttlExpired =
       now - (lastConnectionTime || 0) > scaffoldConfig.autoConnectTTL;
 
-    const connector = connectors.find((c) => c.id === savedConnector?.id);
-    if (!connector || !connector.ready) return;
+    const connector = connectors.find(
+      (c) => c.features["starknet:walletApi"].id === savedConnector?.id,
+    );
+    if (!connector) return;
 
-    const shouldReconnect = !account || ttlExpired;
+    if (ttlExpired || isConnected) return;
 
-    if (shouldReconnect) {
-      hasAutoConnected.current = true;
-      connect({ connector });
-    }
+    hasAutoConnected.current = true;
+    connect({ connector });
   }, [
     isStorageLoaded,
     connect,
     connectors,
     savedConnector,
     lastConnectionTime,
-    account,
+    isConnected,
     wasDisconnectedManually,
   ]);
 };

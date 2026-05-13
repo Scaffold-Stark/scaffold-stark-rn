@@ -1,5 +1,5 @@
-import { Address } from "@starknet-react/chains";
-import { useReadContract } from "@starknet-react/core";
+import { Address } from "@starknet-start/chains";
+import { useReadContract } from "@starknet-start/react";
 import { Abi } from "abi-wan-kanabi";
 import { BlockNumber } from "starknet";
 import { formatUnits } from "@/utils/scaffold-stark/ethUnits";

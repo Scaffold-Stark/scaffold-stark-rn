@@ -18,10 +18,8 @@ import {
   isCairoVoid,
 } from "@/utils/scaffold-stark/typeValidations";
 import { Abi } from "abi-wan-kanabi";
-import { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Text, View } from "react-native";
-import ArrayInput from "./Array";
-import Struct from "./Struct";
 import {
   addError,
   clearError,
@@ -66,6 +64,10 @@ export const ContractInput = ({
   };
 
   const renderInput = () => {
+    // Lazy require to break circular dependency (ContractInput -> Array/Struct -> ContractInput)
+    const ArrayInput = require("./Array").default;
+    const Struct = require("./Struct").default;
+
     if (isCairoArray(paramType.type)) {
       return (
         <ArrayInput

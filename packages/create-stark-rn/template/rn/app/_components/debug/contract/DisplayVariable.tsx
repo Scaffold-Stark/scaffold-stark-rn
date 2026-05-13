@@ -4,8 +4,8 @@ import {
 } from "@/components/scaffold-stark/ThemeProvider";
 import { AbiFunction } from "@/utils/scaffold-stark/contract";
 import { EvilIcons } from "@expo/vector-icons";
-import { Address } from "@starknet-react/chains";
-import { useReadContract } from "@starknet-react/core";
+import { Address } from "@starknet-start/chains";
+import { useReadContract } from "@starknet-start/react";
 import { Abi } from "abi-wan-kanabi";
 import { useEffect } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
