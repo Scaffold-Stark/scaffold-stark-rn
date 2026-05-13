@@ -11,7 +11,7 @@ jest.mock("../useDeployedContractInfo", () => ({
   })),
 }));
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useReadContract: (...args: any[]) => mockUseReadContract(...args),
 }));
 
@@ -19,7 +19,7 @@ jest.mock("starknet", () => ({
   BlockNumber: {},
 }));
 
-jest.mock("@/utils/scaffold-stark/ethUnits", () => ({
+jest.mock("viem", () => ({
   formatUnits: (value: bigint, decimals: number) => {
     return (Number(value) / 10 ** decimals).toString();
   },
@@ -62,6 +62,7 @@ describe("useScaffoldStrkBalance", () => {
         address: "0xstrk",
         watch: true,
         enabled: true,
+        blockIdentifier: "pre_confirmed",
       }),
     );
   });
@@ -113,7 +114,7 @@ describe("useScaffoldStrkBalance", () => {
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.error).toBeDefined();
-    expect(result.current.refetch).toBeInstanceOf(Function);
+    expect(typeof result.current.refetch).toBe("function");
   });
 
   it("uses Strk contract from useDeployedContractInfo", () => {

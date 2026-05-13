@@ -1,6 +1,9 @@
 import { appToast } from "@/utils/scaffold-stark/toast";
 
-jest.mock("react-native", () => ({ Linking: { openURL: jest.fn() } }));
+const mockOpenURL = jest.fn();
+jest.mock("react-native", () => ({
+  Linking: { openURL: (...args: any[]) => mockOpenURL(...args) },
+}));
 const mockShow = jest.fn();
 const mockHide = jest.fn();
 jest.mock("toastify-react-native", () => ({
@@ -15,6 +18,7 @@ describe("toast wrapper", () => {
   beforeEach(() => {
     mockShow.mockClear();
     mockHide.mockClear();
+    mockOpenURL.mockClear();
   });
 
   test("showPersistentInfo passes correct options", () => {
@@ -26,6 +30,28 @@ describe("toast wrapper", () => {
         text2: "subtitle",
         position: "center",
         autoHide: false,
+      }),
+    );
+  });
+
+  test("showPersistentInfo uses default position", () => {
+    appToast.showPersistentInfo("title");
+    expect(mockShow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "info",
+        text1: "title",
+        text2: undefined,
+        position: "top",
+        autoHide: false,
+      }),
+    );
+  });
+
+  test("showPersistentInfo passes useModal option", () => {
+    appToast.showPersistentInfo("title", undefined, { useModal: true });
+    expect(mockShow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        useModal: true,
       }),
     );
   });
@@ -42,6 +68,32 @@ describe("toast wrapper", () => {
     );
   });
 
+  test("showWaiting without url has no text2", () => {
+    appToast.showWaiting("waiting");
+    expect(mockShow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "info",
+        text1: "waiting",
+        text2: undefined,
+        autoHide: false,
+      }),
+    );
+  });
+
+  test("showWaiting onPress opens url when provided", () => {
+    appToast.showWaiting("waiting", "https://explorer/tx");
+    const call = mockShow.mock.calls[0][0];
+    call.onPress();
+    expect(mockOpenURL).toHaveBeenCalledWith("https://explorer/tx");
+  });
+
+  test("showWaiting onPress does nothing without url", () => {
+    appToast.showWaiting("waiting");
+    const call = mockShow.mock.calls[0][0];
+    call.onPress();
+    expect(mockOpenURL).not.toHaveBeenCalled();
+  });
+
   test("showSuccess includes explorer hint when url provided", () => {
     appToast.showSuccess("success", "https://explorer/tx");
     expect(mockShow).toHaveBeenCalledWith(
@@ -50,6 +102,31 @@ describe("toast wrapper", () => {
         text2: "Tap to view in explorer",
       }),
     );
+  });
+
+  test("showSuccess without url has no text2", () => {
+    appToast.showSuccess("success");
+    expect(mockShow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "success",
+        text1: "success",
+        text2: undefined,
+      }),
+    );
+  });
+
+  test("showSuccess onPress opens url when provided", () => {
+    appToast.showSuccess("success", "https://explorer/tx");
+    const call = mockShow.mock.calls[0][0];
+    call.onPress();
+    expect(mockOpenURL).toHaveBeenCalledWith("https://explorer/tx");
+  });
+
+  test("showSuccess onPress does nothing without url", () => {
+    appToast.showSuccess("success");
+    const call = mockShow.mock.calls[0][0];
+    call.onPress();
+    expect(mockOpenURL).not.toHaveBeenCalled();
   });
 
   test("showError calls error", () => {
