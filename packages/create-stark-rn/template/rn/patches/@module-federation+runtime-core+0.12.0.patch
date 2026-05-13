@@ -1,0 +1,36 @@
+diff --git a/node_modules/@module-federation/runtime-core/dist/index.esm.js b/node_modules/@module-federation/runtime-core/dist/index.esm.js
+index 1111111..2222222 100644
+--- a/node_modules/@module-federation/runtime-core/dist/index.esm.js
++++ b/node_modules/@module-federation/runtime-core/dist/index.esm.js
+@@ -1017,7 +1017,12 @@
+                         reject
+                     ]);
+                 } else {
+-                    import(/* webpackIgnore: true */ /* @vite-ignore */ entry).then(resolve).catch(reject);
++                    // PATCHED for Hermes: plain `import(entry)` is an Invalid
++                    // expression for Hermes' parser. This fallback path is the
++                    // dynamic-remote loader; an RN/Expo app bundled by Metro
++                    // never reaches it. Reject explicitly to preserve the
++                    // Promise contract.
++                    reject(new Error('Dynamic remote module loading is not supported in this build'));
+                 }
+             } else {
+                 resolve(remoteEntryExports);
+diff --git a/node_modules/@module-federation/runtime-core/dist/index.cjs.cjs b/node_modules/@module-federation/runtime-core/dist/index.cjs.cjs
+index 1111111..2222222 100644
+--- a/node_modules/@module-federation/runtime-core/dist/index.cjs.cjs
++++ b/node_modules/@module-federation/runtime-core/dist/index.cjs.cjs
+@@ -1018,7 +1018,12 @@
+                         reject
+                     ]);
+                 } else {
+-                    import(/* webpackIgnore: true */ /* @vite-ignore */ entry).then(resolve).catch(reject);
++                    // PATCHED for Hermes: plain `import(entry)` is an Invalid
++                    // expression for Hermes' parser. This fallback path is the
++                    // dynamic-remote loader; an RN/Expo app bundled by Metro
++                    // never reaches it. Reject explicitly to preserve the
++                    // Promise contract.
++                    reject(new Error('Dynamic remote module loading is not supported in this build'));
+                 }
+             } else {
+                 resolve(remoteEntryExports);
