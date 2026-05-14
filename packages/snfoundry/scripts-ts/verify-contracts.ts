@@ -2,7 +2,7 @@ import path from "path";
 import { execSync } from "child_process";
 import yargs from "yargs";
 import { green, red, yellow } from "./helpers/colorize-log";
-import deployedContracts from "../../rn/contracts/deployedContracts";
+import deployedContracts from "../../nextjs/contracts/deployedContracts";
 
 function main() {
   // Parse command line arguments
