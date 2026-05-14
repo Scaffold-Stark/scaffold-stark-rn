@@ -55,38 +55,41 @@ jest.mock("starknet", () => ({
   },
 }));
 
-const mockContractData = {
-  address: "0xcontract",
-  abi: [
+const mockEventAbi = {
+  type: "event",
+  name: "contracts::YourContract::Transfer",
+  kind: "struct",
+  members: [
     {
-      type: "event",
-      name: "contracts::YourContract::Transfer",
-      kind: "struct",
-      members: [
-        {
-          name: "from",
-          type: "core::starknet::contract_address::ContractAddress",
-          kind: "key",
-        },
-        {
-          name: "to",
-          type: "core::starknet::contract_address::ContractAddress",
-          kind: "key",
-        },
-        { name: "value", type: "core::integer::u256", kind: "data" },
-      ],
+      name: "from",
+      type: "core::starknet::contract_address::ContractAddress",
+      kind: "key",
     },
+    {
+      name: "to",
+      type: "core::starknet::contract_address::ContractAddress",
+      kind: "key",
+    },
+    { name: "value", type: "core::integer::u256", kind: "data" },
   ],
 };
 
-jest.mock("../useDeployedContractInfo", () => ({
-  useDeployedContractInfo: jest.fn(() => ({
-    data: mockContractData,
-    isLoading: false,
-  })),
+const mockContractData = {
+  address: "0xcontract",
+  abi: [mockEventAbi],
+};
+
+const mockUseDeployedContractInfo = jest.fn(() => ({
+  data: mockContractData,
+  isLoading: false,
 }));
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("../useDeployedContractInfo", () => ({
+  useDeployedContractInfo: (...args: any[]) =>
+    mockUseDeployedContractInfo(...args),
+}));
+
+jest.mock("@starknet-start/react", () => ({
   useProvider: () => ({ provider: {} }),
 }));
 
@@ -100,7 +103,7 @@ jest.mock("../useTargetNetwork", () => ({
   }),
 }));
 
-jest.mock("@starknet-react/chains", () => ({
+jest.mock("@starknet-start/chains", () => ({
   devnet: { id: 99, network: "devnet" },
 }));
 
@@ -126,14 +129,24 @@ jest.mock("@/utils/scaffold-stark/events", () => ({
 describe("useScaffoldEventHistory", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
+    mockUseDeployedContractInfo.mockReturnValue({
+      data: mockContractData,
+      isLoading: false,
+    });
+    mockGetBlockLatestAccepted.mockResolvedValue({ block_number: 100 });
+    mockGetEvents.mockResolvedValue({
+      events: [
+        {
+          block_hash: "0xblock1",
+          transaction_hash: "0xtx1",
+          keys: ["0xkey1"],
+          data: ["0xdata1"],
+        },
+      ],
+    });
   });
 
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
-  it("returns initial loading state", () => {
+  it("returns data, isLoading, and error properties", async () => {
     const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
 
     const { result } = renderHook(() =>
@@ -144,13 +157,12 @@ describe("useScaffoldEventHistory", () => {
       }),
     );
 
-    // Should have data array (possibly empty) and loading status
     expect(result.current).toHaveProperty("data");
     expect(result.current).toHaveProperty("isLoading");
     expect(result.current).toHaveProperty("error");
   });
 
-  it("fetches events and returns parsed data", async () => {
+  it("fetches events and calls getEvents", async () => {
     const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
 
     const { result } = renderHook(() =>
@@ -162,10 +174,7 @@ describe("useScaffoldEventHistory", () => {
     );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    // The hook should have called getEvents
     expect(mockGetEvents).toHaveBeenCalled();
-    expect(result.current.data).toBeDefined();
     expect(Array.isArray(result.current.data)).toBe(true);
   });
 
@@ -185,103 +194,8 @@ describe("useScaffoldEventHistory", () => {
     expect(mockGetEvents).not.toHaveBeenCalled();
   });
 
-  it("handles contract not deployed", async () => {
-    const { useDeployedContractInfo } = require("../useDeployedContractInfo");
-    useDeployedContractInfo.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-    });
-
-    const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
-
-    // When abi is undefined, matchingAbiEvents will be undefined and the hook
-    // won't throw because the filter produces undefined
-    const { result } = renderHook(() =>
-      useScaffoldEventHistory({
-        contractName: "YourContract" as any,
-        eventName: "Transfer" as any,
-        fromBlock: BigInt(0),
-      }),
-    );
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-  });
-
-  it("includes block data when blockData flag is true", async () => {
-    const { useDeployedContractInfo } = require("../useDeployedContractInfo");
-    useDeployedContractInfo.mockReturnValue({
-      data: mockContractData,
-      isLoading: false,
-    });
-
-    const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
-
-    const { result } = renderHook(() =>
-      useScaffoldEventHistory({
-        contractName: "YourContract" as any,
-        eventName: "Transfer" as any,
-        fromBlock: BigInt(0),
-        blockData: true,
-      }),
-    );
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    // getBlockWithTxHashes should be called when blockData is true
-    expect(mockGetBlockWithTxHashes).toHaveBeenCalled();
-  });
-
-  it("includes transaction data when transactionData flag is true", async () => {
-    const { useDeployedContractInfo } = require("../useDeployedContractInfo");
-    useDeployedContractInfo.mockReturnValue({
-      data: mockContractData,
-      isLoading: false,
-    });
-
-    const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
-
-    const { result } = renderHook(() =>
-      useScaffoldEventHistory({
-        contractName: "YourContract" as any,
-        eventName: "Transfer" as any,
-        fromBlock: BigInt(0),
-        transactionData: true,
-      }),
-    );
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(mockGetTransactionByHash).toHaveBeenCalled();
-  });
-
-  it("includes receipt data when receiptData flag is true", async () => {
-    const { useDeployedContractInfo } = require("../useDeployedContractInfo");
-    useDeployedContractInfo.mockReturnValue({
-      data: mockContractData,
-      isLoading: false,
-    });
-
-    const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
-
-    const { result } = renderHook(() =>
-      useScaffoldEventHistory({
-        contractName: "YourContract" as any,
-        eventName: "Transfer" as any,
-        fromBlock: BigInt(0),
-        receiptData: true,
-      }),
-    );
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(mockGetTransactionReceipt).toHaveBeenCalled();
-  });
-
   it("handles errors during event fetching", async () => {
-    mockGetBlockLatestAccepted.mockRejectedValueOnce(new Error("RPC error"));
-
-    const { useDeployedContractInfo } = require("../useDeployedContractInfo");
-    useDeployedContractInfo.mockReturnValue({
-      data: mockContractData,
-      isLoading: false,
-    });
+    mockGetBlockLatestAccepted.mockRejectedValue(new Error("RPC error"));
 
     const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
 
@@ -297,17 +211,62 @@ describe("useScaffoldEventHistory", () => {
     expect(result.current.error).toBeDefined();
   });
 
-  it("returns empty data when no events match", async () => {
-    mockGetEvents.mockResolvedValueOnce({ events: [] });
+  it("fetches block data when blockData flag is set", async () => {
+    const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
 
-    const { useDeployedContractInfo } = require("../useDeployedContractInfo");
-    useDeployedContractInfo.mockReturnValue({
-      data: mockContractData,
-      isLoading: false,
+    renderHook(() =>
+      useScaffoldEventHistory({
+        contractName: "YourContract" as any,
+        eventName: "Transfer" as any,
+        fromBlock: BigInt(0),
+        blockData: true,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockGetBlockWithTxHashes).toHaveBeenCalled();
     });
+  });
 
-    const starknet = require("starknet");
-    starknet.events.parseEvents.mockReturnValueOnce([]);
+  it("fetches transaction data when transactionData flag is set", async () => {
+    const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
+
+    renderHook(() =>
+      useScaffoldEventHistory({
+        contractName: "YourContract" as any,
+        eventName: "Transfer" as any,
+        fromBlock: BigInt(0),
+        transactionData: true,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockGetTransactionByHash).toHaveBeenCalled();
+    });
+  });
+
+  it("fetches receipt data when receiptData flag is set", async () => {
+    const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
+
+    renderHook(() =>
+      useScaffoldEventHistory({
+        contractName: "YourContract" as any,
+        eventName: "Transfer" as any,
+        fromBlock: BigInt(0),
+        receiptData: true,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockGetTransactionReceipt).toHaveBeenCalled();
+    });
+  });
+
+  it("does not fetch when contract is still loading", async () => {
+    mockUseDeployedContractInfo.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    });
 
     const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
 
@@ -319,7 +278,26 @@ describe("useScaffoldEventHistory", () => {
       }),
     );
 
+    // Should still be in loading state
+    expect(result.current.isLoading).toBe(true);
+    expect(mockGetEvents).not.toHaveBeenCalled();
+  });
+
+  it("passes watch flag correctly to the hook", async () => {
+    const { useScaffoldEventHistory } = require("../useScaffoldEventHistory");
+
+    const { result } = renderHook(() =>
+      useScaffoldEventHistory({
+        contractName: "YourContract" as any,
+        eventName: "Transfer" as any,
+        fromBlock: BigInt(0),
+        watch: true,
+      }),
+    );
+
+    // When watch is true, the hook still performs the initial fetch
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.data).toBeDefined();
+    expect(mockGetEvents).toHaveBeenCalled();
+    expect(Array.isArray(result.current.data)).toBe(true);
   });
 });

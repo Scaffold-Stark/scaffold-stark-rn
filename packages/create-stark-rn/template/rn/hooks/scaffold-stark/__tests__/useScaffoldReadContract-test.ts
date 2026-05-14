@@ -1,4 +1,4 @@
-import * as core from "@starknet-react/core";
+import * as core from "@starknet-start/react";
 import { renderHook } from "@testing-library/react-native";
 
 jest.mock("@/utils/scaffold-stark/contract", () => ({
@@ -15,7 +15,7 @@ jest.mock("../useDeployedContractInfo", () => ({
   }),
 }));
 
-jest.mock("@starknet-react/core", () => {
+jest.mock("@starknet-start/react", () => {
   return {
     useReadContract: jest.fn(() => ({ data: "ok", isLoading: false })),
   };

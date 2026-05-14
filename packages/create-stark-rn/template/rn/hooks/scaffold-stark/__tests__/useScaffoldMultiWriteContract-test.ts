@@ -20,15 +20,18 @@ jest.mock("../useTargetNetwork", () => ({
   useTargetNetwork: jest.fn(),
 }));
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useSendTransaction: jest.fn(),
   useNetwork: jest.fn(() => ({ chain: { id: 1 } })),
 }));
 
 jest.mock("starknet", () => ({
-  Contract: jest.fn().mockImplementation(() => ({
+  // The source uses new StarknetJsContract({ abi, address }) (object form)
+  Contract: jest.fn().mockImplementation(({ abi, address } = {}) => ({
+    abi,
+    address,
     populate: jest.fn().mockReturnValue({
-      contractAddress: "0x123",
+      contractAddress: address || "0x123",
       entrypoint: "transfer",
       calldata: ["0x1234", "1000"],
     }),
@@ -36,9 +39,11 @@ jest.mock("starknet", () => ({
   RpcProvider: jest.fn(),
 }));
 
+const mockWriteTransaction = jest.fn().mockResolvedValue("mock-tx-hash");
+
 jest.mock("../useTransactor", () => ({
   useTransactor: jest.fn().mockReturnValue({
-    writeTransaction: jest.fn().mockResolvedValue("mock-tx-hash"),
+    writeTransaction: mockWriteTransaction,
     sendTransactionInstance: { sendAsync: jest.fn(), status: "idle" },
     transactionReceiptInstance: { data: null, status: "idle" },
   }),
@@ -47,7 +52,7 @@ jest.mock("../useTransactor", () => ({
 describe("useScaffoldMultiWriteContract Hook", () => {
   const mockSendTransaction = jest.fn();
   const { useNetwork, useSendTransaction } = jest.requireMock(
-    "@starknet-react/core",
+    "@starknet-start/react",
   );
   const { useTargetNetwork } = jest.requireMock("../useTargetNetwork");
   const { useTransactor } = jest.requireMock("../useTransactor");
@@ -63,8 +68,9 @@ describe("useScaffoldMultiWriteContract Hook", () => {
       sendAsync: mockSendTransaction,
       status: "idle",
     });
+    mockWriteTransaction.mockResolvedValue("mock-tx-hash");
     (useTransactor as jest.Mock).mockReturnValue({
-      writeTransaction: jest.fn().mockResolvedValue("mock-tx-hash"),
+      writeTransaction: mockWriteTransaction,
       sendTransactionInstance: { sendAsync: jest.fn(), status: "idle" },
       transactionReceiptInstance: { data: null, status: "idle" },
     });
@@ -98,8 +104,142 @@ describe("useScaffoldMultiWriteContract Hook", () => {
       await result.current.sendAsync();
     });
 
-    const transactor = useTransactor();
-    expect(transactor.writeTransaction).not.toHaveBeenCalled();
+    expect(mockWriteTransaction).not.toHaveBeenCalled();
+  });
+
+  it("should return early when on wrong network", async () => {
+    useTargetNetwork.mockReturnValue({
+      targetNetwork: { network: "testNetwork", id: 2 },
+    });
+
+    const { result } = renderHook(() =>
+      useScaffoldMultiWriteContract({
+        calls: [
+          { contractName: "Strk", functionName: "transfer", args: ["arg1", 1] },
+        ],
+      }),
+    );
+
+    await act(async () => {
+      await result.current.sendAsync();
+    });
+
+    expect(mockWriteTransaction).not.toHaveBeenCalled();
+  });
+
+  it("should send batch transaction with parsed calls", async () => {
+    const { result } = renderHook(() =>
+      useScaffoldMultiWriteContract({
+        calls: [
+          { contractName: "Strk", functionName: "transfer", args: ["arg1", 1] },
+        ],
+      }),
+    );
+
+    await act(async () => {
+      await result.current.sendAsync();
+    });
+
+    expect(mockWriteTransaction).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contractAddress: "0x12345",
+          entrypoint: "transfer",
+        }),
+      ]),
+    );
+  });
+
+  it("should handle raw Call objects", async () => {
+    const rawCall = {
+      contractAddress: "0xraw",
+      entrypoint: "raw_fn",
+      calldata: ["1", "2"],
+    };
+
+    const { result } = renderHook(() =>
+      useScaffoldMultiWriteContract({
+        calls: [rawCall as any],
+      }),
+    );
+
+    await act(async () => {
+      await result.current.sendAsync();
+    });
+
+    expect(mockWriteTransaction).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contractAddress: "0xraw",
+          entrypoint: "raw_fn",
+        }),
+      ]),
+    );
+  });
+
+  it("should handle empty calls array", async () => {
+    const { result } = renderHook(() =>
+      useScaffoldMultiWriteContract({
+        calls: [],
+      }),
+    );
+
+    await act(async () => {
+      await result.current.sendAsync();
+    });
+
+    expect(mockWriteTransaction).toHaveBeenCalledWith([]);
+  });
+
+  it("should handle undefined calls", async () => {
+    const { result } = renderHook(() =>
+      useScaffoldMultiWriteContract({
+        calls: undefined as any,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.sendAsync();
+    });
+
+    expect(mockWriteTransaction).toHaveBeenCalledWith([]);
+  });
+
+  it("should re-throw transaction errors", async () => {
+    mockWriteTransaction.mockRejectedValue(new Error("tx failed"));
+
+    const { result } = renderHook(() =>
+      useScaffoldMultiWriteContract({
+        calls: [
+          { contractName: "Strk", functionName: "transfer", args: ["arg1", 1] },
+        ],
+      }),
+    );
+
+    await act(async () => {
+      await expect(result.current.sendAsync()).rejects.toThrow("tx failed");
+    });
+  });
+
+  it("spreads sendTransactionInstance properties", () => {
+    (useTransactor as jest.Mock).mockReturnValue({
+      writeTransaction: mockWriteTransaction,
+      sendTransactionInstance: {
+        sendAsync: jest.fn(),
+        status: "loading",
+        data: "0xdata",
+      },
+      transactionReceiptInstance: { data: null, status: "idle" },
+    });
+
+    const { result } = renderHook(() =>
+      useScaffoldMultiWriteContract({
+        calls: [],
+      }),
+    );
+
+    expect(result.current.status).toBe("loading");
+    expect(result.current.data).toBe("0xdata");
   });
 });
 
@@ -115,5 +255,14 @@ describe("createContractCall Function", () => {
       functionName: "transfer",
       args: ["arg1", 1],
     });
+  });
+
+  it("should handle empty args", () => {
+    const contractCall = createContractCall(
+      "Strk" as any,
+      "get_balance" as unknown as never,
+      [] as unknown as never,
+    );
+    expect(contractCall.args).toEqual([]);
   });
 });

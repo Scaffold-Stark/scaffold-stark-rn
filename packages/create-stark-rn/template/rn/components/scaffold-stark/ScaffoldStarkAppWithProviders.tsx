@@ -1,6 +1,7 @@
 import { appChains, connectors } from "@/configs/connectors";
 import provider from "@/configs/provider";
-import { StarknetConfig, voyager } from "@starknet-react/core";
+import { StarknetConfig } from "@starknet-start/react";
+import { voyager } from "@starknet-start/explorers";
 import { ThemeProvider } from "./ThemeProvider";
 import { AegisProvider } from "@cavos/aegis";
 import aegisConfig from "@/configs/aegisConfig";
@@ -15,7 +16,7 @@ export function ScaffoldStarkAppWithProviders({
       <StarknetConfig
         chains={appChains}
         provider={provider}
-        connectors={connectors}
+        extraWallets={connectors}
         explorer={voyager}
       >
         <AegisProvider config={aegisConfig}>{children}</AegisProvider>
