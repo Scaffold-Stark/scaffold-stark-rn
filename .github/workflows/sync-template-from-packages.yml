@@ -353,6 +353,7 @@ jobs:
       - name: Notify Slack on fast-forward sync
         if: success() && steps.finalize.outputs.OUTCOME == 'fast_forwarded'
         uses: slackapi/slack-github-action@v1.26.0
+        continue-on-error: true
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           slack-message: "create-stark-rn template synced from packages (@${{ steps.sync.outputs.SHORT_SHA }}) and fast-forwarded onto develop."
@@ -362,6 +363,7 @@ jobs:
       - name: Notify Slack on conflict PR opened
         if: success() && steps.finalize.outputs.OUTCOME == 'pr_opened'
         uses: slackapi/slack-github-action@v1.26.0
+        continue-on-error: true
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           slack-message: "create-stark-rn template sync (@${{ steps.sync.outputs.SHORT_SHA }}) hit a rewrite sanity conflict. Opened a review PR on branch ${{ steps.sync.outputs.TEMP_BRANCH }}."
@@ -371,6 +373,7 @@ jobs:
       - name: Notify Slack on no-op sync
         if: success() && steps.sync.outputs.NOOP == 'true'
         uses: slackapi/slack-github-action@v1.26.0
+        continue-on-error: true
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           slack-message: "create-stark-rn template sync (@${{ steps.sync.outputs.SHORT_SHA }}): template already at parity, nothing to apply."
@@ -380,6 +383,7 @@ jobs:
       - name: Notify Slack on failure
         if: failure()
         uses: slackapi/slack-github-action@v1.26.0
+        continue-on-error: true
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           slack-message: "create-stark-rn template sync failed (workflow error, not a sync conflict)."
