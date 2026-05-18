@@ -43,6 +43,9 @@ on:
       # is NOT in this filter, so the workflow cannot retrigger itself.
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+
 concurrency:
   group: sync-template-from-packages
   cancel-in-progress: false
