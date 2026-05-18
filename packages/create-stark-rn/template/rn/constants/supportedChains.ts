@@ -1,4 +1,4 @@
-import * as chains from "@starknet-react/chains";
+import * as chains from "@starknet-start/chains";
 
 const rpcUrlDevnet =
   process.env.EXPO_PUBLIC_DEVNET_PROVIDER_URL || "http://127.0.0.1:5050";

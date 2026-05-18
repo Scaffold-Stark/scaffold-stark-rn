@@ -1,4 +1,4 @@
-import { Address } from "@starknet-react/chains";
+import { Address } from "@starknet-start/chains";
 import { blo } from "blo";
 import { useCallback, useEffect, useState } from "react";
 import { Image, View } from "react-native";

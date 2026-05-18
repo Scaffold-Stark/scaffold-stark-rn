@@ -1,0 +1,390 @@
+# Sync the published create-stark-rn template from this repo's source packages.
+#
+# This is an INTRA-repo mirror of the architecture proven by scaffold-stark-2's
+# .github/workflows/sync-rn-repo.yaml (rsync + explicit --exclude list +
+# deterministic, grep/jq-gated rewrites + PR-on-conflict / fast-forward-on-clean
+# + optional Slack notifications).
+#
+# Source of truth : packages/rn/ + packages/snfoundry/  (kept at toolchain parity)
+# Destination     : packages/create-stark-rn/template/rn|snfoundry/  (npm-published,
+#                   copied literally by the CLI via tsup)
+#
+# The template is a CURATED, TRANSFORMED SUBSET of the source packages, NOT a
+# mirror. The exclude list and the four rewrites below are derived directly from
+# the Task-1 intentional-vs-missed classification (see PR "restore OZ-3.0
+# toolchain parity in published template").
+#
+# rsync runs WITHOUT --delete (exactly like the reference's `rsync -av`). That
+# is what PRESERVES the template-only file
+# packages/create-stark-rn/template/rn/utils/scaffold-stark/ethUnits.ts — it has
+# no counterpart in packages/rn, so a no-delete rsync never touches it.
+#
+# Each rewrite is grep/jq sanity-gated: if an upstream rename makes a gate fail,
+# the partial sync is committed and a CONFLICT PR is opened for manual review
+# instead of silently shipping a broken template.
+#
+# IMPORTANT ORDERING DEPENDENCY: the parity-fix PR (which declares
+# `toastify-react-native` in packages/rn/package.json — source code imports it
+# but the declaration was missing) MUST be merged to develop before this
+# workflow first runs. Otherwise the jq regeneration of the template
+# rn/package.json would omit toastify-react-native and break generated-project
+# installs. See that PR's classification table for full context.
+
+name: Sync create-stark-rn template
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - "packages/rn/**"
+      - "packages/snfoundry/**"
+      # The sync commit only touches packages/create-stark-rn/template/** which
+      # is NOT in this filter, so the workflow cannot retrigger itself.
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-template-from-packages
+  cancel-in-progress: false
+
+jobs:
+  check_commit:
+    runs-on: ubuntu-latest
+    outputs:
+      SHOULD_RUN: ${{ steps.check_commit.outputs.SHOULD_RUN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ORG_GITHUB_TOKEN }}
+
+      - name: Check for [skip ci]
+        id: check_commit
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          if [[ "$COMMIT_MESSAGE" == *"[skip ci]"* ]]; then
+            echo "SHOULD_RUN=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "SHOULD_RUN=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  sync-template:
+    needs: check_commit
+    if: ${{ needs.check_commit.outputs.SHOULD_RUN != 'false' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Sync to temp branch
+        id: sync
+        run: |
+          set -e
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          TEMP_BRANCH="sync/template-${SHORT_SHA}"
+
+          git fetch origin develop
+          git checkout -B "$TEMP_BRANCH" origin/develop
+
+          RN_SRC=packages/rn
+          SNF_SRC=packages/snfoundry
+          RN_DST=packages/create-stark-rn/template/rn
+          SNF_DST=packages/create-stark-rn/template/snfoundry
+
+          # ---- rsync: source packages -> template (NO --delete; see header) ----
+          # Excludes = dev-only / secrets / runtime state that the curated
+          # template does not ship (Task-1 "Only in packages/..." set).
+          rsync -a \
+            --exclude='.DS_Store' \
+            --exclude='.env*' \
+            --exclude='/.gitignore' \
+            --exclude='/.expo/' \
+            --exclude='/.maestro/' \
+            --exclude='node_modules/' \
+            --exclude='/test/' \
+            --exclude='/store-assets/' \
+            --exclude='/eas.json' \
+            --exclude='/PUBLISHING.md' \
+            --exclude='/hooks/scaffold-stark/__tests__/useScaffoldWatchContractEvent-test.ts' \
+            --exclude='/hooks/scaffold-stark/__tests__/useScaffoldWebSocketEvents-test.ts' \
+            "$RN_SRC/" "$RN_DST/"
+
+          rsync -a \
+            --exclude='.DS_Store' \
+            --exclude='.env*' \
+            --exclude='/.gitignore' \
+            --exclude='node_modules/' \
+            --exclude='/deployments/devnet_latest.json' \
+            --exclude='/deployments/sepolia_latest.json' \
+            --exclude='/contracts/target/' \
+            --exclude='/contracts/.snfoundry_cache/' \
+            "$SNF_SRC/" "$SNF_DST/"
+
+          # ---- deterministic, gated rewrites (Task-1 intentional transforms) ----
+          CONFLICT=false
+          REASON=""
+
+          RN_PKG="$RN_DST/package.json"
+          SNF_PKG="$SNF_DST/package.json"
+          DEPLOYED="$RN_DST/contracts/deployedContracts.ts"
+          VERIFY="$SNF_DST/scripts-ts/verify-contracts.ts"
+
+          # T1 — rn/package.json: rename to placeholder + strip dev/release
+          # scripts + strip jest test-setup/coverage. Regenerated from source
+          # via jq each run => idempotent by construction. (sed cannot do
+          # nested-JSON key deletion robustly, so jq is the deterministic tool.)
+          if [ "$CONFLICT" != true ]; then
+            if [ ! -f "$RN_PKG" ]; then
+              CONFLICT=true; REASON="$RN_PKG missing after rsync — upstream layout changed."
+            elif ! jq -e '.name=="@ss-rn/rn" and (.scripts["test:e2e"]!=null) and (.jest.setupFiles!=null)' "$RN_PKG" >/dev/null; then
+              CONFLICT=true; REASON="rn/package.json sentinels missing (name @ss-rn/rn / scripts.test:e2e / jest.setupFiles) — upstream restructured; review T1."
+            else
+              jq --indent 2 '
+                .name = "@my-stark-app/rn"
+                | del(
+                    .scripts["reset-project"], .scripts["test:coverage"],
+                    .scripts["test:hooks"],   .scripts["test:utils"],
+                    .scripts["test:e2e"],     .scripts["build:dev"],
+                    .scripts["build:preview"],.scripts["build:prod"],
+                    .scripts["build:ios"],    .scripts["build:android"],
+                    .scripts["submit:ios"],   .scripts["submit:android"],
+                    .scripts["submit:all"],   .scripts["update:preview"],
+                    .scripts["update:production"]
+                  )
+                | del(.jest.setupFiles, .jest.coverageReporters, .jest.coverageThreshold)
+              ' "$RN_PKG" > "$RN_PKG.tmp" && mv "$RN_PKG.tmp" "$RN_PKG"
+              if ! jq -e '.name=="@my-stark-app/rn" and (.scripts["test:e2e"]==null) and (.jest.setupFiles==null)' "$RN_PKG" >/dev/null; then
+                CONFLICT=true; REASON="T1 post-check failed — rn/package.json not in expected shape after jq."
+              fi
+            fi
+          fi
+
+          # T2 — snfoundry/package.json: standalone deploy:no-reset (no yarn
+          # workspaces in a generated project). Single-token sed (the snfoundry
+          # package NAME @ss-rn/snfoundry is intentionally NOT rewritten).
+          if [ "$CONFLICT" != true ]; then
+            if ! grep -q 'yarn workspace @ss-rn/snfoundry deploy --no-reset' "$SNF_PKG"; then
+              CONFLICT=true; REASON="grep 'yarn workspace @ss-rn/snfoundry deploy --no-reset' not found in $SNF_PKG — upstream changed the deploy script; review T2."
+            else
+              sed -i 's|yarn workspace @ss-rn/snfoundry deploy --no-reset|cd .. \&\& yarn deploy --no-reset|' "$SNF_PKG"
+              if grep -q 'yarn workspace @ss-rn/snfoundry deploy --no-reset' "$SNF_PKG" || ! grep -q 'cd .. && yarn deploy --no-reset' "$SNF_PKG"; then
+                CONFLICT=true; REASON="T2 post-check failed — deploy:no-reset rewrite did not apply cleanly."
+              fi
+            fi
+          fi
+
+          # T3 — deployedContracts.ts: reset to the empty placeholder so a
+          # generated project starts with no pre-deployed contracts. Written
+          # verbatim each run => idempotent.
+          if [ "$CONFLICT" != true ]; then
+            if ! grep -q 'This file is autogenerated by Scaffold-Stark.' "$DEPLOYED"; then
+              CONFLICT=true; REASON="autogenerated header not found in $DEPLOYED — generated-file contract changed; review T3."
+            else
+              printf '%s\n' \
+                '/**' \
+                ' * This file is autogenerated by Scaffold-Stark.' \
+                ' * You should not edit it manually or your changes might be overwritten.' \
+                ' */' \
+                '' \
+                'const deployedContracts = {} as const;' \
+                '' \
+                'export default deployedContracts;' > "$DEPLOYED"
+              if ! grep -q 'const deployedContracts = {} as const;' "$DEPLOYED"; then
+                CONFLICT=true; REASON="T3 post-check failed — deployedContracts.ts placeholder not written."
+              fi
+            fi
+          fi
+
+          # T4 — verify-contracts.ts: nextjs/contracts -> rn/contracts. This is
+          # the same structural delta the reference rewrites; the inbound
+          # cross-repo sync only fixes parse-deployments.ts and misses this
+          # file, so packages/snfoundry still ships the nextjs path.
+          if [ "$CONFLICT" != true ]; then
+            if ! grep -q 'nextjs/contracts' "$VERIFY"; then
+              CONFLICT=true; REASON="grep 'nextjs/contracts' not found in $VERIFY — upstream may have fixed/renamed it; review T4."
+            else
+              sed -i 's|nextjs/contracts|rn/contracts|g' "$VERIFY"
+              if grep -q 'nextjs/contracts' "$VERIFY"; then
+                CONFLICT=true; REASON="T4 post-check failed — residual nextjs/contracts in $VERIFY."
+              fi
+            fi
+          fi
+
+          # T5 — rn ethUnits curation: source imports formatEther/parseEther/
+          # formatUnits from "viem", but viem is DELIBERATELY undeclared in both
+          # rn/package.json files (Task-1 classified rn ethUnits usage as
+          # INTENTIONAL template curation). The curated template re-points
+          # exactly these four files at the template-only shim
+          # @/utils/scaffold-stark/ethUnits. rsync has no transform for this, so
+          # without T5 the sync would ship a template importing an undeclared
+          # package (broken generated-project install). Per-file grep-gated,
+          # exactly like T1–T4: a missing file or vanished 'from "viem"' sentinel
+          # (upstream refactor) surfaces as a CONFLICT PR, never a silent break.
+          if [ "$CONFLICT" != true ]; then
+            for rel in \
+              app/_components/debug/contract/utilsDisplay.tsx \
+              components/scaffold-stark/utilsDisplay.tsx \
+              components/scaffold-stark/Input/IntegerInput.tsx \
+              hooks/scaffold-stark/useScaffoldStrkBalance.ts; do
+              f="$RN_DST/$rel"
+              if [ ! -f "$f" ]; then
+                CONFLICT=true; REASON="$f missing after rsync — ethUnits-curated file removed/renamed upstream; review T5."
+                break
+              elif ! grep -q 'from "viem"' "$f"; then
+                CONFLICT=true; REASON="'from \"viem\"' not found in $f — upstream changed the ethUnits-curated import; review T5."
+                break
+              fi
+              sed -i 's|from "viem"|from "@/utils/scaffold-stark/ethUnits"|' "$f"
+              if grep -q 'from "viem"' "$f" || ! grep -q 'from "@/utils/scaffold-stark/ethUnits"' "$f"; then
+                CONFLICT=true; REASON="T5 post-check failed — viem import not re-pointed to ethUnits shim in $f."
+                break
+              fi
+            done
+          fi
+
+          if [ "$CONFLICT" = true ]; then
+            echo "::warning::template-sync rewrite sanity check failed; staging partial sync for manual review."
+            echo "$REASON"
+          fi
+
+          if [ -n "$(git status --porcelain)" ]; then
+            git add packages/create-stark-rn/template
+            git commit -m "chore: sync create-stark-rn template from packages (@ ${SHORT_SHA}) [skip ci]"
+            git push --force-with-lease origin "$TEMP_BRANCH"
+            NOOP=false
+          else
+            echo "Template already at parity with source packages; nothing to sync."
+            NOOP=true
+          fi
+
+          {
+            echo "TEMP_BRANCH=$TEMP_BRANCH"
+            echo "SHORT_SHA=$SHORT_SHA"
+            echo "CONFLICT=$CONFLICT"
+            echo "NOOP=$NOOP"
+            echo 'REASON<<REASON_EOF'
+            echo "${REASON:-Rewrites applied cleanly.}"
+            echo 'REASON_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Finalize sync (fast-forward or open PR)
+        id: finalize
+        if: steps.sync.outputs.NOOP != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
+          DEST_REPO: ${{ github.repository }}
+          PROD_BRANCH: develop
+          TEMP_BRANCH: ${{ steps.sync.outputs.TEMP_BRANCH }}
+          SHORT_SHA: ${{ steps.sync.outputs.SHORT_SHA }}
+          REASON: ${{ steps.sync.outputs.REASON }}
+          CONFLICT: ${{ steps.sync.outputs.CONFLICT }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -e
+
+          if [ "$CONFLICT" = "true" ]; then
+            gh label create sync-conflict --color b60205 \
+              --description "Template sync from packages hit a rewrite sanity conflict" \
+              --force --repo "$DEST_REPO"
+            gh label create needs-review --color fbca04 \
+              --description "Awaiting human review" \
+              --force --repo "$DEST_REPO"
+
+            BODY_FILE=$(mktemp)
+            {
+              echo "## Automated template-sync conflict"
+              echo
+              echo "A grep/jq sanity check failed while rewriting the rsync'd tree from \`packages/rn\` + \`packages/snfoundry\` into \`packages/create-stark-rn/template/\`. The partial sync (rsync + any rewrites that passed) is committed to this branch so the failure can be inspected against the latest tree."
+              echo
+              echo "| Field | Value |"
+              echo "| --- | --- |"
+              echo "| Source SHA | \`$SHORT_SHA\` |"
+              echo "| Trigger | \`$EVENT_NAME\` |"
+              echo "| Failing rewrite | $REASON |"
+              echo
+              echo "### Sanity-check reason"
+              echo
+              echo '```'
+              echo "$REASON"
+              echo '```'
+              echo
+              echo "### Manual resolution"
+              echo
+              echo "1. \`git fetch origin && git checkout $TEMP_BRANCH\`"
+              echo "2. Inspect the failing rewrite (T1–T4) in \`.github/workflows/sync-template-from-packages.yml\`. If the source package legitimately renamed a sentinel (\`@ss-rn/rn\`, the snfoundry deploy script, the autogenerated header, or \`nextjs/contracts\`), update that rewrite + its grep/jq gate. Otherwise resolve manually on this branch."
+              echo "3. Resolve, amend the sync commit, force-push."
+              echo "4. When CI is green, merge this PR into \`$PROD_BRANCH\`."
+            } > "$BODY_FILE"
+
+            EXISTING=$(gh pr list --repo "$DEST_REPO" --head "$TEMP_BRANCH" --base "$PROD_BRANCH" --state open --json number --jq '.[0].number // empty')
+            if [ -n "$EXISTING" ]; then
+              gh pr edit "$EXISTING" --repo "$DEST_REPO" --body-file "$BODY_FILE"
+              echo "Updated existing conflict PR #$EXISTING"
+            else
+              gh pr create --repo "$DEST_REPO" \
+                --base "$PROD_BRANCH" \
+                --head "$TEMP_BRANCH" \
+                --title "Template sync conflict @ ${SHORT_SHA}" \
+                --label sync-conflict \
+                --label needs-review \
+                --body-file "$BODY_FILE"
+            fi
+            rm -f "$BODY_FILE"
+            echo "OUTCOME=pr_opened" >> "$GITHUB_OUTPUT"
+          else
+            git fetch origin "$PROD_BRANCH" "$TEMP_BRANCH"
+            git checkout "$PROD_BRANCH"
+            git merge --ff-only "origin/$TEMP_BRANCH"
+            git push origin "$PROD_BRANCH"
+            git push origin --delete "$TEMP_BRANCH"
+            echo "OUTCOME=fast_forwarded" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ---- Slack notifications (optional; repo already holds these secrets as
+      # the destination of the inbound cross-repo sync). Mirrors the reference.
+      - name: Notify Slack on fast-forward sync
+        if: success() && steps.finalize.outputs.OUTCOME == 'fast_forwarded'
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: "create-stark-rn template synced from packages (@${{ steps.sync.outputs.SHORT_SHA }}) and fast-forwarded onto develop."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+      - name: Notify Slack on conflict PR opened
+        if: success() && steps.finalize.outputs.OUTCOME == 'pr_opened'
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: "create-stark-rn template sync (@${{ steps.sync.outputs.SHORT_SHA }}) hit a rewrite sanity conflict. Opened a review PR on branch ${{ steps.sync.outputs.TEMP_BRANCH }}."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+      - name: Notify Slack on no-op sync
+        if: success() && steps.sync.outputs.NOOP == 'true'
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: "create-stark-rn template sync (@${{ steps.sync.outputs.SHORT_SHA }}): template already at parity, nothing to apply."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+      - name: Notify Slack on failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: "create-stark-rn template sync failed (workflow error, not a sync conflict)."
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

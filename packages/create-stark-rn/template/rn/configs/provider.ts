@@ -1,10 +1,7 @@
 import scaffoldConfig from "@/scaffold.config";
-import * as chains from "@starknet-react/chains";
-import {
-  jsonRpcProvider,
-  publicProvider,
-  starknetChainId,
-} from "@starknet-react/core";
+import * as chains from "@starknet-start/chains";
+import { jsonRpcProvider, publicProvider } from "@starknet-start/providers";
+import { starknetChainId } from "@starknet-start/react";
 
 const containsDevnet = (networks: readonly chains.Chain[]) => {
   return (
@@ -28,10 +25,14 @@ export const getRpcUrl = (networkName: string): string => {
       rpcUrl = devnetRpcUrl || "http://127.0.0.1:5050";
       break;
     case "sepolia":
-      rpcUrl = sepoliaRpcUrl || "";
+      rpcUrl =
+        sepoliaRpcUrl ||
+        "https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_10/_hKu4IgnPgrF8O82GLuYU";
       break;
     case "mainnet":
-      rpcUrl = mainnetRpcUrl || "";
+      rpcUrl =
+        mainnetRpcUrl ||
+        "https://starknet-mainnet.g.alchemy.com/starknet/version/rpc/v0_10/_hKu4IgnPgrF8O82GLuYU";
       break;
     default:
       rpcUrl = "http://127.0.0.1:5050";

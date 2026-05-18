@@ -17,11 +17,11 @@ import {
   isCairoU256,
   parseGenericType,
 } from "@/utils/scaffold-stark/typeValidations";
-import { Address } from "@starknet-react/chains";
+import { Address } from "@starknet-start/chains";
 import {
   UseReadContractProps,
   UseSendTransactionProps,
-} from "@starknet-react/core";
+} from "@starknet-start/react";
 import type {
   Abi,
   ExtractAbiEventNames,

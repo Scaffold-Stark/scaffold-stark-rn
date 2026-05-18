@@ -6,8 +6,8 @@ import {
 } from "@/components/scaffold-stark/ThemeProvider";
 import { isValidContractArgs } from "@/utils/scaffold-stark/common";
 import { AbiFunction } from "@/utils/scaffold-stark/contract";
-import { Address } from "@starknet-react/chains";
-import { useContract, useReadContract } from "@starknet-react/core";
+import { Address } from "@starknet-start/chains";
+import { useContract, useReadContract } from "@starknet-start/react";
 import { Abi } from "abi-wan-kanabi";
 import { useEffect, useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";

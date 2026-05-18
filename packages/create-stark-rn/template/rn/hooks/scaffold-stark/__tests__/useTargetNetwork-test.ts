@@ -16,7 +16,7 @@ jest.mock("@/stores/store", () => ({
     }),
 }));
 
-jest.mock("@starknet-react/core", () => ({
+jest.mock("@starknet-start/react", () => ({
   useAccount: () => ({ chainId: 2 }),
 }));
 
