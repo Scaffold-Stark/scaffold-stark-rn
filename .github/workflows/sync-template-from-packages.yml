@@ -218,6 +218,38 @@ jobs:
             fi
           fi
 
+          # T5 — rn ethUnits curation: source imports formatEther/parseEther/
+          # formatUnits from "viem", but viem is DELIBERATELY undeclared in both
+          # rn/package.json files (Task-1 classified rn ethUnits usage as
+          # INTENTIONAL template curation). The curated template re-points
+          # exactly these four files at the template-only shim
+          # @/utils/scaffold-stark/ethUnits. rsync has no transform for this, so
+          # without T5 the sync would ship a template importing an undeclared
+          # package (broken generated-project install). Per-file grep-gated,
+          # exactly like T1–T4: a missing file or vanished 'from "viem"' sentinel
+          # (upstream refactor) surfaces as a CONFLICT PR, never a silent break.
+          if [ "$CONFLICT" != true ]; then
+            for rel in \
+              app/_components/debug/contract/utilsDisplay.tsx \
+              components/scaffold-stark/utilsDisplay.tsx \
+              components/scaffold-stark/Input/IntegerInput.tsx \
+              hooks/scaffold-stark/useScaffoldStrkBalance.ts; do
+              f="$RN_DST/$rel"
+              if [ ! -f "$f" ]; then
+                CONFLICT=true; REASON="$f missing after rsync — ethUnits-curated file removed/renamed upstream; review T5."
+                break
+              elif ! grep -q 'from "viem"' "$f"; then
+                CONFLICT=true; REASON="'from \"viem\"' not found in $f — upstream changed the ethUnits-curated import; review T5."
+                break
+              fi
+              sed -i 's|from "viem"|from "@/utils/scaffold-stark/ethUnits"|' "$f"
+              if grep -q 'from "viem"' "$f" || ! grep -q 'from "@/utils/scaffold-stark/ethUnits"' "$f"; then
+                CONFLICT=true; REASON="T5 post-check failed — viem import not re-pointed to ethUnits shim in $f."
+                break
+              fi
+            done
+          fi
+
           if [ "$CONFLICT" = true ]; then
             echo "::warning::template-sync rewrite sanity check failed; staging partial sync for manual review."
             echo "$REASON"
