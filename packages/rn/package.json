@@ -1,7 +1,7 @@
 {
   "name": "@ss-rn/rn",
   "main": "./index.js",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "overrides": {
     "chalk": "5.3.0",
     "strip-ansi": "7.1.0",

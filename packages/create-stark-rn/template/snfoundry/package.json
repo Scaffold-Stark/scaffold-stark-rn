@@ -1,6 +1,6 @@
 {
   "name": "@ss-rn/snfoundry",
-  "version": "0.0.1",
+  "version": "1.0.5",
   "scripts": {
     "chain": "starknet-devnet --seed 0",
     "deploy": "ts-node scripts-ts/helpers/deploy-wrapper.ts",
