@@ -9,7 +9,7 @@ import {
 } from "@/utils/scaffold-stark/typeValidations";
 import { Abi } from "abi-wan-kanabi";
 import { getChecksumAddress, Uint256 } from "starknet";
-import { formatEther } from "@/utils/scaffold-stark/ethUnits";
+import { formatEther } from "viem";
 
 type DisplayContent = Uint256 | string | bigint | boolean | Object | unknown;
 
