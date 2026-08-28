@@ -31,6 +31,9 @@ jobs:
     permissions:
       contents: write
 
+    outputs:
+      new_version: ${{ steps.version.outputs.new }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -128,3 +131,19 @@ jobs:
           git commit -m "chore(release): $VERSION"
           git tag "v$VERSION"
           git push origin main --follow-tags
+
+  publish:
+    name: Publish create-stark-rn
+    needs: bump
+    # bump has an `if:` guard — if it is skipped (e.g. a chore(release): commit),
+    # `needs: bump` makes this job skip too, so no double publish / loop.
+    uses: ./.github/workflows/npm-publish-cli.yml
+    secrets: inherit
+    with:
+      # Publish exactly the version the bump job just computed and pushed.
+      version: ${{ needs.bump.outputs.new_version }}
+      # Operate on the POST-bump tree: bump has already pushed the
+      # `chore(release):` commit to main by the time this job starts
+      # (guaranteed by `needs: bump`), so origin/main is the bumped tree.
+      ref: main
+      dry_run: false

@@ -7,6 +7,25 @@ on:
         description: "Version to publish (e.g. 1.0.0). Leave empty to use version from package.json."
         required: false
         type: string
+      ref:
+        description: "Git ref to check out and publish from. Leave empty for the triggering branch."
+        required: false
+        type: string
+      dry_run:
+        description: "Dry run (skip actual publish)"
+        required: false
+        default: false
+        type: boolean
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to publish (e.g. 1.0.0). Leave empty to use version from package.json."
+        required: false
+        type: string
+      ref:
+        description: "Git ref to check out and publish from. Leave empty for the triggering branch."
+        required: false
+        type: string
       dry_run:
         description: "Dry run (skip actual publish)"
         required: false
@@ -27,6 +46,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # When called from version-bump, the caller passes ref: main so this
+          # checks out the POST-bump tree (the chore(release): commit) rather
+          # than the pre-bump SHA that triggered the caller workflow.
+          ref: ${{ inputs.ref || github.ref_name }}
+
+      - name: Normalize flags
+        id: flags
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "dry_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "dry_run=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Sync template from main rn app
         run: |
@@ -53,9 +86,9 @@ jobs:
 
       - name: Set create-stark-rn version
         run: |
-          if [ "${{ github.event.inputs.version }}" != "" ]; then
-            VERSION="${{ github.event.inputs.version }}"
-            echo "Using manual version from workflow input: $VERSION"
+          if [ -n "${{ inputs.version }}" ]; then
+            VERSION="${{ inputs.version }}"
+            echo "Using version from workflow input: $VERSION"
           else
             VERSION=$(node -pe "require('../../package.json').version")
             echo "Using scaffold-stark-rn version from root package.json: $VERSION"
@@ -66,13 +99,13 @@ jobs:
         run: npm pack --dry-run
 
       - name: Publish to npm
-        if: ${{ github.event.inputs.dry_run != 'true' }}
+        if: steps.flags.outputs.dry_run == 'false'
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Dry run publish
-        if: ${{ github.event.inputs.dry_run == 'true' }}
+        if: steps.flags.outputs.dry_run == 'true'
         run: npm publish --access public --dry-run
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
